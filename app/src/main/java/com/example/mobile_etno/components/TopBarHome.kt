@@ -1,6 +1,5 @@
 package com.example.mobile_etno.components
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
