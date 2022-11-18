@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.components.TopBarScreen
+import com.example.mobile_etno.viewmodels.MenuViewModel
 
 @Composable
 fun ReservationsScreen(screenName: String, navHostController: NavHostController){

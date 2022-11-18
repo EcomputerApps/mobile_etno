@@ -1,3 +1,42 @@
 <resources>
-    <string name="app_name">mobile-etno</string>
+    <string name="app_name" translatable="false">mobile-etno</string>
+
+    <string name="test">cambio</string>
+
+    <string name="events">eventos</string>
+    <string name="reservations">Reservaciones</string>
+    <string name="deaths">Muertes</string>
+    <string name="phones">Telefonos</string>
+    <string name="news">Noticias</string>
+    <string name="gallery">Galeria</string>
+    <string name="pharmacies">Farmacias</string>
+    <string name="sponsors">Patrocinadores</string>
+    <string name="festivities">Fiestas</string>
+    <string name="advertisements">Anuncios</string>
+    <string name="tourism">Turismo</string>
+    <string name="service">Servicio</string>
+    <string name="incidents">Incidentes</string>
+    <string name="links">Enlaces</string>
+    <string name="bandos">Bandos</string>
+
+
+    <string-array name="menu_path">
+        <item>Events</item>
+        <item>Reservations</item>
+        <item>Deaths</item>
+        <item>Phones</item>
+        <item>News</item>
+        <item>Gallery</item>
+        <item>Pharmacies</item>
+        <item>Sponsors</item>
+        <item>Festivities</item>
+        <item>Advertisements</item>
+        <item>Tourism</item>
+        <item>Service</item>
+        <item>Incidents</item>
+        <item>Links</item>
+        <item>Bandos</item>
+    </string-array>
+    <string name="title_activity_home">HomeActivity</string>
+
 </resources>

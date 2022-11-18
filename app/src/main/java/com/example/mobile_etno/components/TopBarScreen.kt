@@ -1,7 +1,7 @@
 package com.example.mobile_etno.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
@@ -17,12 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.R
+import com.example.mobile_etno.viewmodels.MenuViewModel
 
 @Composable
 fun TopBarScreen(screenName: String, navHostController: NavHostController){
     TopAppBar(title = { Text(text = screenName, textAlign = TextAlign.Center, modifier = Modifier.width(270.dp), color = Color.White )},
     navigationIcon = {
-        IconButton(onClick = { navHostController.navigate("Home")}) {
+        IconButton(onClick = {
+            navHostController.navigate("Home")
+            }) {
             Icon(painter = painterResource(id = R.drawable.back_arrow), tint = Color.White, contentDescription = "back to Home screen", modifier = Modifier.size(30.dp))
         }
     },
