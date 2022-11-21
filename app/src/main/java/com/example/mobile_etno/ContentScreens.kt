@@ -1,6 +1,7 @@
 package com.example.mobile_etno
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,8 +30,15 @@ import com.example.mobile_etno.views.ScreenTopBar
 
 @Composable
 fun HomeScreen(list: List<String>, navController: NavHostController, menuViewModel: MenuViewModel) {
-    //then here i have to iterate the list in card
 
+    val activity = (LocalContext.current as Activity)
+
+    BackHandler() {
+        activity.finish()
+    }
+
+    val listImage = listOf<String>("")
+    //then here i have to iterate the list in card
     LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
         .background(Colors.backgroundEtno)
         .fillMaxSize()){
@@ -43,12 +52,28 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
                     navController.navigate(list[index]) {
                         menuViewModel.updateInvisible(false)
                     }
-
                 },
                 backgroundColor = Colors.backgroundEtno) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                    Image(painter = painterResource(id = R.drawable.home_test), modifier = Modifier.size(60.dp), contentDescription = item)
+
+                    when(item){
+                        "Eventos" -> Icon(painter = painterResource(id = R.drawable.events_icon), contentDescription = "events", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Reservaciones" -> Icon(painter = painterResource(id = R.drawable.book_icon), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Muertes" -> Icon(painter = painterResource(id = R.drawable.death), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Telefonos" -> Icon(painter = painterResource(id = R.drawable.phone), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Noticias" -> Icon(painter = painterResource(id = R.drawable.news), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Galeria" -> Icon(painter = painterResource(id = R.drawable.gallery), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Farmacias" -> Icon(painter = painterResource(id = R.drawable.kit_pharmacie), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Patrocinadores" -> Icon(painter = painterResource(id = R.drawable.sponsors), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Fiestas" -> Icon(painter = painterResource(id = R.drawable.festivities), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Anuncios" -> Icon(painter = painterResource(id = R.drawable.ad), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Turismo" -> Icon(painter = painterResource(id = R.drawable.tourism), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Servicios" -> Icon(painter = painterResource(id = R.drawable.service), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Incidentes" -> Icon(painter = painterResource(id = R.drawable.warning), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Enlaces" -> Icon(painter = painterResource(id = R.drawable.links), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                        "Bandos" -> Icon(painter = painterResource(id = R.drawable.speaker), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                    }
                     Text(text = item)
                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
                 }
