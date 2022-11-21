@@ -3,7 +3,7 @@
 
     <string name="test">cambio</string>
 
-    <string name="events">eventos</string>
+    <string name="events">Eventos</string>
     <string name="reservations">Reservaciones</string>
     <string name="deaths">Muertes</string>
     <string name="phones">Telefonos</string>
@@ -20,23 +20,23 @@
     <string name="bandos">Bandos</string>
 
 
-    <string-array name="menu_path">
-        <item>Events</item>
-        <item>Reservations</item>
-        <item>Deaths</item>
-        <item>Phones</item>
-        <item>News</item>
-        <item>Gallery</item>
-        <item>Pharmacies</item>
-        <item>Sponsors</item>
-        <item>Festivities</item>
-        <item>Advertisements</item>
-        <item>Tourism</item>
-        <item>Service</item>
-        <item>Incidents</item>
-        <item>Links</item>
+    <string-array name="menu_items">
+        <item>Eventos</item>
+        <item>Reservaciones</item>
+        <item>Muertes</item>
+        <item>Telefonos</item>
+        <item>Noticias</item>
+        <item>Galeria</item>
+        <item>Farmacias</item>
+        <item>Patrocinadores</item>
+        <item>Fiestas</item>
+        <item>Anuncios</item>
+        <item>Turismo</item>
+        <item>Servicios</item>
+        <item>Incidentes</item>
+        <item>Enlaces</item>
         <item>Bandos</item>
     </string-array>
-    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_home" translatable="false">HomeActivity</string>
 
 </resources>
