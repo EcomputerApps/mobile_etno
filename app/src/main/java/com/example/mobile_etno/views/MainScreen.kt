@@ -26,12 +26,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
+import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(list: List<String>, menuViewModel: MenuViewModel){
+fun MainScreen(list: List<String>, menuViewModel: MenuViewModel, eventViewModel: EventViewModel){
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
@@ -47,7 +48,7 @@ fun MainScreen(list: List<String>, menuViewModel: MenuViewModel){
         backgroundColor = Color.Red
     ) { padding ->  // We need to pass scaffold's inner padding to content. That's why we use Box.
         Box(modifier = Modifier.padding(padding)) {
-            Navigation(navController = navController, list, menuViewModel)
+            Navigation(navController = navController, list, menuViewModel, eventViewModel)
         }
     }
     // }
@@ -223,13 +224,13 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
 }
 
 @Composable
-fun Navigation(navController: NavHostController, list: List<String>, menuViewModel: MenuViewModel) {
+fun Navigation(navController: NavHostController, list: List<String>, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
     NavHost(navController, startDestination = NavDrawerItem.Home.route) {
         composable(NavDrawerItem.Home.route) {
             HomeScreen(list, navController = navController, menuViewModel = menuViewModel)
         }
         composable(NavDrawerItem.Events.route) {
-            EventsScreen(navController = navController, menuViewModel = menuViewModel)
+            EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
         }
         composable(NavDrawerItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)

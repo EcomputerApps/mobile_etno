@@ -1,0 +1,37 @@
+package com.example.mobile_etno.viewmodels
+
+import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mobile_etno.models.Event
+import com.example.mobile_etno.models.service.client.EventClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class EventViewModel: ViewModel() {
+
+    private val token: String = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlY29tcHV0ZXIiLCJpYXQiOjE2NjkzMTE5MDYsImV4cCI6MTY2OTM5ODMwNn0.fmpcCxuNbKKtjT_oonfo07EXaKVhkrEhMBNKHkFgMKk"
+
+    var events: MutableList<Event> by mutableStateOf(mutableListOf())
+
+    init {
+        viewModelScope.launch {
+            val eventsRequest = EventClient.eventService.getEvent("Bearer $token")
+
+            try {
+                val body =  withContext(Dispatchers.IO){ eventsRequest.execute().body()}
+                events = body!!.toMutableList()
+                Log.d("logss", events[0].title.toString())
+            }catch (error: java.lang.Exception){
+                Log.d("error", error.message.toString())
+            }
+        }
+    }
+
+
+}
