@@ -3,12 +3,14 @@ package com.example.mobile_etno.models
 import java.util.*
 
 data class Event(
-    var idEvent: UUID? = null,
+    var idEvent: String? = null,
     var title: String? = null,
+    var address: String? = null,
     var description: String? = null,
-    var startDate: Date? = null,
-    var endDate: Date? = null,
-    var publicationDate: Date? = null,
+    var startDate: String? = null,
+    var endDate: String? = null,
+    var publicationDate: String? = null,
+    var time: String? = null,
     var lat: String? = null,
     var long: String? = null,
     var subscription: Boolean? = null,

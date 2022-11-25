@@ -1,11 +1,7 @@
 package com.example.mobile_etno.navigation
-import android.content.res.Resources
 import androidx.compose.runtime.Stable
-import androidx.core.content.res.TypedArrayUtils.getText
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.mobile_etno.R
-import com.example.mobile_etno.utils.DataResourceString
 
 @Stable
 sealed class NavItem(

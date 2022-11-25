@@ -227,7 +227,8 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
 fun Navigation(navController: NavHostController, list: List<String>, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
     NavHost(navController, startDestination = NavDrawerItem.Home.route) {
         composable(NavDrawerItem.Home.route) {
-            HomeScreen(list, navController = navController, menuViewModel = menuViewModel)
+            eventViewModel.getEvents()
+            HomeScreen(list, navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
         }
         composable(NavDrawerItem.Events.route) {
             EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)

@@ -16,5 +16,4 @@ class MenuViewModel(): ViewModel() {
     fun updateInvisible(isInvisible: Boolean){
         this.isInvisible = isInvisible
     }
-
 }

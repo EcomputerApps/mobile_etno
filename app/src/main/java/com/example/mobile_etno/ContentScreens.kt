@@ -2,25 +2,23 @@ package com.example.mobile_etno
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DatePickerDialog
-import android.util.Log
 import android.widget.CalendarView
-import android.widget.DatePicker
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,19 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.models.service.client.EventClient
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
-import io.github.boguszpawlowski.composecalendar.SelectableCalendar
-import io.github.boguszpawlowski.composecalendar.StaticCalendar
 import java.util.*
-import kotlin.concurrent.thread
 
 @Composable
-fun HomeScreen(list: List<String>, navController: NavHostController, menuViewModel: MenuViewModel) {
+fun HomeScreen(list: List<String>, navController: NavHostController, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
 
     //This will let to close the screen ->
     val activity = (LocalContext.current as Activity)
@@ -64,6 +58,10 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
                     //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
                     navController.navigate(list[index]) {
                         menuViewModel.updateInvisible(false)
+                    }
+
+                    when (item) {
+                        "Eventos" -> eventViewModel.getEvents()
                     }
                 },
                 backgroundColor = Colors.backgroundEtno) {
@@ -136,33 +134,56 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     it.setOnDateChangeListener { view, year, month, dayOfMonth -> date = "$dayOfMonth - ${month + 1} - $year" }
 
                 })
-                Column(modifier = Modifier
-                    .padding(top = 350.dp)
-                    .padding(horizontal = 35.dp)) {
-                    /*
-                    Text(text = date)
-                    Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.width(340.dp))
-                    Text(text = date)
-                    Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.width(250.dp))
-                    Text(text = date)
-                    */
-                    
-                    Row(modifier = Modifier.background(Color.White)) {
-                        Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                        Image(painter = painterResource(id = R.drawable.home_test), contentDescription = "")
-                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            Text(text = "Event Name", style = MaterialTheme.typography.h6)
-                            Text(text = "Kalamaki, Zante")
 
-                            Row() {
-                                Text(text = "14/06/2019")
-                                Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                                Text(text = "Time: 1:00 am")
+                if(eventViewModel.events.isNotEmpty()){
+                LazyColumn(modifier = Modifier
+                    .padding(top = 350.dp)
+                    .padding(horizontal = 35.dp)
+                    ) {
+                    items(eventViewModel.events) { item ->
+                        //Here to apply logic the card filters
+
+                        Card(modifier = Modifier.clickable {
+                            Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                        }) {
+                            Row(modifier = Modifier
+                                .background(Color.White)
+                                .width(400.dp)) {
+                                Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.home_test),
+                                    contentDescription = "",
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                    Text(
+                                        text = item.title!!,
+                                        style = MaterialTheme.typography.h6
+                                    )
+                                    Text(text = eventViewModel.events[0].address!!)
+
+                                    Row() {
+                                        Text(text = "Fecha: ${item.publicationDate}")
+                                        Spacer(modifier = Modifier.padding(horizontal = 10.dp))
+                                        Text(text = "Tiempo: ${item.time!!}")
+                                    }
+                                }
+                                Image(
+                                    painter = painterResource(id = R.drawable.arrow_rigth),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .size(40.dp)
+                                )
                             }
                         }
+                        Spacer(modifier = Modifier.padding(vertical = 16.dp))
                     }
-                    Log.d("seee", eventViewModel.events[0].title!!)
+                    }
+                } else {
+                    Text(text = "There is not connection!")
                 }
+                    //Log.d("seee", eventViewModel.events[0].title!!)
             }
         }
     }

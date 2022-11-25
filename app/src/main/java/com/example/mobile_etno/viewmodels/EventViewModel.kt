@@ -1,6 +1,5 @@
 package com.example.mobile_etno.viewmodels
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,13 +14,11 @@ import kotlinx.coroutines.withContext
 
 class EventViewModel: ViewModel() {
 
-    private val token: String = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlY29tcHV0ZXIiLCJpYXQiOjE2NjkzMTE5MDYsImV4cCI6MTY2OTM5ODMwNn0.fmpcCxuNbKKtjT_oonfo07EXaKVhkrEhMBNKHkFgMKk"
+    var events: List<Event> by mutableStateOf(mutableListOf())
 
-    var events: MutableList<Event> by mutableStateOf(mutableListOf())
-
-    init {
+    fun getEvents(){
         viewModelScope.launch {
-            val eventsRequest = EventClient.eventService.getEvent("Bearer $token")
+            val eventsRequest = EventClient.eventService.getEvent()
 
             try {
                 val body =  withContext(Dispatchers.IO){ eventsRequest.execute().body()}

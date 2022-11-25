@@ -9,6 +9,6 @@ interface EventServiceInterface {
     //I have to use sqllite to save token to endpoint request ...
 
     @GET("events")
-    fun getEvent(@Header("Authorization") token: String): Call<List<Event>>
+    fun getEvent(): Call<List<Event>>
 
 }
