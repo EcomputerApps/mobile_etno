@@ -7,6 +7,8 @@ data class Event(
     var title: String? = null,
     var address: String? = null,
     var description: String? = null,
+    var organization: String? = null,
+    var link: String? = null,
     var startDate: String? = null,
     var endDate: String? = null,
     var publicationDate: String? = null,

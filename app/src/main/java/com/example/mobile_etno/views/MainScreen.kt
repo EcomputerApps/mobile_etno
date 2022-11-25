@@ -26,13 +26,19 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
+import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(list: List<String>, menuViewModel: MenuViewModel, eventViewModel: EventViewModel){
+fun MainScreen(
+    list: List<String>,
+    menuViewModel: MenuViewModel,
+    eventViewModel: EventViewModel,
+    sqlDataBase: SqlDataBase
+){
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
@@ -48,10 +54,9 @@ fun MainScreen(list: List<String>, menuViewModel: MenuViewModel, eventViewModel:
         backgroundColor = Color.Red
     ) { padding ->  // We need to pass scaffold's inner padding to content. That's why we use Box.
         Box(modifier = Modifier.padding(padding)) {
-            Navigation(navController = navController, list, menuViewModel, eventViewModel)
+            Navigation(navController = navController, list, menuViewModel, eventViewModel, sqlDataBase)
         }
     }
-    // }
 }
 
 @Composable
@@ -163,8 +168,6 @@ fun DrawerItem(item: NavDrawerItem, selected: Boolean, onItemClick: (NavDrawerIt
             )
             Divider(color = Color.Gray, thickness = 0.5.dp, modifier = Modifier.width(250.dp))
         }
-
-
     }
 }
 
@@ -220,18 +223,23 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
             contentColor = Color.White
         )
     }
-
 }
 
 @Composable
-fun Navigation(navController: NavHostController, list: List<String>, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
+fun Navigation(
+    navController: NavHostController,
+    list: List<String>,
+    menuViewModel: MenuViewModel,
+    eventViewModel: EventViewModel,
+    sqlDataBase: SqlDataBase
+) {
     NavHost(navController, startDestination = NavDrawerItem.Home.route) {
         composable(NavDrawerItem.Home.route) {
             eventViewModel.getEvents()
             HomeScreen(list, navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
         }
         composable(NavDrawerItem.Events.route) {
-            EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
+            EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel, sqlDataBase = sqlDataBase)
         }
         composable(NavDrawerItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)

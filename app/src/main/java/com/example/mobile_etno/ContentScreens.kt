@@ -27,11 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import kotlinx.coroutines.launch
 import java.util.*
 
 @Composable
@@ -95,8 +97,9 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController) {
+fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController, sqlDataBase: SqlDataBase) {
     val currentContext = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     var date by remember {
         mutableStateOf("")
@@ -143,6 +146,26 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     items(eventViewModel.events) { item ->
                         //Here to apply logic the card filters
 
+                        //need indexes to save in image table
+
+                        LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
+                            coroutineScope.launch {
+                                sqlDataBase.insertEventDb(
+                                    title = item.title,
+                                    address = item.address,
+                                    description = item.description,
+                                    organization = item.organization,
+                                    link = item.link,
+                                    startDate = item.startDate,
+                                    endDate = item.endDate,
+                                    publicationDate = item.publicationDate,
+                                    time = item.time,
+                                    lat = item.lat,
+                                    long = item.long
+                                )
+                            }
+                        }
+
                         Card(modifier = Modifier.clickable {
                             Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
                         }) {
@@ -181,7 +204,51 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     }
                     }
                 } else {
-                    Text(text = "There is not connection!")
+                   // Text(text = sqlDataBase.getEventDb()[0].title!!)
+                    LazyColumn(modifier = Modifier
+                        .padding(top = 350.dp)
+                        .padding(horizontal = 35.dp)
+                    ) {
+                        items(sqlDataBase.getEventDb()) { item ->
+                            //Here to apply logic the card filters
+                            Card(modifier = Modifier.clickable {
+                                Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                            }) {
+                                Row(modifier = Modifier
+                                    .background(Color.White)
+                                    .width(400.dp)) {
+                                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                                    Image(
+                                        painter = painterResource(id = R.drawable.home_test),
+                                        contentDescription = "",
+                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                    )
+                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                        Text(
+                                            text = item.title!!,
+                                            style = MaterialTheme.typography.h6
+                                        )
+                                        Text(text = item.address!!)
+
+                                        Row() {
+                                            Text(text = "Fecha: ${item.publicationDate}")
+                                            Spacer(modifier = Modifier.padding(horizontal = 10.dp))
+                                            Text(text = "Tiempo: ${item.time!!}")
+                                        }
+                                    }
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow_rigth),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .size(40.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                        }
+                    }
+
                 }
                     //Log.d("seee", eventViewModel.events[0].title!!)
             }

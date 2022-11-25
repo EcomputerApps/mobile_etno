@@ -10,5 +10,4 @@ interface EventServiceInterface {
 
     @GET("events")
     fun getEvent(): Call<List<Event>>
-
 }

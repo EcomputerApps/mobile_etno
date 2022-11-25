@@ -14,7 +14,7 @@ class SqlDataBase(
     context: Context?
 ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
     companion object {
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 4
         private const val DATABASE_NAME = "etno_db"
 
         //TABLE EVENTS ->
@@ -31,7 +31,7 @@ class SqlDataBase(
         private const val COL_TIME = "time"
         private const val COL_LAT = "lat"
         private const val COL_LOG = "log"
-        private const val COL_SUBSCRIPTION = "subscription"
+        //private const val COL_SUBSCRIPTION = "subscription"
 
         //TABLE IMAGES ->
         private const val TABLE_IMAGES = "images"
@@ -41,7 +41,7 @@ class SqlDataBase(
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val sqlCreateTableEvent = "CREATE TABLE $TABLE_EVENT ($ID_EVENT INTEGER PRIMARY KEY, $COL_TITLE TEXT, $COL_ADDRESS TEXT, $COL_DESCRIPTION TEXT, $COL_ORGANIZATION TEXT, $COL_LINK TEXT, $COL_START_DATE TEXT, $COL_END_DATE TEXT, $COL_PUBLICATION_DATE TEXT, $COL_TIME TEXT, $COL_LAT TEXT, $COL_LOG TEXT, $COL_SUBSCRIPTION TEXT)"
+        val sqlCreateTableEvent = "CREATE TABLE $TABLE_EVENT ($ID_EVENT INTEGER PRIMARY KEY AUTOINCREMENT, $COL_TITLE TEXT, $COL_ADDRESS TEXT, $COL_DESCRIPTION TEXT, $COL_ORGANIZATION TEXT, $COL_LINK TEXT, $COL_START_DATE TEXT, $COL_END_DATE TEXT, $COL_PUBLICATION_DATE TEXT, $COL_TIME TEXT, $COL_LAT TEXT, $COL_LOG TEXT, UNIQUE($COL_TITLE))"
         db?.execSQL(sqlCreateTableEvent)
     }
 
@@ -50,11 +50,15 @@ class SqlDataBase(
         onCreate(db)
     }
 
-    fun insertEventDb(idEvent: String?, title: String?, address: String?, description: String?, organization: String?, link: String?, startDate: String?, endDate: String?, publicationDate: String?, time: String?, lat: String?, log: String?, subscription: Boolean?){
+    fun deleteEvents(){
+        val db = this.writableDatabase
+        db.execSQL("DELETE FROM $TABLE_EVENT")
+    }
+
+    fun insertEventDb( title: String?, address: String?, description: String?, organization: String?, link: String?, startDate: String?, endDate: String?, publicationDate: String?, time: String?, lat: String?, long: String?){
         val databaseSQL = this.writableDatabase
         val values = ContentValues()
 
-        values.put(ID_EVENT, idEvent)
         values.put(COL_TITLE, title)
         values.put(COL_ADDRESS, address)
         values.put(COL_DESCRIPTION, description)
@@ -65,8 +69,7 @@ class SqlDataBase(
         values.put(COL_PUBLICATION_DATE, publicationDate)
         values.put(COL_TIME, time)
         values.put(COL_LAT, lat)
-        values.put(COL_LOG, log)
-        values.put(COL_SUBSCRIPTION, subscription)
+        values.put(COL_LOG, long)
 
         databaseSQL.insert(TABLE_EVENT, null, values)
         databaseSQL.close()
@@ -86,7 +89,6 @@ class SqlDataBase(
             dataBaseSQL.execSQL(selectQuery)
             return ArrayList()
         }
-        var idEvent: String
         var title: String
         var address: String
         var description: String
@@ -97,25 +99,35 @@ class SqlDataBase(
         var publicationDate: String
         var time: String
         var lat: String
-        var log: String
-        var subscription: String
+        var long: String
 
         if(cursor.moveToFirst()){
             do {
-                idEvent = cursor.getString(cursor.getColumnIndex(ID_EVENT))
                 title = cursor.getString(cursor.getColumnIndex(COL_TITLE))
                 address = cursor.getString(cursor.getColumnIndex(COL_ADDRESS))
                 description = cursor.getString(cursor.getColumnIndex(COL_DESCRIPTION))
                 organization = cursor.getString(cursor.getColumnIndex(COL_ORGANIZATION))
                 link = cursor.getString(cursor.getColumnIndex(COL_LINK))
                 startDate = cursor.getString(cursor.getColumnIndex(COL_START_DATE))
+                endDate = cursor.getString(cursor.getColumnIndex(COL_END_DATE))
                 publicationDate = cursor.getString(cursor.getColumnIndex(COL_PUBLICATION_DATE))
                 time = cursor.getString(cursor.getColumnIndex(COL_TIME))
                 lat = cursor.getString(cursor.getColumnIndex(COL_LAT))
-                log = cursor.getString(cursor.getColumnIndex(COL_LOG))
-                subscription = cursor.getString(cursor.getColumnIndex(COL_SUBSCRIPTION))
+                long = cursor.getString(cursor.getColumnIndex(COL_LOG))
 
-               // listEventSQL.add()
+                listEventSQL.add(Event(
+                    title = title,
+                    address = address,
+                    description = description,
+                    organization = organization,
+                    link = link,
+                    startDate = startDate,
+                    endDate = endDate,
+                    publicationDate = publicationDate,
+                    time = time,
+                    lat = lat,
+                    long = long,
+                ))
             }while (cursor.moveToNext())
         }
      return listEventSQL
