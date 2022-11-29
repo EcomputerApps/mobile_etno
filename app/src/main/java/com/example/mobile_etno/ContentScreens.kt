@@ -2,6 +2,7 @@ package com.example.mobile_etno
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.widget.CalendarView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -33,6 +34,9 @@ import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -101,9 +105,21 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
     val currentContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+
+
     var date by remember {
         mutableStateOf("")
     }
+
+    LaunchedEffect(eventViewModel.isRefreshing){
+        if (eventViewModel.isRefreshing){
+            eventViewModel.getEvents()
+            delay(2000)
+           // Log.d("winded up", "finish")
+            eventViewModel.isRefreshing = false
+        }
+    }
+
     BackHandler() {
         navController.navigate(NavDrawerItem.Home.route){
             menuViewModel.updateInvisible(true)
@@ -135,76 +151,77 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                 //datePickerDialog.show()
                 AndroidView(factory = {CalendarView(it)}, update = {
                     it.setOnDateChangeListener { view, year, month, dayOfMonth -> date = "$dayOfMonth - ${month + 1} - $year" }
-
                 })
 
+            SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
                 if(eventViewModel.events.isNotEmpty()){
-                LazyColumn(modifier = Modifier
-                    .padding(top = 350.dp)
-                    .padding(horizontal = 35.dp)
+
+                    LazyColumn(modifier = Modifier
+                        .padding(top = 350.dp)
+                        .padding(horizontal = 35.dp)
                     ) {
-                    items(eventViewModel.events) { item ->
-                        //Here to apply logic the card filters
+                        items(eventViewModel.events) { item ->
+                            //Here to apply logic the card filters
 
-                        //need indexes to save in image table
+                            //need indexes to save in image table
 
-                        LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
-                            coroutineScope.launch {
-                                sqlDataBase.insertEventDb(
-                                    title = item.title,
-                                    address = item.address,
-                                    description = item.description,
-                                    organization = item.organization,
-                                    link = item.link,
-                                    startDate = item.startDate,
-                                    endDate = item.endDate,
-                                    publicationDate = item.publicationDate,
-                                    time = item.time,
-                                    lat = item.lat,
-                                    long = item.long
-                                )
-                            }
-                        }
-
-                        Card(modifier = Modifier.clickable {
-                            Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
-                        }) {
-                            Row(modifier = Modifier
-                                .background(Color.White)
-                                .width(400.dp)) {
-                                Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                                Image(
-                                    painter = painterResource(id = R.drawable.home_test),
-                                    contentDescription = "",
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                )
-                                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                    Text(
-                                        text = item.title!!,
-                                        style = MaterialTheme.typography.h6
+                            LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
+                                coroutineScope.launch {
+                                    sqlDataBase.insertEventDb(
+                                        title = item.title,
+                                        address = item.address,
+                                        description = item.description,
+                                        organization = item.organization,
+                                        link = item.link,
+                                        startDate = item.startDate,
+                                        endDate = item.endDate,
+                                        publicationDate = item.publicationDate,
+                                        time = item.time,
+                                        lat = item.lat,
+                                        long = item.long
                                     )
-                                    Text(text = eventViewModel.events[0].address!!)
-
-                                    Row() {
-                                        Text(text = "Fecha: ${item.publicationDate}")
-                                        Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                                        Text(text = "Tiempo: ${item.time!!}")
-                                    }
                                 }
-                                Image(
-                                    painter = painterResource(id = R.drawable.arrow_rigth),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .size(40.dp)
-                                )
                             }
+
+                            Card(modifier = Modifier.clickable {
+                                Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                            }) {
+                                Row(modifier = Modifier
+                                    .background(Color.White)
+                                    .width(400.dp)) {
+                                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                                    Image(
+                                        painter = painterResource(id = R.drawable.home_test),
+                                        contentDescription = "",
+                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                    )
+                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                        Text(
+                                            text = item.title!!,
+                                            style = MaterialTheme.typography.h6
+                                        )
+                                        Text(text = eventViewModel.events[0].address!!)
+
+                                        Row() {
+                                            Text(text = "Fecha: ${item.publicationDate}")
+                                            Spacer(modifier = Modifier.padding(horizontal = 10.dp))
+                                            Text(text = "Tiempo: ${item.time!!}")
+                                        }
+                                    }
+                                    Image(
+                                        painter = painterResource(id = R.drawable.arrow_rigth),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .size(40.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.padding(vertical = 16.dp))
                         }
-                        Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                    }
                     }
                 } else {
-                   // Text(text = sqlDataBase.getEventDb()[0].title!!)
+                    // Text(text = sqlDataBase.getEventDb()[0].title!!)
                     LazyColumn(modifier = Modifier
                         .padding(top = 350.dp)
                         .padding(horizontal = 35.dp)
@@ -250,7 +267,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     }
 
                 }
-                    //Log.d("seee", eventViewModel.events[0].title!!)
+            }
             }
         }
     }

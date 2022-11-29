@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 class EventViewModel: ViewModel() {
 
     var events: List<Event> by mutableStateOf(mutableListOf())
+    var isRefreshing by mutableStateOf(false)
 
     fun getEvents(){
         viewModelScope.launch {
@@ -21,8 +22,10 @@ class EventViewModel: ViewModel() {
             try {
                 val body =  withContext(Dispatchers.IO){ eventsRequest.execute().body()}
                 events = body!!.toMutableList()
+                isRefreshing = false
             }catch (_: java.lang.Exception){
             }
         }
     }
+
 }
