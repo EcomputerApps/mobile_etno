@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -61,6 +62,16 @@ dependencies {
     implementation "io.github.boguszpawlowski.composecalendar:composecalendar:1.0.2"
     // separate artifact with utilities for working with kotlinx-datetime
     implementation "io.github.boguszpawlowski.composecalendar:kotlinx-datetime:1.0.2"
+
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:31.1.0')
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    implementation 'com.google.firebase:firebase-messaging-ktx'
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")

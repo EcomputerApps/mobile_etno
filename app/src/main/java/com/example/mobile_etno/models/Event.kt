@@ -1,7 +1,5 @@
 package com.example.mobile_etno.models
 
-import java.util.*
-
 data class Event(
     var idEvent: String? = null,
     var title: String? = null,

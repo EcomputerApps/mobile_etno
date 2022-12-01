@@ -20,12 +20,11 @@ class EventViewModel: ViewModel() {
         viewModelScope.launch {
             val eventsRequest = EventClient.eventService.getEvent()
             try {
-                val body =  withContext(Dispatchers.IO){ eventsRequest.execute().body()}
+                val body = withContext(Dispatchers.IO){ eventsRequest.execute().body()}
                 events = body!!.toMutableList()
                 isRefreshing = false
             }catch (_: java.lang.Exception){
             }
         }
     }
-
 }

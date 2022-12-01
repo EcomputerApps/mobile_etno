@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "255762217465",
+    "project_id": "notification-test-fa3a4",
+    "storage_bucket": "notification-test-fa3a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:255762217465:android:a15774fad0e2dc34936528",
+        "android_client_info": {
+          "package_name": "com.example.mobile_etno"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "255762217465-hesqmsf5ml8bmqdjghkk89c8oe9jn1ji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQA-ZV66iTg13mvBlrBG09cM_4C_zScjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "255762217465-hesqmsf5ml8bmqdjghkk89c8oe9jn1ji.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
