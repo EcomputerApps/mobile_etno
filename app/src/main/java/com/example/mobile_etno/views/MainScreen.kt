@@ -20,15 +20,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
+import com.example.mobile_etno.models.Event
+import com.example.mobile_etno.models.Image
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
+import com.example.mobile_etno.views.screen.EventNameScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -235,11 +240,43 @@ fun Navigation(
 ) {
     NavHost(navController, startDestination = NavDrawerItem.Home.route) {
         composable(NavDrawerItem.Home.route) {
-            eventViewModel.getEvents()
+           // eventViewModel.getEvents()
             HomeScreen(list, navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
         }
-        composable(NavDrawerItem.Events.route) {
+        composable(NavDrawerItem.Events.route,
+        ) {
             EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel, sqlDataBase = sqlDataBase)
+        }
+        composable("${NavDrawerItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}", arguments =
+        listOf(navArgument("title"){type = NavType.StringType},
+            navArgument("address"){type = NavType.StringType},
+            navArgument("description"){type = NavType.StringType},
+            navArgument("organization"){type = NavType.StringType},
+            navArgument("link"){type = NavType.StringType},
+            navArgument("endDate"){type = NavType.StringType},
+            navArgument("publicationDate"){type = NavType.StringType},
+            navArgument("time"){type = NavType.StringType},
+            navArgument("lat"){type = NavType.StringType},
+            navArgument("long"){type = NavType.StringType},
+            navArgument("image"){type = NavType.StringType}
+            )
+        ){
+            val event = Event(
+                title = it.arguments?.getString("title"),
+                address = it.arguments?.getString("address"),
+                description = it.arguments?.getString("description"),
+                organization = it.arguments?.getString("organization"),
+                link = it.arguments?.getString("link"),
+                startDate = it.arguments?.getString("startDate"),
+                endDate = it.arguments?.getString("endDate"),
+                publicationDate = it.arguments?.getString("publicationDate"),
+                time = it.arguments?.getString("time"),
+                lat = it.arguments?.getString("lat"),
+                long = it.arguments?.getString("long"),
+                images = null
+            )
+            val imageEvent = it.arguments?.getString("image")
+            EventNameScreen(navController = navController, menuViewModel = menuViewModel, event = event, imageEvent = imageEvent!!)
         }
         composable(NavDrawerItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)
@@ -283,5 +320,6 @@ fun Navigation(
         composable(NavDrawerItem.Bandos.route){
             BandosScreen(navController = navController, menuViewModel = menuViewModel)
         }
+
     }
 }

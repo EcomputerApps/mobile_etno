@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
@@ -38,6 +39,8 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.*
 
 @Composable
@@ -104,7 +107,6 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
 fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController, sqlDataBase: SqlDataBase) {
     val currentContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
 
 
     var date by remember {
@@ -184,7 +186,16 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                             }
 
                             Card(modifier = Modifier.clickable {
-                                Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                               // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                                val encodeUrlLink = URLEncoder.encode(item.link, StandardCharsets.UTF_8.toString())
+                                val encodeStartDate = URLEncoder.encode(item.startDate, StandardCharsets.UTF_8.toString())
+                                val encodeEndDate = URLEncoder.encode(item.endDate, StandardCharsets.UTF_8.toString())
+                                val encodePublicationDate = URLEncoder.encode(item.publicationDate, StandardCharsets.UTF_8.toString())
+                                val encodeUrlImage = URLEncoder.encode(item.images!![0].link, StandardCharsets.UTF_8.toString())
+
+                                navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage"){
+
+                                }
                             }) {
                                 Row(modifier = Modifier
                                     .background(Color.White)
@@ -229,7 +240,10 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                         items(sqlDataBase.getEventDb()) { item ->
                             //Here to apply logic the card filters
                             Card(modifier = Modifier.clickable {
-                                Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                               // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
+                                navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}"){
+
+                                }
                             }) {
                                 Row(modifier = Modifier
                                     .background(Color.White)

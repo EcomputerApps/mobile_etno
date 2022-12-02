@@ -3,6 +3,7 @@ package com.example.mobile_etno
 sealed class NavDrawerItem(var route: String, var icon: Int? = null, var title: String? = null) {
     object Home : NavDrawerItem("home")
     object Events : NavDrawerItem("Eventos", R.drawable.home_test, "Eventos")
+    object EventNameScreen: NavDrawerItem("NombreEventoScreen")
     object Reservations : NavDrawerItem("Reservaciones", R.drawable.home_test, "Reservaciones")
     object Deaths : NavDrawerItem("Muertes", R.drawable.home_test, "Muertes")
     object Phone : NavDrawerItem("Telefonos", R.drawable.home_test, "Telefono")

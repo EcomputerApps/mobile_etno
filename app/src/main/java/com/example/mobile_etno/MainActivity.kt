@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         val fcmViewModel = FCMViewModel()
         val sqlDataBase = SqlDataBase(context = this)
 
-       // sqlDataBase.deleteEvents()
+        //sqlDataBase.deleteEvents()
         val menuItem = resources.getStringArray(R.array.menu_items).toList()
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
@@ -30,13 +30,9 @@ class MainActivity : ComponentActivity() {
                 Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             }
-
             // Get new FCM registration token
             val token = task.result
-
             fcmViewModel.saveFCMToken(FCMToken(token = token))
-
-            Log.d("get fcm", token)
         })
 
         setContent {

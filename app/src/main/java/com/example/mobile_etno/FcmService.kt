@@ -9,14 +9,11 @@ class FcmService: FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-
         Log.d(tag, "Received FCM from ${remoteMessage.notification?.body}")
     }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-
         Log.d("FCM", "Received FCM token: $token")
-
     }
 }
