@@ -15,10 +15,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,14 +29,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.screen.NotConnectionScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
@@ -53,7 +56,6 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
         activity.finish()
     }
 
-    val listImage = listOf<String>("")
     //then here i have to iterate the list in card
     LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
         .background(Colors.backgroundEtno)
@@ -70,7 +72,7 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
                     }
 
                     when (item) {
-                        "Eventos" -> eventViewModel.getEvents()
+                        "Eventos" -> eventViewModel.getEventRequest()
                     }
                 },
                 backgroundColor = Colors.backgroundEtno) {
@@ -102,11 +104,13 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
     }
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController, sqlDataBase: SqlDataBase) {
     val currentContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+
+    val infoDialog = remember { mutableStateOf(false) }
 
 
     var date by remember {
@@ -115,8 +119,8 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
 
     LaunchedEffect(eventViewModel.isRefreshing){
         if (eventViewModel.isRefreshing){
-            eventViewModel.getEvents()
-            delay(2000)
+            eventViewModel.getEventRequest()
+            delay(3000)
            // Log.d("winded up", "finish")
             eventViewModel.isRefreshing = false
         }
@@ -156,17 +160,14 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                 })
 
             SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
-                if(eventViewModel.events.isNotEmpty()){
+                if(eventViewModel.events.value.isNotEmpty()){
 
                     LazyColumn(modifier = Modifier
                         .padding(top = 350.dp)
                         .padding(horizontal = 35.dp)
                     ) {
-                        items(eventViewModel.events) { item ->
-                            //Here to apply logic the card filters
-
+                        items(eventViewModel.events.value) { item ->
                             //need indexes to save in image table
-
                             LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
                                 coroutineScope.launch {
                                     sqlDataBase.insertEventDb(
@@ -180,7 +181,8 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                         publicationDate = item.publicationDate,
                                         time = item.time,
                                         lat = item.lat,
-                                        long = item.long
+                                        long = item.long,
+                                        imageUrl = item.images!![0].link!!
                                     )
                                 }
                             }
@@ -202,16 +204,18 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                     .width(400.dp)) {
                                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
                                     Image(
-                                        painter = painterResource(id = R.drawable.home_test),
+                                        painter = rememberAsyncImagePainter(model = item.images!![0].link),
                                         contentDescription = "",
-                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                        modifier = Modifier
+                                            .align(Alignment.CenterVertically).height(35.dp).clip(
+                                                CircleShape)
                                     )
                                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                                         Text(
                                             text = item.title!!,
                                             style = MaterialTheme.typography.h6
                                         )
-                                        Text(text = eventViewModel.events[0].address!!)
+                                        Text(text = eventViewModel.events.value[0].address!!)
 
                                         Row() {
                                             Text(text = "Fecha: ${item.publicationDate}")
@@ -241,19 +245,13 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                             //Here to apply logic the card filters
                             Card(modifier = Modifier.clickable {
                                // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
-                                navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}"){
-
-                                }
+                                infoDialog.value = true
                             }) {
                                 Row(modifier = Modifier
                                     .background(Color.White)
                                     .width(400.dp)) {
                                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                                    Image(
-                                        painter = painterResource(id = R.drawable.home_test),
-                                        contentDescription = "",
-                                        modifier = Modifier.align(Alignment.CenterVertically)
-                                    )
+
                                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                                         Text(
                                             text = item.title!!,
@@ -277,6 +275,18 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                 }
                             }
                             Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+                            if(infoDialog.value){
+                                NotConnectionScreen(
+                                    title = "Whoops!",
+                                    description = "No hay conexión a internet.\n" +
+                                            "Compruebe su conexión.",
+                                    onDismiss = {
+                                        infoDialog.value = false
+                                        //Log.d("down_show", infoDialog.value.toString())
+                                    }
+                                )
+                            }
                         }
                     }
 

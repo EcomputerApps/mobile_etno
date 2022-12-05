@@ -34,7 +34,6 @@ class MainActivity : ComponentActivity() {
             val token = task.result
             fcmViewModel.saveFCMToken(FCMToken(token = token))
         })
-
         setContent {
            MainScreen(menuItem, menuViewModel, eventViewModel, sqlDataBase)
         }
