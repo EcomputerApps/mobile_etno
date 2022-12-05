@@ -182,7 +182,6 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                         time = item.time,
                                         lat = item.lat,
                                         long = item.long,
-                                        imageUrl = item.images!![0].link!!
                                     )
                                 }
                             }
@@ -276,20 +275,21 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                             }
                             Spacer(modifier = Modifier.padding(vertical = 16.dp))
 
-                            if(infoDialog.value){
-                                NotConnectionScreen(
-                                    title = "Whoops!",
-                                    description = "No hay conexión a internet.\n" +
-                                            "Compruebe su conexión.",
-                                    onDismiss = {
-                                        infoDialog.value = false
-                                        //Log.d("down_show", infoDialog.value.toString())
-                                    }
-                                )
-                            }
+
                         }
                     }
 
+                }
+                if(infoDialog.value){
+                    NotConnectionScreen(
+                        title = "Whoops!",
+                        description = "No hay conexión a internet.\n" +
+                                "Compruebe su conexión.",
+                        onDismiss = {
+                            infoDialog.value = false
+                            //Log.d("down_show", infoDialog.value.toString())
+                        }
+                    )
                 }
             }
             }

@@ -14,7 +14,7 @@ class SqlDataBase(
     context: Context?
 ): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
     companion object {
-        private const val DATABASE_VERSION = 5
+        private const val DATABASE_VERSION = 6
         private const val DATABASE_NAME = "etno_db"
 
         //TABLE EVENTS ->
@@ -31,7 +31,6 @@ class SqlDataBase(
         private const val COL_TIME = "time"
         private const val COL_LAT = "lat"
         private const val COL_LOG = "log"
-        private const val COL_IMAGE_URL = "image_url"
         //private const val COL_SUBSCRIPTION = "subscription"
 
         //TABLE IMAGES ->
@@ -42,7 +41,7 @@ class SqlDataBase(
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val sqlCreateTableEvent = "CREATE TABLE $TABLE_EVENT ($ID_EVENT INTEGER PRIMARY KEY AUTOINCREMENT, $COL_TITLE TEXT, $COL_ADDRESS TEXT, $COL_DESCRIPTION TEXT, $COL_ORGANIZATION TEXT, $COL_LINK TEXT, $COL_START_DATE TEXT, $COL_END_DATE TEXT, $COL_PUBLICATION_DATE TEXT, $COL_TIME TEXT, $COL_LAT TEXT, $COL_LOG TEXT, $COL_IMAGE_URL TEXT, UNIQUE($COL_TITLE))"
+        val sqlCreateTableEvent = "CREATE TABLE $TABLE_EVENT ($ID_EVENT INTEGER PRIMARY KEY AUTOINCREMENT, $COL_TITLE TEXT, $COL_ADDRESS TEXT, $COL_DESCRIPTION TEXT, $COL_ORGANIZATION TEXT, $COL_LINK TEXT, $COL_START_DATE TEXT, $COL_END_DATE TEXT, $COL_PUBLICATION_DATE TEXT, $COL_TIME TEXT, $COL_LAT TEXT, $COL_LOG TEXT, UNIQUE($COL_TITLE))"
         db?.execSQL(sqlCreateTableEvent)
     }
 
@@ -56,7 +55,7 @@ class SqlDataBase(
         db.execSQL("DELETE FROM $TABLE_EVENT")
     }
 
-    fun insertEventDb( title: String?, address: String?, description: String?, organization: String?, link: String?, startDate: String?, endDate: String?, publicationDate: String?, time: String?, lat: String?, long: String?, imageUrl: String){
+    fun insertEventDb( title: String?, address: String?, description: String?, organization: String?, link: String?, startDate: String?, endDate: String?, publicationDate: String?, time: String?, lat: String?, long: String?){
         val databaseSQL = this.writableDatabase
         val values = ContentValues()
 
@@ -71,7 +70,6 @@ class SqlDataBase(
         values.put(COL_TIME, time)
         values.put(COL_LAT, lat)
         values.put(COL_LOG, long)
-        values.put(COL_IMAGE_URL, imageUrl)
 
         databaseSQL.insert(TABLE_EVENT, null, values)
         databaseSQL.close()
@@ -117,7 +115,6 @@ class SqlDataBase(
                 time = cursor.getString(cursor.getColumnIndex(COL_TIME))
                 lat = cursor.getString(cursor.getColumnIndex(COL_LAT))
                 long = cursor.getString(cursor.getColumnIndex(COL_LOG))
-                imageUrl = cursor.getString(cursor.getColumnIndex(COL_IMAGE_URL))
 
                 listEventSQL.add(Event(
                     title = title,
@@ -130,8 +127,7 @@ class SqlDataBase(
                     publicationDate = publicationDate,
                     time = time,
                     lat = lat,
-                    long = long,
-                    imageUrl = imageUrl
+                    long = long
                 ))
             }while (cursor.moveToNext())
         }

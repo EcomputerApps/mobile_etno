@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
 
         val menuViewModel = MenuViewModel()
         val eventViewModel = EventViewModel()
+        val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel()
         val sqlDataBase = SqlDataBase(context = this)
 
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
             fcmViewModel.saveFCMToken(FCMToken(token = token))
         })
         setContent {
-           MainScreen(menuItem, menuViewModel, eventViewModel, sqlDataBase)
+           MainScreen(menuItem, menuViewModel, eventViewModel =  eventViewModel, eventNameViewModel =  eventNameViewModel, sqlDataBase =  sqlDataBase)
         }
     }
 }

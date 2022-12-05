@@ -14,7 +14,6 @@ data class Event(
     var lat: String? = null,
     var long: String? = null,
     var subscription: Boolean? = null,
-    var imageUrl: String? = null,
     var images: MutableList<Image>?= mutableListOf(),
     var videos: MutableList<Video>? = mutableListOf()
 )

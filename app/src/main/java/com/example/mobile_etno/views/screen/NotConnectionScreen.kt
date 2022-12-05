@@ -1,6 +1,5 @@
 package com.example.mobile_etno.views.screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -73,7 +72,6 @@ fun NotConnectionScreen(title: String?="Message",
                     //.........................Spacer
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    //.........................Button : OK button
                     Button(
                         onClick = {
                                  // Log.d("okButton", "executing")

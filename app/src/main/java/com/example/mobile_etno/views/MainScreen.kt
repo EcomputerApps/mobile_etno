@@ -29,8 +29,8 @@ import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Event
-import com.example.mobile_etno.models.Image
 import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.screen.EventNameScreen
@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     list: List<String>,
     menuViewModel: MenuViewModel,
+    eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
     sqlDataBase: SqlDataBase
 ){
@@ -59,7 +60,7 @@ fun MainScreen(
         backgroundColor = Color.Red
     ) { padding ->  // We need to pass scaffold's inner padding to content. That's why we use Box.
         Box(modifier = Modifier.padding(padding)) {
-            Navigation(navController = navController, list, menuViewModel, eventViewModel, sqlDataBase)
+            Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel, sqlDataBase)
         }
     }
 }
@@ -235,6 +236,7 @@ fun Navigation(
     navController: NavHostController,
     list: List<String>,
     menuViewModel: MenuViewModel,
+    eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
     sqlDataBase: SqlDataBase
 ) {
@@ -276,7 +278,7 @@ fun Navigation(
                 images = null
             )
             val imageEvent = it.arguments?.getString("image")
-            EventNameScreen(navController = navController, menuViewModel = menuViewModel, event = event, imageEvent = imageEvent!!)
+            EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!)
         }
         composable(NavDrawerItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)
