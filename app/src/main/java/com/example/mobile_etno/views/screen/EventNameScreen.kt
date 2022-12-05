@@ -122,12 +122,14 @@ fun CustomScrollableTabRow(
     val imageInfoDialog = remember { mutableStateOf(false) }
     val saveImageUrl = remember { mutableStateOf("") }
 
+
     ScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
         edgePadding = 0.dp,
         backgroundColor = Colors.backgroundEtno
     ) {
         imageList.forEachIndexed { index, item ->
+
             Tab(selected = selectedTabIndex == index, onClick = {
                 onItemClick.invoke(index)
                 Log.d("tab_image", index.toString())
@@ -139,12 +141,11 @@ fun CustomScrollableTabRow(
                     .height(180.dp)
                     .padding(5.dp))
             }
-
         }
         if(imageInfoDialog.value)
             ImageDetails(image = saveImageUrl.value, onDismiss = {
                 imageInfoDialog.value = false
-            })
+            }, list = imageList, selectedTabIndex = selectedTabIndex)
     }
 }
 
@@ -152,6 +153,8 @@ fun CustomScrollableTabRow(
 @Composable
 fun ImageDetails(
     image: String,
+    list: List<String>,
+    selectedTabIndex: Int,
     onDismiss: () -> Unit
 ){
     Dialog(onDismissRequest = { onDismiss.invoke() },
@@ -165,15 +168,27 @@ fun ImageDetails(
                 .background(
                     color = Color.Transparent,
                     shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp)
-                ).align(Alignment.BottomCenter)) {
+                )
+                .align(Alignment.BottomCenter)) {
+                /*
                 Image(
                     painter = rememberAsyncImagePainter(model = image),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .height(300.dp)
-
                 )
+                 */
+                ScrollableTabRow(selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, backgroundColor = Color.Transparent, divider = {Divider(startIndent = 0.dp, thickness = 0.dp, color = Color.Transparent)}) {
+                    list.forEachIndexed { index, item ->
+                        Tab(selected = selectedTabIndex == index, onClick = {  }, enabled = false ){
+                            Image(painter = rememberAsyncImagePainter(model = item), contentDescription = "", modifier = Modifier
+                                .width(300.dp)
+                                .height(300.dp)
+                                .padding(5.dp))
+                        }
+                    }
+                }
             }
         }
     }
