@@ -112,7 +112,6 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
 
     val infoDialog = remember { mutableStateOf(false) }
 
-
     var date by remember {
         mutableStateOf("")
     }
@@ -168,9 +167,11 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     ) {
                         items(eventViewModel.events.value) { item ->
                             //need indexes to save in image table
+                            /*
                             LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
                                 coroutineScope.launch {
                                     sqlDataBase.insertEventDb(
+                                        idEvent = item.idEvent,
                                         title = item.title,
                                         address = item.address,
                                         description = item.description,
@@ -184,8 +185,9 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                         long = item.long,
                                     )
                                 }
+                                item.images?.forEach { image ->  sqlDataBase.insertImageDb(idImage = image.idImage, linkImage = image.link, idEvent = item.idEvent)}
                             }
-
+                            */
                             Card(modifier = Modifier.clickable {
                                // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
                                 val encodeUrlLink = URLEncoder.encode(item.link, StandardCharsets.UTF_8.toString())
@@ -194,7 +196,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                 val encodePublicationDate = URLEncoder.encode(item.publicationDate, StandardCharsets.UTF_8.toString())
                                 val encodeUrlImage = URLEncoder.encode(item.images!![0].link, StandardCharsets.UTF_8.toString())
 
-                                navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage"){
+                                navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage/${item.idEvent}"){
 
                                 }
                             }) {
@@ -214,7 +216,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                             text = item.title!!,
                                             style = MaterialTheme.typography.h6
                                         )
-                                        Text(text = eventViewModel.events.value[0].address!!)
+                                        Text(text = item.address!!)
 
                                         Row() {
                                             Text(text = "Fecha: ${item.publicationDate}")
@@ -234,8 +236,9 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                             Spacer(modifier = Modifier.padding(vertical = 16.dp))
                         }
                     }
-                } else {
+                }; if(!isInternetAvailable(currentContext)) {
                     // Text(text = sqlDataBase.getEventDb()[0].title!!)
+
                     LazyColumn(modifier = Modifier
                         .padding(top = 350.dp)
                         .padding(horizontal = 35.dp)
@@ -274,8 +277,6 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                 }
                             }
                             Spacer(modifier = Modifier.padding(vertical = 16.dp))
-
-
                         }
                     }
 

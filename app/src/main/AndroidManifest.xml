@@ -18,6 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobileetno"
         tools:targetApi="31">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDZcqlsS-nn_OIV9-ZsoC_HCGYSdgWld0U">
+        </meta-data>
+
         <service
             android:name=".FcmService"
             android:stopWithTask="false"
@@ -41,6 +46,7 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
         </activity>
     </application>
 

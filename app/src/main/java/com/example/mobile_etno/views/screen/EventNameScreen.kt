@@ -23,21 +23,36 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.Event
+import com.example.mobile_etno.models.ImageModelDB
+import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventNameViewModel
+import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.google.maps.android.compose.GoogleMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun EventNameScreen(menuViewModel: MenuViewModel?,
                     eventNameViewModel: EventNameViewModel?,
+                    sqlDataBase: SqlDataBase,
                     navController: NavHostController?,
                     event: Event,
-                    imageEvent: String){
+                    imageEvent: String,
+                    idEvent: String){
 
-    val eventState = remember {event}
+   // val coroutineScope = rememberCoroutineScope()
+
+    val imagesFilteredByEventId = sqlDataBase.getImagesDb(idEvent)
+
+    Log.d("show_list", imagesFilteredByEventId.toString())
 
     val titleSubscribe = eventNameViewModel!!.isSubscribeTitle.collectAsState()
     val isSubscribe = eventNameViewModel.isSubscribe.collectAsState()
@@ -66,17 +81,20 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
             Surface(color = Colors.backgroundEtno,
                 modifier = Modifier.fillMaxSize()) {
                Column(
+                   modifier =
                    Modifier
                        .verticalScroll(rememberScrollState())
                        .padding(16.dp)) {
-                   Image(painter = rememberAsyncImagePainter(imageEvent), contentDescription = "", modifier = Modifier.height(300.dp))
+                   Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                       Image(painter = rememberAsyncImagePainter(imageEvent), contentDescription = "", modifier = Modifier.height(300.dp))
+                   }
                    Row() {
                        Column() {
                            Text(text = "Título", fontWeight = FontWeight.Bold)
                            Text(text = event.title!!)
                        }
-                       Spacer(modifier = Modifier.padding(horizontal = 65.dp))
-                       Button(onClick = { eventNameViewModel.changeStateButtonSubscribe() }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red ), shape = CircleShape) {
+                       Spacer(modifier = Modifier.padding(horizontal = 75.dp))
+                       Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = { eventNameViewModel.changeStateButtonSubscribe() }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red ), shape = CircleShape) {
                            Text(text = titleSubscribe.value, color = Color.White)
                        }
                    }
@@ -101,10 +119,12 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                       Text(text = event.publicationDate!!)
                       Text(text = "Description", fontWeight = FontWeight.Bold)
                       Text(text = event.description!!)
+                      MyGoogleMap(latitude = event.lat!!, longitude = event.long!!, title = event.title!!)
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Fotos", fontWeight = FontWeight.Bold)
 
                    var selectedTabIndex by remember { mutableStateOf(0) }
-                      CustomScrollableTabRow(imageList = listOf(imageEvent, imageEvent, imageEvent, imageEvent, imageEvent), selectedTabIndex = selectedTabIndex){
+                      CustomScrollableTabRow(imageList = imagesFilteredByEventId, selectedTabIndex = selectedTabIndex){
                           selectedTabIndex = it
                       }
                   }
@@ -115,35 +135,35 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
 
 @Composable
 fun CustomScrollableTabRow(
-    imageList: List<String>,
+    imageList: List<ImageModelDB>,
     selectedTabIndex: Int,
     onItemClick: (Int) -> Unit
 ){
     val imageInfoDialog = remember { mutableStateOf(false) }
     val saveImageUrl = remember { mutableStateOf("") }
 
-
     ScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
         edgePadding = 0.dp,
-        backgroundColor = Colors.backgroundEtno
+        backgroundColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        divider = {}
     ) {
         imageList.forEachIndexed { index, item ->
-
             Tab(selected = selectedTabIndex == index, onClick = {
                 onItemClick.invoke(index)
                 Log.d("tab_image", index.toString())
                 imageInfoDialog.value = true
-                saveImageUrl.value = item
+                saveImageUrl.value = item.linkImage!!
             }){
-                Image(painter = rememberAsyncImagePainter(model = item), contentDescription = "", modifier = Modifier
+                Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
                     .width(180.dp)
                     .height(180.dp)
-                    .padding(5.dp))
+                    .padding(5.dp), contentScale = ContentScale.Fit)
             }
         }
         if(imageInfoDialog.value)
-            ImageDetails(image = saveImageUrl.value, onDismiss = {
+            ImageDetails(onDismiss = {
                 imageInfoDialog.value = false
             }, list = imageList, selectedTabIndex = selectedTabIndex)
     }
@@ -152,8 +172,7 @@ fun CustomScrollableTabRow(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ImageDetails(
-    image: String,
-    list: List<String>,
+    list: List<ImageModelDB>,
     selectedTabIndex: Int,
     onDismiss: () -> Unit
 ){
@@ -170,19 +189,10 @@ fun ImageDetails(
                     shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp)
                 )
                 .align(Alignment.BottomCenter)) {
-                /*
-                Image(
-                    painter = rememberAsyncImagePainter(model = image),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .height(300.dp)
-                )
-                 */
                 ScrollableTabRow(selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, backgroundColor = Color.Transparent, divider = {Divider(startIndent = 0.dp, thickness = 0.dp, color = Color.Transparent)}) {
                     list.forEachIndexed { index, item ->
                         Tab(selected = selectedTabIndex == index, onClick = {  }, enabled = false ){
-                            Image(painter = rememberAsyncImagePainter(model = item), contentDescription = "", modifier = Modifier
+                            Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
                                 .width(300.dp)
                                 .height(300.dp)
                                 .padding(5.dp))

@@ -182,7 +182,8 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: M
     AnimatedVisibility(visible = menuViewModel.isInvisible) {
         TopAppBar(
             title = {
-                Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = "Etno")
+                //Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = "Etno")
+                Image(painter = painterResource(id = R.drawable.etno_icon), contentDescription = "Etno icon", modifier = Modifier.width(260.dp), alignment = Alignment.Center)
                 IconButton(onClick = { /*TODO*/ }) {
                     Icon(painter = painterResource(id = R.drawable.internalization_icon), contentDescription = "Internalization to traslate the Etno app")
                 }},
@@ -249,7 +250,7 @@ fun Navigation(
         ) {
             EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel, sqlDataBase = sqlDataBase)
         }
-        composable("${NavDrawerItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}", arguments =
+        composable("${NavDrawerItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}/{idEvent}", arguments =
         listOf(navArgument("title"){type = NavType.StringType},
             navArgument("address"){type = NavType.StringType},
             navArgument("description"){type = NavType.StringType},
@@ -260,7 +261,8 @@ fun Navigation(
             navArgument("time"){type = NavType.StringType},
             navArgument("lat"){type = NavType.StringType},
             navArgument("long"){type = NavType.StringType},
-            navArgument("image"){type = NavType.StringType}
+            navArgument("image"){type = NavType.StringType},
+            navArgument("idEvent"){type = NavType.StringType}
             )
         ){
             val event = Event(
@@ -278,7 +280,8 @@ fun Navigation(
                 images = null
             )
             val imageEvent = it.arguments?.getString("image")
-            EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!)
+            val idEvent = it.arguments?.getString("idEvent")
+            EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
         }
         composable(NavDrawerItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)

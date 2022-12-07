@@ -18,13 +18,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val sqlDataBase = SqlDataBase(context = this)
         val menuViewModel = MenuViewModel()
-        val eventViewModel = EventViewModel()
+        val eventViewModel = EventViewModel(sqlDataBase)
         val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel()
-        val sqlDataBase = SqlDataBase(context = this)
 
-        //sqlDataBase.deleteEvents()
+       // sqlDataBase.deleteEvents()
+        sqlDataBase.deleteImages()
+
         val menuItem = resources.getStringArray(R.array.menu_items).toList()
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
