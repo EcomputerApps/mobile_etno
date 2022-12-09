@@ -40,6 +40,10 @@ import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.screen.NotConnectionScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.himanshoe.kalendar.Kalendar
+import com.himanshoe.kalendar.color.KalendarThemeColor
+import com.himanshoe.kalendar.component.day.KalendarDay
+import com.himanshoe.kalendar.model.KalendarType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
@@ -152,19 +156,19 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             backgroundColor = Color.Red
         ) {
 
-            Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
-                //datePickerDialog.show()
-                AndroidView(factory = {CalendarView(it)}, update = {
-                    it.setOnDateChangeListener {
-                            _, year, month, dayOfMonth -> date = "$dayOfMonth-${month + 1}-$year"
-                        eventViewModel.eventsFilterByPublicationDate(date)
-                    }
-                })
+            Surface(color = Color.White) {
+                Kalendar(onCurrentDayClick = { kalendarDay, _ -> date = "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"},
+                    kalendarType = KalendarType.Firey,
+                    kalendarThemeColor = KalendarThemeColor(backgroundColor = Color.White, dayBackgroundColor = Color.Red, headerTextColor = Color.Black))
+
+
+                eventViewModel.eventsFilterByPublicationDate(date)
+
                 SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
                 if(eventViewModel.events.value.isNotEmpty()){
 
                     LazyColumn(modifier = Modifier
-                        .padding(top = 350.dp)
+                        .padding(top = 470.dp)
                         .padding(horizontal = 35.dp)
                     ) {
                         items(eventViewModel.events.value) { item ->
@@ -183,33 +187,44 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                 Row(modifier = Modifier
                                     .background(Color.White)
                                     .width(400.dp)) {
+                                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
                                     Image(
                                         painter = rememberAsyncImagePainter(model = item.images!![0].link),
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .align(Alignment.CenterVertically).height(35.dp).clip(
-                                                CircleShape)
+                                            .align(Alignment.CenterVertically)
+                                            .height(40.dp)
+                                            .width(40.dp)
+                                            .clip(
+                                                CircleShape
+                                            )
                                     )
                                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                                         Text(
                                             text = item.title!!,
                                             style = MaterialTheme.typography.h6
                                         )
-                                        Text(text = item.address!!)
-
+                                        Row(){
+                                            Icon(painter = painterResource(id = R.drawable.chincheta) , contentDescription = item.title, modifier = Modifier.size(20.dp))
+                                            Text(text = item.address!!)
+                                        }
+                                        
                                         Row() {
+                                            Icon(painter = painterResource(id = R.drawable.date), contentDescription = item.publicationDate, modifier = Modifier.size(20.dp))
                                             Text(text = "Fecha: ${item.publicationDate}")
                                             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                                             Text(text = "Tiempo: ${item.time!!}")
                                         }
                                     }
-                                    Image(
+                                    Icon(
                                         painter = painterResource(id = R.drawable.arrow_rigth),
                                         contentDescription = "",
+                                        tint = Color.Red,
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
-                                            .size(40.dp)
+                                            .width(60.dp)
+                                            .height(60.dp)
                                     )
                                 }
                             }
@@ -276,6 +291,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             }
         }
     }
+
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

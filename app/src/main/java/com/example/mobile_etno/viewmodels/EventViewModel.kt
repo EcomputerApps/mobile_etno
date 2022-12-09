@@ -56,16 +56,19 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
             }catch (_: java.lang.Exception){}
         }
     }
+
     fun eventsFilterByPublicationDate(date: String){
         Log.d("date_updated", date)
 
-        val filteredEvents = _events.value.filter { event -> event.publicationDate == date }
+        val filteredEvents = saveEvents.value.filter { event -> event.publicationDate == date }
 
         if(filteredEvents.isEmpty()){
             _events.value = saveEvents.value
         }else{
             _events.value = filteredEvents.toMutableList()
         }
-        Log.d("list_filtered", events.value.toString())
+
+       // Log.d("list_filtered", events.value.toString())
+        Log.d("size_list", events.value.size.toString())
     }
 }
