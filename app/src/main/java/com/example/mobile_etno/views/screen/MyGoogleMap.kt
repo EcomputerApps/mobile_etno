@@ -14,10 +14,10 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MyGoogleMap(latitude: String, longitude: String, title: String){
+fun MyGoogleMap(latitude: String, longitude: String, title: String, section: String){
 
     val placeInGoogleMap = LatLng(latitude.toDouble(), longitude.toDouble())
-    val cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(placeInGoogleMap, 10f) }
+    val cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(placeInGoogleMap, 12f) }
 
     GoogleMap(
         modifier = Modifier
@@ -28,7 +28,7 @@ fun MyGoogleMap(latitude: String, longitude: String, title: String){
         Marker(
             state = MarkerState(position = placeInGoogleMap),
             title = title,
-            snippet = "Marker in $title"
+            snippet = "$section $title"
         )
     }
 }

@@ -158,8 +158,6 @@ class SqlDataBase(
 
     @SuppressLint("Recycle", "Range")
      fun getImagesDb(idEventSearch: String): MutableList<ImageModelDB>{
-
-
         val listImageSQL: MutableList<ImageModelDB> = mutableListOf()
 
         val selectQuery = "SELECT * FROM $TABLE_IMAGES WHERE $ID_EVENT_FK = '$idEventSearch'"

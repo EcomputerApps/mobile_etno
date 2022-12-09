@@ -21,14 +21,10 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
     private val _events = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val events: StateFlow<MutableList<Event>> = _events.asStateFlow()
 
-    private val _idEvent = MutableStateFlow("")
-    val idEvent: StateFlow<String> = _idEvent
+    private val _saveEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
+    val saveEvents: StateFlow<MutableList<Event>> = _saveEvents
 
     var isRefreshing by mutableStateOf(false)
-
-    fun updateIdEvent(idEvent: String){
-        _idEvent.value = idEvent
-    }
 
     fun getEventRequest(){
         viewModelScope.launch {
@@ -36,6 +32,7 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
                 val eventsRequest = EventClient.eventService.getEvent()
                 val body = withContext(Dispatchers.IO){ eventsRequest.execute().body()}
                 _events.value = body!!.toMutableList()
+                _saveEvents.value = events.value
                 Log.d("event_dato", events.value[0].toString())
 
                 events.value.forEach { item ->
@@ -58,5 +55,17 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
                 isRefreshing = false
             }catch (_: java.lang.Exception){}
         }
+    }
+    fun eventsFilterByPublicationDate(date: String){
+        Log.d("date_updated", date)
+
+        val filteredEvents = _events.value.filter { event -> event.publicationDate == date }
+
+        if(filteredEvents.isEmpty()){
+            _events.value = saveEvents.value
+        }else{
+            _events.value = filteredEvents.toMutableList()
+        }
+        Log.d("list_filtered", events.value.toString())
     }
 }

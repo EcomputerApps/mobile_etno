@@ -27,16 +27,9 @@ import com.example.mobile_etno.models.ImageModelDB
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventNameViewModel
-import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
-import com.google.maps.android.compose.GoogleMap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
@@ -91,19 +84,22 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                    Row() {
                        Column() {
                            Text(text = "Título", fontWeight = FontWeight.Bold)
-                           Text(text = event.title!!)
+                           Text(text = event.title!!, modifier = Modifier.width(60.dp))
                        }
-                       Spacer(modifier = Modifier.padding(horizontal = 75.dp))
+                       Spacer(modifier = Modifier.padding(horizontal = 70.dp))
                        Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = { eventNameViewModel.changeStateButtonSubscribe() }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red ), shape = CircleShape) {
                            Text(text = titleSubscribe.value, color = Color.White)
                        }
                    }
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Lugar", fontWeight = FontWeight.Bold)
                       Text(text = event.address!!)
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Enlace", fontWeight = FontWeight.Bold)
                       Text(text = event.link!!, color = Color.Blue, modifier = Modifier.clickable {
                           currentContext.startActivity(intent)
                       })
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                      Row() {
                          Column() {
                              Text(text = "Fecha inicial", fontWeight = FontWeight.Bold)
@@ -115,11 +111,14 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                              Text(text = event.organization!!)
                          }
                      }
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Fecha de publicación", fontWeight = FontWeight.Bold)
                       Text(text = event.publicationDate!!)
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Description", fontWeight = FontWeight.Bold)
                       Text(text = event.description!!)
-                      MyGoogleMap(latitude = event.lat!!, longitude = event.long!!, title = event.title!!)
+                      Spacer(modifier = Modifier.padding(vertical = 5.dp))
+                      MyGoogleMap(latitude = event.lat!!, longitude = event.long!!, title = event.title!!, section = "Evento")
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Fotos", fontWeight = FontWeight.Bold)
 

@@ -155,10 +155,12 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
                 //datePickerDialog.show()
                 AndroidView(factory = {CalendarView(it)}, update = {
-                    it.setOnDateChangeListener { view, year, month, dayOfMonth -> date = "$dayOfMonth - ${month + 1} - $year" }
+                    it.setOnDateChangeListener {
+                            _, year, month, dayOfMonth -> date = "$dayOfMonth-${month + 1}-$year"
+                        eventViewModel.eventsFilterByPublicationDate(date)
+                    }
                 })
-
-            SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
+                SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
                 if(eventViewModel.events.value.isNotEmpty()){
 
                     LazyColumn(modifier = Modifier
@@ -166,28 +168,6 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                         .padding(horizontal = 35.dp)
                     ) {
                         items(eventViewModel.events.value) { item ->
-                            //need indexes to save in image table
-                            /*
-                            LaunchedEffect(sqlDataBase.getEventDb().isEmpty()){
-                                coroutineScope.launch {
-                                    sqlDataBase.insertEventDb(
-                                        idEvent = item.idEvent,
-                                        title = item.title,
-                                        address = item.address,
-                                        description = item.description,
-                                        organization = item.organization,
-                                        link = item.link,
-                                        startDate = item.startDate,
-                                        endDate = item.endDate,
-                                        publicationDate = item.publicationDate,
-                                        time = item.time,
-                                        lat = item.lat,
-                                        long = item.long,
-                                    )
-                                }
-                                item.images?.forEach { image ->  sqlDataBase.insertImageDb(idImage = image.idImage, linkImage = image.link, idEvent = item.idEvent)}
-                            }
-                            */
                             Card(modifier = Modifier.clickable {
                                // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
                                 val encodeUrlLink = URLEncoder.encode(item.link, StandardCharsets.UTF_8.toString())
