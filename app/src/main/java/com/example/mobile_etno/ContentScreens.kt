@@ -161,8 +161,9 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                     kalendarType = KalendarType.Firey,
                     kalendarThemeColor = KalendarThemeColor(backgroundColor = Color.White, dayBackgroundColor = Color.Red, headerTextColor = Color.Black))
 
-
-                eventViewModel.eventsFilterByPublicationDate(date)
+                if(date != ""){
+                    eventViewModel.eventsFilterByPublicationDate(date)
+                }
 
                 SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
                 if(eventViewModel.events.value.isNotEmpty()){
