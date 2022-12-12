@@ -3,8 +3,6 @@ package com.example.mobile_etno
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
-import android.widget.CalendarView
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,10 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
@@ -42,10 +40,8 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.himanshoe.kalendar.Kalendar
 import com.himanshoe.kalendar.color.KalendarThemeColor
-import com.himanshoe.kalendar.component.day.KalendarDay
 import com.himanshoe.kalendar.model.KalendarType
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -156,18 +152,24 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             backgroundColor = Color.Red
         ) {
 
+            //var localDate = LocalDate.parse("2022-12-8")
+
             Surface(color = Color.White) {
-                Kalendar(onCurrentDayClick = { kalendarDay, _ -> date = "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"},
-                    kalendarType = KalendarType.Firey,
-                    kalendarThemeColor = KalendarThemeColor(backgroundColor = Color.White, dayBackgroundColor = Color.Red, headerTextColor = Color.Black))
+                Kalendar(kalendarEvents = eventViewModel.calendarEvents.value, onCurrentDayClick = { kalendarDay, list -> date =
+                    "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"
+                                                                             Log.d("events", list.size.toString())
+                                                                             },
+                    kalendarThemeColor = KalendarThemeColor(backgroundColor = Color.White, dayBackgroundColor = Color.Red, headerTextColor = Color.Black),
+                kalendarType = KalendarType.Firey)
 
                 if(date != ""){
                     eventViewModel.eventsFilterByPublicationDate(date)
                 }
 
+                Log.d("day_current", date)
+
                 SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
                 if(eventViewModel.events.value.isNotEmpty()){
-
                     LazyColumn(modifier = Modifier
                         .padding(top = 470.dp)
                         .padding(horizontal = 35.dp)
@@ -213,7 +215,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                         
                                         Row() {
                                             Icon(painter = painterResource(id = R.drawable.date), contentDescription = item.publicationDate, modifier = Modifier.size(20.dp))
-                                            Text(text = "Fecha: ${item.publicationDate}")
+                                            Text(text = "Fecha: ${Parse.formatEuropean(item.publicationDate!!)}")
                                             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                                             Text(text = "Tiempo: ${item.time!!}")
                                         }

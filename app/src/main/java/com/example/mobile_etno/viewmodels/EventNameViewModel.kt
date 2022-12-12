@@ -12,6 +12,7 @@ class EventNameViewModel: ViewModel() {
     private val _isSubscribeTitle = MutableStateFlow("Subscribirse")
     val isSubscribeTitle: StateFlow<String> = _isSubscribeTitle
 
+    //I can operate this state with parameter on this function (Event title)
     fun updateIsSubscribe(isSubscribe: Boolean){
         _isSubscribe.value = isSubscribe
     }

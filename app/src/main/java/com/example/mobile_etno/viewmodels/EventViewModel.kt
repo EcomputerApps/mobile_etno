@@ -9,17 +9,24 @@ import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.service.client.EventClient
 import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.utils.Parse
+import com.himanshoe.kalendar.model.KalendarEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
+import java.time.format.DateTimeFormatter
 
 class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
 
     private val _events = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val events: StateFlow<MutableList<Event>> = _events.asStateFlow()
+
+    private val _calendarEvents = MutableStateFlow<MutableList<KalendarEvent>>(mutableListOf())
+    val calendarEvents: StateFlow<MutableList<KalendarEvent>> = _calendarEvents
 
     private val _saveEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val saveEvents: StateFlow<MutableList<Event>> = _saveEvents
@@ -51,6 +58,12 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
                         long = item.long,
                     )
                     item.images?.forEach { image ->  sqlDataBase.insertImageDb(idImage = image.idImage, linkImage = image.link, idEvent = item.idEvent)}
+
+                    calendarEvents.value.add(KalendarEvent(
+                        date = LocalDate.parse("${Parse.getYear(item.publicationDate!!)}-${Parse.getDay(item.publicationDate!!)}-${Parse.getMouth(item.publicationDate!!)}"),
+                        eventName = item.title!!,
+                        eventDescription = item.description
+                    ))
                 }
                 isRefreshing = false
             }catch (_: java.lang.Exception){}
@@ -59,15 +72,10 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
 
     fun eventsFilterByPublicationDate(date: String){
         Log.d("date_updated", date)
+        val formatter = DateTimeFormatter.ofPattern("d-M-yyyy")
 
-        val filteredEvents = _saveEvents.value.filter { event -> event.publicationDate == date }
-
-        //if(filteredEvents.isEmpty()){
-        //    _events.value = saveEvents.value
-       // }else{
+        val filteredEvents = _saveEvents.value.filter { event -> event.publicationDate == java.time.LocalDate.parse(date, formatter).toString() }
             _events.value = filteredEvents.toMutableList()
-        //}
-       // Log.d("list_filtered", events.value.toString())
         Log.d("size_list", events.value.size.toString())
     }
 }

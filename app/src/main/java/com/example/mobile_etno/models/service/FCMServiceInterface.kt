@@ -6,7 +6,6 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface FCMServiceInterface {
-
     @POST("FCMTokens")
     fun saveFcmToken(@Body fcmToken: FCMToken): Call<FCMToken>?
 }

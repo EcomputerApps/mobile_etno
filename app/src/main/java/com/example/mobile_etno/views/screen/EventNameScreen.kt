@@ -41,8 +41,6 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                     imageEvent: String,
                     idEvent: String){
 
-   // val coroutineScope = rememberCoroutineScope()
-
     val imagesFilteredByEventId = sqlDataBase.getImagesDb(idEvent)
 
     Log.d("show_list", imagesFilteredByEventId.toString())
