@@ -20,16 +20,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.Event
+import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.ImageModelDB
+import com.example.mobile_etno.models.SectionSubscribe
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventNameViewModel
+import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
@@ -42,16 +49,22 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                     idEvent: String){
 
     val imagesFilteredByEventId = sqlDataBase.getImagesDb(idEvent)
-
-    Log.d("show_list", imagesFilteredByEventId.toString())
-
-    val titleSubscribe = eventNameViewModel!!.isSubscribeTitle.collectAsState()
-    val isSubscribe = eventNameViewModel.isSubscribe.collectAsState()
+    val isSubscribe = eventNameViewModel?.isSubscribe!!.collectAsState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val currentContext = LocalContext.current
-
     val intent = remember { Intent(Intent.ACTION_VIEW, Uri.parse(event.link)) }
+
+
+    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+            return@OnCompleteListener
+        }
+        // Get new FCM registration token
+        val token = task.result
+        eventNameViewModel.getSubscriptionByTokenAndCategoryAndTitle(token, event.title!!)
+    })
 
     Column(
         modifier = Modifier
@@ -85,8 +98,23 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                            Text(text = event.title!!, modifier = Modifier.width(60.dp))
                        }
                        Spacer(modifier = Modifier.padding(horizontal = 70.dp))
-                       Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = { eventNameViewModel.changeStateButtonSubscribe() }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red ), shape = CircleShape) {
-                           Text(text = titleSubscribe.value, color = Color.White)
+                       Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = {
+
+                           FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                               OnCompleteListener { task ->
+                               if (!task.isSuccessful) {
+                                   Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+                                   return@OnCompleteListener
+                               }
+                               // Get new FCM registration token
+                               val token = task.result
+                               Log.d("stater_fcmToken", token.toString())
+                              // fcmViewModel.saveFCMToken(FCMToken(token = token))
+                                   eventNameViewModel.changeStateButtonSubscribe(token,
+                                       SectionSubscribe(category = "Evento", title = event.title))
+                           }
+                       ) }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red), shape = CircleShape) {
+                           Text(text = if(eventNameViewModel.isSubscribe.value) "Desuscribirse" else "Subscribirse", color = Color.White)
                        }
                    }
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))

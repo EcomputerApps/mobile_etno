@@ -29,9 +29,11 @@ import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Event
+import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
+import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.screen.EventNameScreen
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +45,8 @@ fun MainScreen(
     menuViewModel: MenuViewModel,
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
-    sqlDataBase: SqlDataBase
+    fcmTokenViewModel: FCMViewModel,
+    sqlDataBase: SqlDataBase,
 ){
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
@@ -60,7 +63,7 @@ fun MainScreen(
         backgroundColor = Color.Red
     ) { padding ->  // We need to pass scaffold's inner padding to content. That's why we use Box.
         Box(modifier = Modifier.padding(padding)) {
-            Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel, sqlDataBase)
+            Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel,fcmTokenViewModel, sqlDataBase)
         }
     }
 }
@@ -239,6 +242,7 @@ fun Navigation(
     menuViewModel: MenuViewModel,
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
+    fcmTokenViewModel: FCMViewModel,
     sqlDataBase: SqlDataBase
 ) {
     NavHost(navController, startDestination = NavDrawerItem.Home.route) {

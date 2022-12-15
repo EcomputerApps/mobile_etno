@@ -31,7 +31,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.utils.colors.Colors
+import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
+import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
@@ -155,7 +157,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             //var localDate = LocalDate.parse("2022-12-8")
 
             Surface(color = Color.White) {
-                Kalendar(kalendarEvents = eventViewModel.calendarEvents.value, onCurrentDayClick = { kalendarDay, list -> date =
+                Kalendar(kalendarEvents = eventViewModel.calendarEvents.value.toList(), onCurrentDayClick = { kalendarDay, list -> date =
                     "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"
                                                                              Log.d("events", list.size.toString())
                                                                              },

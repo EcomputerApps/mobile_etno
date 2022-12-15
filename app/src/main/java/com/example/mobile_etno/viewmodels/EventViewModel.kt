@@ -25,11 +25,11 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
     private val _events = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val events: StateFlow<MutableList<Event>> = _events.asStateFlow()
 
-    private val _calendarEvents = MutableStateFlow<MutableList<KalendarEvent>>(mutableListOf())
-    val calendarEvents: StateFlow<MutableList<KalendarEvent>> = _calendarEvents
+    private val _calendarEvents = MutableStateFlow<MutableSet<KalendarEvent>>(mutableSetOf())
+    val calendarEvents: StateFlow<MutableSet<KalendarEvent>> = _calendarEvents
 
     private val _saveEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
-    val saveEvents: StateFlow<MutableList<Event>> = _saveEvents
+    private val saveEvents: StateFlow<MutableList<Event>> = _saveEvents
 
     var isRefreshing by mutableStateOf(false)
 
@@ -59,8 +59,12 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
                     )
                     item.images?.forEach { image ->  sqlDataBase.insertImageDb(idImage = image.idImage, linkImage = image.link, idEvent = item.idEvent)}
 
+                    val date = "${Parse.getYear(item.publicationDate!!)}-${Parse.getMouth(item.publicationDate!!)}-${Parse.getDay(item.publicationDate!!)}"
+
+                    Log.d("data:value", date)
+
                     calendarEvents.value.add(KalendarEvent(
-                        date = LocalDate.parse("${Parse.getYear(item.publicationDate!!)}-${Parse.getDay(item.publicationDate!!)}-${Parse.getMouth(item.publicationDate!!)}"),
+                        date = LocalDate.parse(date),
                         eventName = item.title!!,
                         eventDescription = item.description
                     ))
@@ -71,11 +75,8 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
     }
 
     fun eventsFilterByPublicationDate(date: String){
-        Log.d("date_updated", date)
-        val formatter = DateTimeFormatter.ofPattern("d-M-yyyy")
-
-        val filteredEvents = _saveEvents.value.filter { event -> event.publicationDate == java.time.LocalDate.parse(date, formatter).toString() }
+        val dateParsedToISO = "${Parse.getMouth(date)}-${Parse.getYear(date)}-${Parse.getDay(date)}"
+        val filteredEvents = saveEvents.value.filter { event -> event.publicationDate == dateParsedToISO }
             _events.value = filteredEvents.toMutableList()
-        Log.d("size_list", events.value.size.toString())
     }
 }

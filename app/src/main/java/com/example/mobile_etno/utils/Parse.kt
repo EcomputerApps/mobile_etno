@@ -4,19 +4,13 @@ import java.time.format.DateTimeFormatter
 
 object Parse {
     fun getDay(date: String): String {
-        val dayAndMouth = date.substringAfter("-")
         val day = date.substringAfter("-").substringBefore("-")
-        val mouth = dayAndMouth.substringAfter("-")
-        val year = date.substringBefore("-")
-
         return if (!day.contains("0") && day.toInt() < 10) "0$day" else day
     }
 
     fun getMouth(date: String): String {
         val dayAndMouth = date.substringAfter("-")
         val mouth = dayAndMouth.substringAfter("-")
-        val year = date.substringBefore("-")
-
         return if (!mouth.contains("0") && mouth.toInt() < 10) "0$mouth" else mouth
     }
 

@@ -36,10 +36,12 @@ class MainActivity : ComponentActivity() {
             }
             // Get new FCM registration token
             val token = task.result
+            Log.d("stater_fcmToken", token.toString())
             fcmViewModel.saveFCMToken(FCMToken(token = token))
         })
+
         setContent {
-           MainScreen(menuItem, menuViewModel, eventViewModel =  eventViewModel, eventNameViewModel =  eventNameViewModel, sqlDataBase =  sqlDataBase)
+           MainScreen(menuItem, menuViewModel, eventViewModel =  eventViewModel, eventNameViewModel =  eventNameViewModel, sqlDataBase =  sqlDataBase, fcmTokenViewModel = fcmViewModel)
         }
     }
 }
