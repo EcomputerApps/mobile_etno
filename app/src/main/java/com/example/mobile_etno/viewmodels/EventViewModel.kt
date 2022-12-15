@@ -79,4 +79,8 @@ class EventViewModel(private val sqlDataBase: SqlDataBase) : ViewModel() {
         val filteredEvents = saveEvents.value.filter { event -> event.publicationDate == dateParsedToISO }
             _events.value = filteredEvents.toMutableList()
     }
+
+    fun resetListConnection(){
+        _events.value.removeAll(events.value)
+    }
 }

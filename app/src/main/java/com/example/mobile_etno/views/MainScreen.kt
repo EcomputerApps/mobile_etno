@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +30,7 @@ import com.example.mobile_etno.*
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.FCMToken
+import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
@@ -51,19 +52,24 @@ fun MainScreen(
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
+    var selectedItem by remember { mutableStateOf(1) }
+    val items = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-        topBar = { TopBar(scope = scope, scaffoldState = scaffoldState, menuViewModel) },
-        drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
-        // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
-        drawerContent = {
-            Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, menuViewModel)
-        },
-        backgroundColor = Color.Red
-    ) { padding ->  // We need to pass scaffold's inner padding to content. That's why we use Box.
-        Box(modifier = Modifier.padding(padding)) {
-            Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel,fcmTokenViewModel, sqlDataBase)
+    Box() {
+        Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel,fcmTokenViewModel, sqlDataBase)
+        BottomNavigation(modifier = Modifier.align(Alignment.BottomCenter).height(50.dp), backgroundColor = Color.Red, contentColor = Color.White) {
+            items.forEachIndexed { index, item ->
+                BottomNavigationItem(selected = selectedItem == index, onClick = {
+                    when(item.name){
+                        "Noticias" -> { navController.navigate(NavDrawerItem.News.route) {  menuViewModel.updateInvisible(false) } }
+                        "Menu" -> { navController.navigate(NavDrawerItem.Home.route){  menuViewModel.updateInvisible(true) } }
+                    }
+                    selectedItem = index
+                }, icon = { Icon(
+                    imageVector = item.icon!!,
+                    contentDescription = null
+                )}, label = { Text(text = item.name!!) })
+            }
         }
     }
 }
@@ -207,8 +213,6 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: M
 
 @Composable
 fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewModel: MenuViewModel){
-
-    AnimatedVisibility(visible = true) {
         TopAppBar(
             title = {
                 Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = nameScreen)
@@ -220,11 +224,7 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
                     navController.navigate(NavDrawerItem.Home.route){
                         menuViewModel.updateInvisible(true)
                     }
-                    /*
-                    scope.launch {
-                        scaffoldState.drawerState.open()
-                    }
-                     */
+
                 }) {
                     Icon(painter = painterResource(id = R.drawable.back_arrow), "back to Home screen", modifier = Modifier.size(35.dp))
                 }
@@ -233,7 +233,29 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
             contentColor = Color.White
         )
     }
+@Composable
+fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController, menuViewModel: MenuViewModel){
+    TopAppBar(
+        title = {
+            Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = nameScreen)
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(painter = painterResource(id = R.drawable.internalization_icon), contentDescription = "Internalization to traslate the Etno app")
+            }},
+        navigationIcon = {
+            IconButton(onClick = {
+                navController.navigate(NavDrawerItem.Home.route){
+                    menuViewModel.updateInvisible(true)
+                }
+
+            }) {
+                Icon(painter = painterResource(id = R.drawable.back_arrow), "back to Home screen", modifier = Modifier.size(35.dp))
+            }
+        },
+        backgroundColor = Color.Red,
+        contentColor = Color.White
+    )
 }
+
 
 @Composable
 fun Navigation(

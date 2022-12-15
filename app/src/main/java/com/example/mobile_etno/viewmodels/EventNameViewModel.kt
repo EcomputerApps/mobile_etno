@@ -17,9 +17,6 @@ class EventNameViewModel: ViewModel() {
     private val _isSubscribe = MutableStateFlow(false)
     val isSubscribe: StateFlow<Boolean> = _isSubscribe
 
-    private val _isSubscribeTitle = MutableStateFlow("Subscribirse")
-    val isSubscribeTitle: StateFlow<String> = _isSubscribeTitle
-
     //I can operate this state with parameter on this function (Event title)
    private fun updateIsSubscribe(isSubscribe: Boolean){
         _isSubscribe.value = isSubscribe
@@ -51,7 +48,7 @@ class EventNameViewModel: ViewModel() {
                 val subscriptionClient = SubscriptionClient.subscriptionService.getSubscription(token = token, category = "Evento", title = title)
                 val body = withContext(Dispatchers.IO){ subscriptionClient.execute().body() }
                 Log.d("see_subscription", body.toString())
-            _isSubscribe.value = body?.isSubscribe!!
+                if(body == null){_isSubscribe.value = false} else {_isSubscribe.value = body.isSubscribe!!}
             }catch (_:java.lang.Exception){}
         }
     }
@@ -60,20 +57,13 @@ class EventNameViewModel: ViewModel() {
         when(isSubscribe.value){
             true -> {
                 updateIsSubscribe(true)
-               // _isSubscribeTitle.value = "Subscribirse"
                 dropOutSectionByTokenAndTitle(token = token, title = sectionSubscribe.title!!)
-                _isSubscribeTitle.value = "Subscribirse"
-
                 //Return the subscription in backend :)
             }
             false -> {
                 updateIsSubscribe(false)
-               // _isSubscribeTitle.value = "Desuscribirse"
                 addEventToFCM(token = token, sectionSubscribe)
-                _isSubscribeTitle.value = "Desuscribirse"
             }
         }
     }
-
-
 }

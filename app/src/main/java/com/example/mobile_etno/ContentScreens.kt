@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -37,6 +36,8 @@ import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.ScreenTopBarSpecial
+import com.example.mobile_etno.views.TopBar
 import com.example.mobile_etno.views.screen.NotConnectionScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -48,6 +49,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.*
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(list: List<String>, navController: NavHostController, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
 
@@ -57,61 +59,82 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
     BackHandler() {
         activity.finish()
     }
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+            //then here i have to iterate the list in card
 
-    //then here i have to iterate the list in card
-    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
-        .background(Colors.backgroundEtno)
-        .fillMaxSize()){
-        itemsIndexed(list){
-                index ,item ->
-            Card(elevation = 0.dp,modifier = Modifier
-                .fillMaxSize()
-                .fillMaxHeight()
-                .clickable {
-                    //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
-                    navController.navigate(list[index]) {
-                        menuViewModel.updateInvisible(false)
-                    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column() {
+            Scaffold(
+                scaffoldState = scaffoldState,
+                topBar = { TopBar(scope = scope, scaffoldState = scaffoldState, menuViewModel = menuViewModel) },
+                drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
+                // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
 
-                    when (item) {
-                        "Eventos" -> eventViewModel.getEventRequest()
-                    }
-                },
-                backgroundColor = Colors.backgroundEtno) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                backgroundColor = Color.Red
+            ){
+                LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
+                    .background(Colors.backgroundEtno)
+                    .fillMaxSize()){
 
-                    when(item){
-                        "Eventos" -> Icon(painter = painterResource(id = R.drawable.events_icon), contentDescription = "events", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Reservaciones" -> Icon(painter = painterResource(id = R.drawable.book_icon), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Muertes" -> Icon(painter = painterResource(id = R.drawable.death), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Telefonos" -> Icon(painter = painterResource(id = R.drawable.phone), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Noticias" -> Icon(painter = painterResource(id = R.drawable.news), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Galeria" -> Icon(painter = painterResource(id = R.drawable.gallery), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Farmacias" -> Icon(painter = painterResource(id = R.drawable.kit_pharmacie), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Patrocinadores" -> Icon(painter = painterResource(id = R.drawable.sponsors), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Fiestas" -> Icon(painter = painterResource(id = R.drawable.festivities), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Anuncios" -> Icon(painter = painterResource(id = R.drawable.ad), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Turismo" -> Icon(painter = painterResource(id = R.drawable.tourism), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Servicios" -> Icon(painter = painterResource(id = R.drawable.service), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Incidentes" -> Icon(painter = painterResource(id = R.drawable.warning), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Enlaces" -> Icon(painter = painterResource(id = R.drawable.links), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
-                        "Bandos" -> Icon(painter = painterResource(id = R.drawable.speaker), contentDescription = "book", modifier = Modifier.size(60.dp), tint = Color.Red)
+                    itemsIndexed(list){
+                            index ,item ->
+                        Card(elevation = 0.dp,modifier = Modifier
+                            .fillMaxSize()
+                            .fillMaxHeight()
+                            .clickable {
+                                //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
+                                navController.navigate(list[index]) {
+                                    menuViewModel.updateInvisible(false)
+                                }
+
+                                when (item) {
+                                    "Eventos" -> eventViewModel.getEventRequest()
+                                }
+                            },
+                            backgroundColor = Colors.backgroundEtno) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+                                when(item){
+                                    "Eventos" -> Icon(painter = painterResource(id = R.drawable.events_icon), contentDescription = "events", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Reservaciones" -> Icon(painter = painterResource(id = R.drawable.book_icon), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Muertes" -> Icon(painter = painterResource(id = R.drawable.death), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Telefonos" -> Icon(painter = painterResource(id = R.drawable.phone), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Noticias" -> Icon(painter = painterResource(id = R.drawable.news), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Galeria" -> Icon(painter = painterResource(id = R.drawable.gallery), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Farmacias" -> Icon(painter = painterResource(id = R.drawable.kit_pharmacie), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Patrocinadores" -> Icon(painter = painterResource(id = R.drawable.sponsors), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Fiestas" -> Icon(painter = painterResource(id = R.drawable.festivities), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Anuncios" -> Icon(painter = painterResource(id = R.drawable.ad), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Turismo" -> Icon(painter = painterResource(id = R.drawable.tourism), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Servicios" -> Icon(painter = painterResource(id = R.drawable.service), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Incidentes" -> Icon(painter = painterResource(id = R.drawable.warning), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Enlaces" -> Icon(painter = painterResource(id = R.drawable.links), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                    "Bandos" -> Icon(painter = painterResource(id = R.drawable.speaker), contentDescription = "book", modifier = Modifier.size(55.dp), tint = Color.Red)
+                                }
+                                Text(text = item)
+                                Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                            }
+                        }
                     }
-                    Text(text = item)
-                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
                 }
             }
+
         }
     }
+    
+
+
+
+
+    
 }
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController, sqlDataBase: SqlDataBase) {
     val currentContext = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
     val infoDialog = remember { mutableStateOf(false) }
 
     var date by remember {
@@ -140,7 +163,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
         modifier = Modifier
             .fillMaxSize()
             .background(Colors.backgroundEtno)
-            .wrapContentSize(Alignment.Center)
+
     ) {
 
         Scaffold(
@@ -148,14 +171,13 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
             topBar = { ScreenTopBar(menuViewModel =  menuViewModel, navController = navController, nameScreen = "Events") },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController, menuViewModel)
             },
+             */
             backgroundColor = Color.Red
         ) {
-
-            //var localDate = LocalDate.parse("2022-12-8")
-
             Surface(color = Color.White) {
                 Kalendar(kalendarEvents = eventViewModel.calendarEvents.value.toList(), onCurrentDayClick = { kalendarDay, list -> date =
                     "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"
@@ -214,7 +236,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                             Icon(painter = painterResource(id = R.drawable.chincheta) , contentDescription = item.title, modifier = Modifier.size(20.dp))
                                             Text(text = item.address!!)
                                         }
-                                        
+
                                         Row() {
                                             Icon(painter = painterResource(id = R.drawable.date), contentDescription = item.publicationDate, modifier = Modifier.size(20.dp))
                                             Text(text = "Fecha: ${Parse.formatEuropean(item.publicationDate!!)}")
@@ -233,14 +255,15 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                            Spacer(modifier = Modifier.padding(vertical = 26.dp))
                         }
                     }
                 }; if(!isInternetAvailable(currentContext)) {
                     // Text(text = sqlDataBase.getEventDb()[0].title!!)
+                    eventViewModel.resetListConnection()
 
                     LazyColumn(modifier = Modifier
-                        .padding(top = 350.dp)
+                        .padding(top = 470.dp)
                         .padding(horizontal = 35.dp)
                     ) {
                         items(sqlDataBase.getEventDb()) { item ->
@@ -276,7 +299,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                            Spacer(modifier = Modifier.padding(vertical = 26.dp))
                         }
                     }
 
@@ -330,6 +353,7 @@ fun ReservationsScreen(menuViewModel: MenuViewModel, navController: NavHostContr
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -338,6 +362,8 @@ fun ReservationsScreen(menuViewModel: MenuViewModel, navController: NavHostContr
                     menuViewModel
                 )
             },
+
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -386,6 +412,7 @@ fun DeathsScreen(menuViewModel: MenuViewModel, navController: NavHostController)
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -394,6 +421,8 @@ fun DeathsScreen(menuViewModel: MenuViewModel, navController: NavHostController)
                     menuViewModel
                 )
             },
+
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -496,6 +525,7 @@ fun NewsScreen(menuViewModel: MenuViewModel, navController: NavHostController){
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -504,6 +534,7 @@ fun NewsScreen(menuViewModel: MenuViewModel, navController: NavHostController){
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -551,6 +582,7 @@ fun GalleryScreen(menuViewModel: MenuViewModel, navController: NavHostController
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -559,6 +591,7 @@ fun GalleryScreen(menuViewModel: MenuViewModel, navController: NavHostController
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -605,6 +638,7 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, navController: NavHostControl
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -613,6 +647,7 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, navController: NavHostControl
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -659,6 +694,7 @@ fun SponsorsScreen(menuViewModel: MenuViewModel, navController: NavHostControlle
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -667,6 +703,7 @@ fun SponsorsScreen(menuViewModel: MenuViewModel, navController: NavHostControlle
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -713,6 +750,7 @@ fun FestivitiesScreen(menuViewModel: MenuViewModel, navController: NavHostContro
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -721,6 +759,7 @@ fun FestivitiesScreen(menuViewModel: MenuViewModel, navController: NavHostContro
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -767,6 +806,7 @@ fun AdvertisementsScreen(menuViewModel: MenuViewModel, navController: NavHostCon
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -775,6 +815,7 @@ fun AdvertisementsScreen(menuViewModel: MenuViewModel, navController: NavHostCon
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -821,6 +862,7 @@ fun ServicesScreen(menuViewModel: MenuViewModel, navController: NavHostControlle
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -829,6 +871,7 @@ fun ServicesScreen(menuViewModel: MenuViewModel, navController: NavHostControlle
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -875,6 +918,7 @@ fun TourismScreen(menuViewModel: MenuViewModel, navController: NavHostController
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -883,6 +927,7 @@ fun TourismScreen(menuViewModel: MenuViewModel, navController: NavHostController
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -929,6 +974,7 @@ fun IncidentsScreen(menuViewModel: MenuViewModel, navController: NavHostControll
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -937,6 +983,8 @@ fun IncidentsScreen(menuViewModel: MenuViewModel, navController: NavHostControll
                     menuViewModel
                 )
             },
+
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -983,6 +1031,7 @@ fun LinksScreen(menuViewModel: MenuViewModel, navController: NavHostController){
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -991,6 +1040,7 @@ fun LinksScreen(menuViewModel: MenuViewModel, navController: NavHostController){
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
@@ -1037,6 +1087,7 @@ fun BandosScreen(menuViewModel: MenuViewModel, navController: NavHostController)
             },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(
                     scope = scope,
@@ -1045,6 +1096,7 @@ fun BandosScreen(menuViewModel: MenuViewModel, navController: NavHostController)
                     menuViewModel
                 )
             },
+             */
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {

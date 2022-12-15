@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -54,6 +55,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
     val scope = rememberCoroutineScope()
     val currentContext = LocalContext.current
     val intent = remember { Intent(Intent.ACTION_VIEW, Uri.parse(event.link)) }
+    val infoDialog = remember { mutableStateOf(false) }
 
 
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
@@ -77,9 +79,11 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
             topBar = { ScreenTopBar(menuViewModel =  menuViewModel!!, navController = navController!!, nameScreen = "Nombre de Evento") },
             drawerBackgroundColor = Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
+            /*
             drawerContent = {
                 Drawer(scope = scope, scaffoldState = scaffoldState, navController = navController!!, menuViewModel!!)
             },
+             */
             backgroundColor = Color.Red
         ){
             Surface(color = Colors.backgroundEtno,
@@ -100,20 +104,28 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                        Spacer(modifier = Modifier.padding(horizontal = 70.dp))
                        Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = {
 
-                           FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                               OnCompleteListener { task ->
-                               if (!task.isSuccessful) {
-                                   Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
-                                   return@OnCompleteListener
-                               }
-                               // Get new FCM registration token
-                               val token = task.result
-                               Log.d("stater_fcmToken", token.toString())
-                              // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                   eventNameViewModel.changeStateButtonSubscribe(token,
-                                       SectionSubscribe(category = "Evento", title = event.title))
+                           if(eventNameViewModel.isSubscribe.value){
+                               infoDialog.value = false
+                               FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                   OnCompleteListener { task ->
+                                       if (!task.isSuccessful) {
+                                           Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+                                           return@OnCompleteListener
+                                       }
+                                       // Get new FCM registration token
+                                       val token = task.result
+                                       Log.d("stater_fcmToken", token.toString())
+                                       // fcmViewModel.saveFCMToken(FCMToken(token = token))
+                                       eventNameViewModel.changeStateButtonSubscribe(token,
+                                           SectionSubscribe(category = "Evento", title = event.title))
+                                       Toast.makeText(currentContext, "Se ha desuscrito al Evento ${event.title}", Toast.LENGTH_SHORT).show()
+                                   })
+
+                           }else{
+                               infoDialog.value = true
                            }
-                       ) }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red), shape = CircleShape) {
+
+                           }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red), shape = CircleShape) {
                            Text(text = if(eventNameViewModel.isSubscribe.value) "Desuscribirse" else "Subscribirse", color = Color.White)
                        }
                    }
@@ -153,6 +165,30 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                           selectedTabIndex = it
                       }
                   }
+                if(infoDialog.value){
+                    if(!eventNameViewModel.isSubscribe.value){
+                        FormSubscription(eventNameViewModel = eventNameViewModel, onDismiss = { infoDialog.value = false }, onSubscription = {name, direction, phone, wallet ->
+
+                            Log.d("form::subscription", "name -> $name, direction -> $direction, phone -> $phone, wallet -> $wallet")
+
+                            FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                OnCompleteListener { task ->
+                                    if (!task.isSuccessful) {
+                                        Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+                                        return@OnCompleteListener
+                                    }
+                                    // Get new FCM registration token
+                                    val token = task.result
+                                    Log.d("stater_fcmToken", token.toString())
+                                    // fcmViewModel.saveFCMToken(FCMToken(token = token))
+                                    eventNameViewModel.changeStateButtonSubscribe(token,
+                                        SectionSubscribe(category = "Evento", title = event.title))
+                                    Toast.makeText(currentContext, "Se ha subscrito al Evento ${event.title}", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        })
+                    }
+                }
             }
         }
     }
