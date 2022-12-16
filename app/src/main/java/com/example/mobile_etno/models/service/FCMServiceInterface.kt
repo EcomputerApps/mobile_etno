@@ -26,5 +26,4 @@ interface FCMServiceInterface {
     fun dropOutSectionByTokenAndTitle(@Query("token") token: String,
                                       @Query("category") category: String,
                                       @Query("title") title: String): Call<SectionSubscribe>
-
 }
