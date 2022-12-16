@@ -1,11 +1,13 @@
 package com.example.mobile_etno.viewmodels
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.SectionSubscribe
 import com.example.mobile_etno.models.service.client.FCMClient
 import com.example.mobile_etno.models.service.client.SubscriptionClient
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,12 +24,12 @@ class EventNameViewModel: ViewModel() {
         _isSubscribe.value = isSubscribe
    }
 
-    private fun addEventToFCM(token: String, sectionSubscribe: SectionSubscribe){
+    private fun addEventToFCM(token: String, name: String, mail: String, phone: String, wallet: Double, sectionSubscribe: SectionSubscribe){
         viewModelScope.launch {
             try {
-                val fcmClient = FCMClient.FCMService.addSectionToFCMToken(token, sectionSubscribe)
+                val fcmClient = FCMClient.FCMService.addSectionToFCMToken(token, name, mail, phone, wallet, sectionSubscribe)
                 val body = withContext(Dispatchers.IO){ fcmClient.execute().body() }
-                _isSubscribe.value = body?.isSubscribe!!
+                _isSubscribe.value = body?.subscriptionUsers?.find { it.fcmToken == token }?.isSubscribe!!
             }catch (_: java.lang.Exception){}
         }
     }
@@ -35,9 +37,9 @@ class EventNameViewModel: ViewModel() {
     private fun dropOutSectionByTokenAndTitle(token: String, title: String){
         viewModelScope.launch {
             try {
-                val fcmClient = FCMClient.FCMService.dropOutSectionByTokenAndTitle(token = token, title = title)
+                val fcmClient = FCMClient.FCMService.dropOutSectionByTokenAndTitle(token = token, category = "Evento", title = title)
                 val body = withContext(Dispatchers.IO){ fcmClient.execute().body() }
-                _isSubscribe.value = body?.isSubscribe!!
+                _isSubscribe.value = body?.subscriptionUsers?.find { it.fcmToken == token }?.isSubscribe!!
             }catch (_: java.lang.Exception){}
         }
     }
@@ -53,7 +55,7 @@ class EventNameViewModel: ViewModel() {
         }
     }
 
-    fun changeStateButtonSubscribe(token: String, sectionSubscribe: SectionSubscribe){
+    fun changeStateButtonSubscribe(token: String, name: String ? = null, mail: String ? = null, phone: String ? = null, wallet: Double ? = null, sectionSubscribe: SectionSubscribe){
         when(isSubscribe.value){
             true -> {
                 updateIsSubscribe(true)
@@ -62,7 +64,7 @@ class EventNameViewModel: ViewModel() {
             }
             false -> {
                 updateIsSubscribe(false)
-                addEventToFCM(token = token, sectionSubscribe)
+                addEventToFCM(token = token, name = name!!, mail = mail!!, phone = phone!!, wallet = wallet!!, sectionSubscribe)
             }
         }
     }

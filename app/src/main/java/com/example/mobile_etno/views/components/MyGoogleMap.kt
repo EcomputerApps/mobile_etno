@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.screen
+package com.example.mobile_etno.views.components
 
 import androidx.compose.foundation.layout.height
 
@@ -14,7 +14,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MyGoogleMap(latitude: String, longitude: String, title: String, section: String){
+fun GoogleMapSection(latitude: String, longitude: String, title: String, section: String){
 
     val placeInGoogleMap = LatLng(latitude.toDouble(), longitude.toDouble())
     val cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(placeInGoogleMap, 12f) }

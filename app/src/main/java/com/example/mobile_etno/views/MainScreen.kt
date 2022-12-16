@@ -20,23 +20,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
-import com.example.mobile_etno.models.Event
-import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.navigation.Navigation
 import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
-import com.example.mobile_etno.views.screen.EventNameScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,8 +43,6 @@ fun MainScreen(
     fcmTokenViewModel: FCMViewModel,
     sqlDataBase: SqlDataBase,
 ){
-    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(1) }
     val items = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
@@ -61,8 +53,8 @@ fun MainScreen(
             items.forEachIndexed { index, item ->
                 BottomNavigationItem(selected = selectedItem == index, onClick = {
                     when(item.name){
-                        "Noticias" -> { navController.navigate(NavDrawerItem.News.route) {  menuViewModel.updateInvisible(false) } }
-                        "Menu" -> { navController.navigate(NavDrawerItem.Home.route){  menuViewModel.updateInvisible(true) } }
+                        "Noticias" -> { navController.navigate(NavDrawerItem.News.route) {  } }
+                        "Menu" -> { navController.navigate(NavDrawerItem.Home.route) {  } }
                     }
                     selectedItem = index
                 }, icon = { Icon(
@@ -188,7 +180,6 @@ fun DrawerItem(item: NavDrawerItem, selected: Boolean, onItemClick: (NavDrawerIt
 
 @Composable
 fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: MenuViewModel) {
-    AnimatedVisibility(visible = menuViewModel.isInvisible) {
         TopAppBar(
             title = {
                 //Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = "Etno")
@@ -208,7 +199,6 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: M
             backgroundColor = Color.Red,
             contentColor = Color.White
         )
-    }
 }
 
 @Composable
@@ -257,100 +247,3 @@ fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController, me
 }
 
 
-@Composable
-fun Navigation(
-    navController: NavHostController,
-    list: List<String>,
-    menuViewModel: MenuViewModel,
-    eventNameViewModel: EventNameViewModel,
-    eventViewModel: EventViewModel,
-    fcmTokenViewModel: FCMViewModel,
-    sqlDataBase: SqlDataBase
-) {
-    NavHost(navController, startDestination = NavDrawerItem.Home.route) {
-        composable(NavDrawerItem.Home.route) {
-           // eventViewModel.getEvents()
-            HomeScreen(list, navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel)
-        }
-        composable(NavDrawerItem.Events.route,
-        ) {
-            EventsScreen(navController = navController, menuViewModel = menuViewModel, eventViewModel = eventViewModel, sqlDataBase = sqlDataBase)
-        }
-        composable("${NavDrawerItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}/{idEvent}", arguments =
-        listOf(navArgument("title"){type = NavType.StringType},
-            navArgument("address"){type = NavType.StringType},
-            navArgument("description"){type = NavType.StringType},
-            navArgument("organization"){type = NavType.StringType},
-            navArgument("link"){type = NavType.StringType},
-            navArgument("endDate"){type = NavType.StringType},
-            navArgument("publicationDate"){type = NavType.StringType},
-            navArgument("time"){type = NavType.StringType},
-            navArgument("lat"){type = NavType.StringType},
-            navArgument("long"){type = NavType.StringType},
-            navArgument("image"){type = NavType.StringType},
-            navArgument("idEvent"){type = NavType.StringType}
-            )
-        ){
-            val event = Event(
-                title = it.arguments?.getString("title"),
-                address = it.arguments?.getString("address"),
-                description = it.arguments?.getString("description"),
-                organization = it.arguments?.getString("organization"),
-                link = it.arguments?.getString("link"),
-                startDate = it.arguments?.getString("startDate"),
-                endDate = it.arguments?.getString("endDate"),
-                publicationDate = it.arguments?.getString("publicationDate"),
-                time = it.arguments?.getString("time"),
-                lat = it.arguments?.getString("lat"),
-                long = it.arguments?.getString("long"),
-                images = null
-            )
-            val imageEvent = it.arguments?.getString("image")
-            val idEvent = it.arguments?.getString("idEvent")
-            EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
-        }
-        composable(NavDrawerItem.Reservations.route) {
-            ReservationsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Deaths.route) {
-            DeathsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Phone.route) {
-            PhoneScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.News.route){
-            NewsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Gallery.route) {
-            GalleryScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Pharmacies.route){
-            PharmaciesScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Sponsors.route){
-            SponsorsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Festivities.route){
-            FestivitiesScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Advertisements.route){
-            AdvertisementsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Services.route){
-            ServicesScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Tourism.route){
-            TourismScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Incidents.route){
-            IncidentsScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Links.route){
-            LinksScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-        composable(NavDrawerItem.Bandos.route){
-            BandosScreen(navController = navController, menuViewModel = menuViewModel)
-        }
-
-    }
-}

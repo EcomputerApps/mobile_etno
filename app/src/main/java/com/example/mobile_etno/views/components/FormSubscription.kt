@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.screen
+package com.example.mobile_etno.views.components
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -12,7 +12,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ import com.example.mobile_etno.viewmodels.EventNameViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, direction: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
     Dialog(onDismissRequest = { onDismiss.invoke() },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
@@ -56,7 +55,7 @@ fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, direc
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ComponentFormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, direction: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun ComponentFormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
     var userState by remember{ mutableStateOf(TextFieldValue()) }
     var mailState by remember { mutableStateOf(TextFieldValue()) }
     var phoneState by remember { mutableStateOf(TextFieldValue()) }

@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.screen
+package com.example.mobile_etno.views.screen.events
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -21,23 +21,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.models.Event
-import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.ImageModelDB
 import com.example.mobile_etno.models.SectionSubscribe
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventNameViewModel
-import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
-import com.example.mobile_etno.views.Drawer
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.components.FormSubscription
+import com.example.mobile_etno.views.components.GoogleMapSection
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
@@ -116,8 +113,8 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                                        val token = task.result
                                        Log.d("stater_fcmToken", token.toString())
                                        // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                       eventNameViewModel.changeStateButtonSubscribe(token,
-                                           SectionSubscribe(category = "Evento", title = event.title))
+                                       eventNameViewModel.changeStateButtonSubscribe( token = token,
+                                           sectionSubscribe = SectionSubscribe(category = "Evento", title = event.title))
                                        Toast.makeText(currentContext, "Se ha desuscrito al Evento ${event.title}", Toast.LENGTH_SHORT).show()
                                    })
 
@@ -156,7 +153,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                       Text(text = "Description", fontWeight = FontWeight.Bold)
                       Text(text = event.description!!)
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                      MyGoogleMap(latitude = event.lat!!, longitude = event.long!!, title = event.title!!, section = "Evento")
+                      GoogleMapSection(latitude = event.lat!!, longitude = event.long!!, title = event.title!!, section = "Evento")
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Fotos", fontWeight = FontWeight.Bold)
 
@@ -167,9 +164,9 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                   }
                 if(infoDialog.value){
                     if(!eventNameViewModel.isSubscribe.value){
-                        FormSubscription(eventNameViewModel = eventNameViewModel, onDismiss = { infoDialog.value = false }, onSubscription = {name, direction, phone, wallet ->
+                        FormSubscription(eventNameViewModel = eventNameViewModel, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
 
-                            Log.d("form::subscription", "name -> $name, direction -> $direction, phone -> $phone, wallet -> $wallet")
+                            Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
 
                             FirebaseMessaging.getInstance().token.addOnCompleteListener(
                                 OnCompleteListener { task ->
@@ -181,8 +178,13 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                                     val token = task.result
                                     Log.d("stater_fcmToken", token.toString())
                                     // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                    eventNameViewModel.changeStateButtonSubscribe(token,
-                                        SectionSubscribe(category = "Evento", title = event.title))
+                                    eventNameViewModel.changeStateButtonSubscribe(
+                                        token = token,
+                                        name = name,
+                                        mail = mail,
+                                        phone = phone,
+                                        wallet = wallet.toDouble(),
+                                        sectionSubscribe = SectionSubscribe(category = "Evento", title = event.title))
                                     Toast.makeText(currentContext, "Se ha subscrito al Evento ${event.title}", Toast.LENGTH_SHORT).show()
                                 }
                             )

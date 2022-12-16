@@ -6,5 +6,6 @@ data class SectionSubscribe(
     var idSectionSubscribe: UUID ? = null,
     var category: String ? = null,
     var title: String ? = null,
-    var isSubscribe: Boolean ? = null
+    var isSubscribe: Boolean ? = null,
+    var subscriptionUsers: MutableList<Subscription> ? = mutableListOf()
 )

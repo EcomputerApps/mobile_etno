@@ -14,9 +14,17 @@ interface FCMServiceInterface {
     fun saveFcmToken(@Body fcmToken: FCMToken): Call<FCMToken>?
 
     @PUT("FCMTokens/section")
-    fun addSectionToFCMToken(@Query("token") token: String, @Body sectionSubscribe: SectionSubscribe): Call<Subscription>
+    fun addSectionToFCMToken(@Query("token") token: String,
+                             @Query("name") name: String,
+                             @Query("mail") mail: String,
+                             @Query("phone") phone: String,
+                             @Query("wallet") wallet: Double,
+                             @Body sectionSubscribe: SectionSubscribe
+                             ): Call<SectionSubscribe>
 
     @PUT("FCMTokens/dropout/section")
-    fun dropOutSectionByTokenAndTitle(@Query("token") token: String, @Query("title") title: String): Call<Subscription>
+    fun dropOutSectionByTokenAndTitle(@Query("token") token: String,
+                                      @Query("category") category: String,
+                                      @Query("title") title: String): Call<SectionSubscribe>
 
 }

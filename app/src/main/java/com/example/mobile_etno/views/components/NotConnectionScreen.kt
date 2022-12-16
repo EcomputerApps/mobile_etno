@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.screen
+package com.example.mobile_etno.views.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
