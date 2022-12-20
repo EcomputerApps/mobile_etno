@@ -9,10 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.mobile_etno.NavDrawerItem
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.NavigationBottom
@@ -71,7 +67,7 @@ fun EventsScreen(
     }
 
     BackHandler() {
-        navController.navigate(NavDrawerItem.Home.route){
+        navController.navigate(NavItem.Home.route){
             menuViewModel.updateInvisible(true)
         }
     }
@@ -88,7 +84,7 @@ fun EventsScreen(
 
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { ScreenTopBar(menuViewModel =  menuViewModel, navController = navController, nameScreen = "Events") },
+            topBar = { ScreenTopBar(navController = navController, nameScreen = "Events") },
             drawerBackgroundColor = com.example.mobile_etno.utils.colors.Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
             /*
@@ -127,7 +123,7 @@ fun EventsScreen(
                                     val encodePublicationDate = URLEncoder.encode(item.publicationDate, StandardCharsets.UTF_8.toString())
                                     val encodeUrlImage = URLEncoder.encode(item.images!![0].link, StandardCharsets.UTF_8.toString())
 
-                                    navController.navigate("${NavDrawerItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage/${item.idEvent}"){
+                                    navController.navigate("${NavItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/${item.reservePrice}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage/${item.idEvent}"){
 
                                     }
                                 }) {
@@ -245,10 +241,10 @@ fun EventsScreen(
                         BottomNavigationItem(selected = selectedItem == index, onClick = {
                             when (item.name) {
                                 "Noticias" -> {
-                                    navController.navigate(NavDrawerItem.News.route) { }
+                                    navController.navigate(NavItem.News.route) { }
                                 }
                                 "Menu" -> {
-                                    navController.navigate(NavDrawerItem.Home.route) { }
+                                    navController.navigate(NavItem.Home.route) { }
                                 }
                             }
                             selectedItem = index

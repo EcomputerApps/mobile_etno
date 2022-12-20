@@ -1,8 +1,8 @@
-package com.example.mobile_etno.views.screen
+package com.example.mobile_etno.views.screen.pharmacy
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,18 +14,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.NavDrawerItem
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.viewmodels.PharmacyViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapPharmacies
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyViewModel, navController: NavHostController){
 
     BackHandler() {
-        navController.navigate(NavDrawerItem.Home.route){
+        navController.navigate(NavItem.Home.route){
             menuViewModel.updateInvisible(true)
         }
     }
@@ -43,7 +45,6 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyVi
             scaffoldState = scaffoldState,
             topBar = {
                 ScreenTopBar(
-                    menuViewModel = menuViewModel,
                     navController = navController,
                     nameScreen = "Farmacias"
                 )
@@ -84,9 +85,11 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyVi
                     Spacer(modifier = Modifier.padding(vertical = 170.dp))
                     LazyColumn(modifier = Modifier.padding(16.dp)){
                         items(pharmaciesList.value){
-                            Card(backgroundColor = Color.White, modifier = Modifier.padding(vertical = 4.dp)) {
+                            Card(backgroundColor = Color.White, modifier = Modifier.padding(vertical = 4.dp).clickable {
+                                navController.navigate("${NavItem.DetailPharmacy.route}?imageUrl=${URLEncoder.encode(it.imageUrl, StandardCharsets.UTF_8.toString())}&link=${it.link}&type=${it.type}&name=${it.name}&phone=${it.phone}&description=${it.description}"){  }
+                            }) {
                                 Row(modifier = Modifier
-                                    .height(IntrinsicSize.Min) //intrinsic measurements
+                                    .height(IntrinsicSize.Min)
                                     .fillMaxWidth()) {
                                     Divider(
                                         color = if(it.type == "Normal") Color.Blue else Color.Red,

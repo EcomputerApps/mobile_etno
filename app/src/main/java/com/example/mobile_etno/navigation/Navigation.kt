@@ -13,11 +13,14 @@ import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.NavigationBottom
+import com.example.mobile_etno.models.Pharmacy
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.views.screen.events.EventNameScreen
 import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.events.EventsScreen
+import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
+import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
 
 @Composable
 fun Navigation(
@@ -29,9 +32,8 @@ fun Navigation(
     pharmacyViewModel: PharmacyViewModel,
     sqlDataBase: SqlDataBase
 ) {
-    NavHost(navController, startDestination = NavDrawerItem.Home.route) {
-        composable(NavDrawerItem.Home.route) {
-            // eventViewModel.getEvents()
+    NavHost(navController, startDestination = NavItem.Home.route) {
+        composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
                 menuViewModel = menuViewModel,
                 eventViewModel = eventViewModel,
@@ -39,7 +41,7 @@ fun Navigation(
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(
-            NavDrawerItem.Events.route,
+            NavItem.Events.route,
         ) {
             EventsScreen(
                 navController = navController,
@@ -49,12 +51,13 @@ fun Navigation(
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
             )
         }
-        composable("${NavDrawerItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}/{idEvent}", arguments =
+        composable("${NavItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{reservePrice}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}/{idEvent}", arguments =
         listOf(
             navArgument("title"){type = NavType.StringType},
             navArgument("address"){type = NavType.StringType},
             navArgument("description"){type = NavType.StringType},
             navArgument("organization"){type = NavType.StringType},
+            navArgument("reservePrice"){type = NavType.StringType},
             navArgument("link"){type = NavType.StringType},
             navArgument("endDate"){type = NavType.StringType},
             navArgument("publicationDate"){type = NavType.StringType},
@@ -70,6 +73,7 @@ fun Navigation(
                 address = it.arguments?.getString("address"),
                 description = it.arguments?.getString("description"),
                 organization = it.arguments?.getString("organization"),
+                reservePrice = it.arguments?.getString("reservePrice")?.toDouble(),
                 link = it.arguments?.getString("link"),
                 startDate = it.arguments?.getString("startDate"),
                 endDate = it.arguments?.getString("endDate"),
@@ -83,46 +87,64 @@ fun Navigation(
             val idEvent = it.arguments?.getString("idEvent")
             EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
         }
-        composable(NavDrawerItem.Reservations.route) {
+        composable(NavItem.Reservations.route) {
             ReservationsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Deaths.route) {
+        composable(NavItem.Deaths.route) {
             DeathsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Phone.route) {
+        composable(NavItem.Phone.route) {
             PhoneScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.News.route){
+        composable(NavItem.News.route){
             NewsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Gallery.route) {
+        composable(NavItem.Gallery.route) {
             GalleryScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Pharmacies.route){
+        composable(NavItem.Pharmacies.route){
             PharmaciesScreen(navController = navController, menuViewModel = menuViewModel, pharmacyViewModel = pharmacyViewModel)
         }
-        composable(NavDrawerItem.Sponsors.route){
+        composable("${NavItem.DetailPharmacy.route}?imageUrl={imageUrl}&link={link}&type={type}&name={name}&phone={phone}&description={description}", arguments = listOf(
+            navArgument("link"){ nullable = true; type = NavType.StringType },
+            navArgument("imageUrl"){ nullable = true; type = NavType.StringType },
+            navArgument("name"){ nullable = true; type = NavType.StringType },
+            navArgument("type"){ nullable = true; type = NavType.StringType },
+            navArgument("phone"){ nullable = true; type = NavType.StringType },
+            navArgument("description"){ nullable = true; type = NavType.StringType }
+        )
+        ){
+            PharmacyDetails(navController = navController, pharmacy = Pharmacy(
+                type = it.arguments?.getString("type"),
+                name = it.arguments?.getString("name"),
+                link = it.arguments?.getString("link"),
+                imageUrl = it.arguments?.getString("imageUrl"),
+                phone = it.arguments?.getString("phone"),
+                description = it.arguments?.getString("description")
+            ))
+        }
+        composable(NavItem.Sponsors.route){
             SponsorsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Festivities.route){
+        composable(NavItem.Festivities.route){
             FestivitiesScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Advertisements.route){
+        composable(NavItem.Advertisements.route){
             AdvertisementsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Services.route){
+        composable(NavItem.Services.route){
             ServicesScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Tourism.route){
+        composable(NavItem.Tourism.route){
             TourismScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Incidents.route){
+        composable(NavItem.Incidents.route){
             IncidentsScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Links.route){
+        composable(NavItem.Links.route){
             LinksScreen(navController = navController, menuViewModel = menuViewModel)
         }
-        composable(NavDrawerItem.Bandos.route){
+        composable(NavItem.Bandos.route){
             BandosScreen(navController = navController, menuViewModel = menuViewModel)
         }
     }

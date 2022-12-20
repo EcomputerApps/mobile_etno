@@ -29,7 +29,7 @@ import com.example.mobile_etno.viewmodels.EventNameViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun FormSubscription(onDismiss: () -> Unit, reservePrice: Double ,onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
     Dialog(onDismissRequest = { onDismiss.invoke() },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
@@ -47,7 +47,7 @@ fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail:
                 )
                 .height(700.dp)
                 .fillMaxWidth(), contentAlignment = Alignment.Center) {
-                ComponentFormSubscription(onDismiss = onDismiss, onSubscription = onSubscription, eventNameViewModel = eventNameViewModel)
+                ComponentFormSubscription(onDismiss = onDismiss, reservePrice = reservePrice, onSubscription = onSubscription, eventNameViewModel = eventNameViewModel)
             }
         }
     }
@@ -55,11 +55,11 @@ fun FormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail:
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ComponentFormSubscription(onDismiss: () -> Unit, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun ComponentFormSubscription(onDismiss: () -> Unit, reservePrice: Double, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
     var userState by remember{ mutableStateOf(TextFieldValue()) }
     var mailState by remember { mutableStateOf(TextFieldValue()) }
     var phoneState by remember { mutableStateOf(TextFieldValue()) }
-    var walletState by remember { mutableStateOf(TextFieldValue()) }
+    var walletState by remember { mutableStateOf(TextFieldValue(reservePrice.toString())) }
     val currentContext = LocalContext.current
 
     Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -95,7 +95,7 @@ fun ComponentFormSubscription(onDismiss: () -> Unit, onSubscription: (name: Stri
                 modifier = modifierInput
             )})
         Spacer(modifier = Modifier.padding(16.dp))
-        OutlinedTextField(keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        OutlinedTextField(enabled = false, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             value = walletState,
             onValueChange = { value -> walletState = value
             }, label = { Text(text = "Cartera")}, leadingIcon = { Icon(

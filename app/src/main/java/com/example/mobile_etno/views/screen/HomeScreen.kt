@@ -18,8 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.NavDrawerItem
-import com.example.mobile_etno.utils.colors.Colors
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.TopBar
@@ -117,10 +116,10 @@ fun HomeScreen(
                 BottomNavigationItem(selected = selectedItem == index, onClick = {
                     when (item.name) {
                         "Noticias" -> {
-                            navController.navigate(NavDrawerItem.News.route) { }
+                            navController.navigate(NavItem.News.route) { }
                         }
                         "Menu" -> {
-                            navController.navigate(NavDrawerItem.Home.route) { }
+                            navController.navigate(NavItem.Home.route) { }
                         }
                     }
                     selectedItem = index

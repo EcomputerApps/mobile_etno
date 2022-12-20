@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.NavDrawerItem
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.Drawer
@@ -27,7 +27,7 @@ import com.example.mobile_etno.views.ScreenTopBar
 fun PhoneScreen(menuViewModel: MenuViewModel, navController: NavHostController) {
 
     BackHandler() {
-        navController.navigate(NavDrawerItem.Home.route){
+        navController.navigate(NavItem.Home.route){
             menuViewModel.updateInvisible(true)
         }
     }
@@ -46,7 +46,6 @@ fun PhoneScreen(menuViewModel: MenuViewModel, navController: NavHostController) 
             scaffoldState = scaffoldState,
             topBar = {
                 ScreenTopBar(
-                    menuViewModel = menuViewModel,
                     navController = navController,
                     nameScreen = "Telefonos"
                 )

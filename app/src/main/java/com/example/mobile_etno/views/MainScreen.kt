@@ -23,7 +23,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
-import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.navigation.Navigation
 import com.example.mobile_etno.viewmodels.*
@@ -58,21 +57,21 @@ fun MainScreen(
 @Composable
 fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: NavHostController, menuViewModel: MenuViewModel) {
     val items = listOf(
-        NavDrawerItem.Events,
-        NavDrawerItem.Reservations,
-        NavDrawerItem.Deaths,
-        NavDrawerItem.Phone,
-        NavDrawerItem.News,
-        NavDrawerItem.Gallery,
-        NavDrawerItem.Pharmacies,
-        NavDrawerItem.Sponsors,
-        NavDrawerItem.Festivities,
-        NavDrawerItem.Advertisements,
-        NavDrawerItem.Services,
-        NavDrawerItem.Tourism,
-        NavDrawerItem.Incidents,
-        NavDrawerItem.Links,
-        NavDrawerItem.Bandos
+        NavItem.Events,
+        NavItem.Reservations,
+        NavItem.Deaths,
+        NavItem.Phone,
+        NavItem.News,
+        NavItem.Gallery,
+        NavItem.Pharmacies,
+        NavItem.Sponsors,
+        NavItem.Festivities,
+        NavItem.Advertisements,
+        NavItem.Services,
+        NavItem.Tourism,
+        NavItem.Incidents,
+        NavItem.Links,
+        NavItem.Bandos
     )
     Column {
         // Header
@@ -134,7 +133,7 @@ fun Drawer(scope: CoroutineScope, scaffoldState: ScaffoldState, navController: N
 }
 
 @Composable
-fun DrawerItem(item: NavDrawerItem, selected: Boolean, onItemClick: (NavDrawerItem) -> Unit) {
+fun DrawerItem(item: NavItem, selected: Boolean, onItemClick: (NavItem) -> Unit) {
     val background = if (selected) Color.Red else Color.Transparent
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -191,7 +190,7 @@ fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: M
 }
 
 @Composable
-fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewModel: MenuViewModel){
+fun ScreenTopBar(nameScreen: String, navController: NavHostController){
         TopAppBar(
             title = {
                 Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = nameScreen)
@@ -200,9 +199,7 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController, menuViewM
                 }},
             navigationIcon = {
                 IconButton(onClick = {
-                    navController.navigate(NavDrawerItem.Home.route){
-                        menuViewModel.updateInvisible(true)
-                    }
+                    navController.navigate(NavItem.Home.route){  }
 
                 }) {
                     Icon(painter = painterResource(id = R.drawable.back_arrow), "back to Home screen", modifier = Modifier.size(35.dp))
@@ -222,7 +219,7 @@ fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController, me
             }},
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(NavDrawerItem.Home.route){
+                navController.navigate(NavItem.Home.route){
                     menuViewModel.updateInvisible(true)
                 }
 

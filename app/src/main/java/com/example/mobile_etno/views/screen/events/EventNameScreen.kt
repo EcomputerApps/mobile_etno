@@ -72,7 +72,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
     ) {
         Scaffold(
             scaffoldState = scaffoldState,
-            topBar = { ScreenTopBar(menuViewModel =  menuViewModel!!, navController = navController!!, nameScreen = "Nombre de Evento") },
+            topBar = { ScreenTopBar(navController = navController!!, nameScreen = "Nombre de Evento") },
             drawerBackgroundColor = Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
             /*
@@ -82,7 +82,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
              */
             backgroundColor = Color.Red
         ){
-            Surface(color = Colors.backgroundEtno,
+            Surface(color = Color.White,
                 modifier = Modifier.fillMaxSize()) {
                Column(
                    modifier =
@@ -163,7 +163,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                   }
                 if(infoDialog.value){
                     if(!eventNameViewModel.isSubscribe.value){
-                        FormSubscription(eventNameViewModel = eventNameViewModel, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
+                        FormSubscription(eventNameViewModel = eventNameViewModel, reservePrice = event.reservePrice!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
 
                             Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
 
