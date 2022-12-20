@@ -32,7 +32,7 @@ import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.FormSubscription
-import com.example.mobile_etno.views.components.GoogleMapSection
+import com.example.mobile_etno.views.components.google.GoogleMapSection
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -49,7 +49,6 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
     val imagesFilteredByEventId = sqlDataBase.getImagesDb(idEvent)
     val isSubscribe = eventNameViewModel?.isSubscribe!!.collectAsState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    val scope = rememberCoroutineScope()
     val currentContext = LocalContext.current
     val intent = remember { Intent(Intent.ACTION_VIEW, Uri.parse(event.link)) }
     val infoDialog = remember { mutableStateOf(false) }

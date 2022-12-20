@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.components
+package com.example.mobile_etno.views.components.google
 
 import androidx.compose.foundation.layout.height
 

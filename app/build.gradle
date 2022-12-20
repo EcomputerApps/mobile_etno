@@ -71,7 +71,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-datetime
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-    implementation 'com.google.maps.android:maps-compose:2.7.2'
+    implementation 'com.google.maps.android:maps-compose:2.8.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     // TODO: Add the dependencies for Firebase products you want to use

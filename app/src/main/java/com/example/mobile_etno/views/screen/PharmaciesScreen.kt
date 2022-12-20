@@ -3,36 +3,34 @@ package com.example.mobile_etno.views.screen
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavDrawerItem
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.MenuViewModel
+import com.example.mobile_etno.viewmodels.PharmacyViewModel
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.components.google.GoogleMapPharmacies
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PharmaciesScreen(menuViewModel: MenuViewModel, navController: NavHostController){
+fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyViewModel, navController: NavHostController){
 
     BackHandler() {
         navController.navigate(NavDrawerItem.Home.route){
             menuViewModel.updateInvisible(true)
         }
     }
-
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    val scope = rememberCoroutineScope()
+    val pharmaciesList = pharmacyViewModel.pharmacies.collectAsState()
 
     Column(
         modifier = Modifier
@@ -50,7 +48,6 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, navController: NavHostControl
                     nameScreen = "Farmacias"
                 )
             },
-            drawerBackgroundColor = Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
             /*
             drawerContent = {
@@ -64,15 +61,54 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, navController: NavHostControl
              */
             backgroundColor = Color.Red
         ) {
-            Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {
-                Text(
-                    text = "Pharmacies View",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    textAlign = TextAlign.Center,
-                    fontSize = 25.sp
-                )
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White).padding(it)) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+                ) {
+                    GoogleMapPharmacies(pharmaciesList.value)
+                    Column(modifier = Modifier.align(Alignment.BottomStart)) {
+                        FloatingActionButton(onClick = { pharmacyViewModel.pharmaciesFilter("Guardia") }, modifier = Modifier
+                            .padding(5.dp).width(70.dp), backgroundColor = Color.White, contentColor = Color.Red) {
+                            Text(text = "Guardia")
+                        }
+                        FloatingActionButton(onClick = { pharmacyViewModel.pharmaciesFilter("Normal") }, modifier = Modifier
+                            .padding(5.dp).width(70.dp), backgroundColor = Color.White, contentColor = Color.Blue) {
+                            Text(text = "Normal")
+                        }
+                    }
+                }
+                Column {
+                    Spacer(modifier = Modifier.padding(vertical = 170.dp))
+                    LazyColumn(modifier = Modifier.padding(16.dp)){
+                        items(pharmaciesList.value){
+                            Card(backgroundColor = Color.White, modifier = Modifier.padding(vertical = 4.dp)) {
+                                Row(modifier = Modifier
+                                    .height(IntrinsicSize.Min) //intrinsic measurements
+                                    .fillMaxWidth()) {
+                                    Divider(
+                                        color = if(it.type == "Normal") Color.Blue else Color.Red,
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .width(2.dp)
+                                    )
+                                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                                    Column() {
+                                        Text(text = it.name!!, style = MaterialTheme.typography.h6)
+                                        Row() {
+                                            Text(text = "Teléfono: ${it.phone}")
+                                            Spacer(modifier = Modifier.padding(horizontal = 50.dp))
+                                            Text(text = "Servicio ${it.type}", color = if(it.type == "Normal") Color.Blue else Color.Red)
+                                        }
+                                        Text(text = "Horario: ${it.schedule}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

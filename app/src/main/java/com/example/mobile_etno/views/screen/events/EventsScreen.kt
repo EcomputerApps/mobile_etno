@@ -9,6 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +26,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.mobile_etno.NavDrawerItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.isInternetAvailable
+import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.utils.colors.Colors
@@ -40,7 +45,15 @@ import java.nio.charset.StandardCharsets
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
-fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, navController: NavHostController, sqlDataBase: SqlDataBase) {
+fun EventsScreen(
+    listBottomNavigation: List<NavigationBottom>,
+    menuViewModel: MenuViewModel,
+    eventViewModel: EventViewModel,
+    navController: NavHostController,
+    sqlDataBase: SqlDataBase
+) {
+    var selectedItem by remember { mutableStateOf(-1) }
+
     val currentContext = LocalContext.current
     val infoDialog = remember { mutableStateOf(false) }
 
@@ -85,7 +98,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
              */
             backgroundColor = Color.Red
         ) {
-            Surface(color = Color.White) {
+            Box(modifier = Modifier.background(Color.White)) {
                 Kalendar(kalendarEvents = eventViewModel.calendarEvents.value.toList(), onCurrentDayClick = { kalendarDay, list -> date =
                     "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"
                     Log.d("events", list.size.toString())
@@ -100,7 +113,7 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                 Log.d("day_current", date)
 
                 SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
-                    if(eventViewModel.events.value.isNotEmpty()){
+                    if(eventViewModel.events.value.isNotEmpty() && isInternetAvailable(currentContext)){
                         LazyColumn(modifier = Modifier
                             .padding(top = 470.dp)
                             .padding(horizontal = 35.dp)
@@ -221,6 +234,30 @@ fun EventsScreen(menuViewModel: MenuViewModel, eventViewModel: EventViewModel, n
                                 //Log.d("down_show", infoDialog.value.toString())
                             }
                         )
+                    }
+                }
+                BottomNavigation(
+                    modifier = Modifier.align(Alignment.BottomCenter).height(50.dp),
+                    backgroundColor = Color.Red,
+                    contentColor = Color.White
+                ) {
+                    listBottomNavigation.forEachIndexed { index, item ->
+                        BottomNavigationItem(selected = selectedItem == index, onClick = {
+                            when (item.name) {
+                                "Noticias" -> {
+                                    navController.navigate(NavDrawerItem.News.route) { }
+                                }
+                                "Menu" -> {
+                                    navController.navigate(NavDrawerItem.Home.route) { }
+                                }
+                            }
+                            selectedItem = index
+                        }, icon = {
+                            Icon(
+                                imageVector = item.icon!!,
+                                contentDescription = null
+                            )
+                        }, label = { Text(text = item.name!!) })
                     }
                 }
             }

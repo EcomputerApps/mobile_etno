@@ -10,8 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,16 +18,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.mobile_etno.NavDrawerItem
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.EventViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.TopBar
 import com.example.mobile_etno.R.*
+import com.example.mobile_etno.models.NavigationBottom
+import com.example.mobile_etno.viewmodels.PharmacyViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(list: List<String>, navController: NavHostController, menuViewModel: MenuViewModel, eventViewModel: EventViewModel) {
-
+fun HomeScreen(
+    list: List<String>,
+    listBottomNavigation: List<NavigationBottom>,
+    navController: NavHostController,
+    menuViewModel: MenuViewModel,
+    eventViewModel: EventViewModel,
+    pharmacyViewModel: PharmacyViewModel
+) {
+    var selectedItem by remember { mutableStateOf(1) }
     //This will let to close the screen ->
     val activity = (LocalContext.current as Activity)
 
@@ -44,13 +53,13 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
             Scaffold(
                 scaffoldState = scaffoldState,
                 topBar = { TopBar(scope = scope, scaffoldState = scaffoldState, menuViewModel = menuViewModel) },
-                drawerBackgroundColor = Colors.backgroundEtno,
+                drawerBackgroundColor = Color.White,
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
 
                 backgroundColor = Color.Red
             ){
                 LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
-                    .background(Colors.backgroundEtno)
+                    .background(Color.White)
                     .fillMaxSize()){
 
                     itemsIndexed(list){
@@ -66,9 +75,10 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
 
                                 when (item) {
                                     "Eventos" -> eventViewModel.getEventRequest()
+                                    "Farmacias" -> pharmacyViewModel.getPharmacies()
                                 }
                             },
-                            backgroundColor = Colors.backgroundEtno) {
+                            backgroundColor = Color.White) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Spacer(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -97,6 +107,30 @@ fun HomeScreen(list: List<String>, navController: NavHostController, menuViewMod
                 }
             }
 
+        }
+        BottomNavigation(
+            modifier = Modifier.align(Alignment.BottomCenter).height(50.dp),
+            backgroundColor = Color.Red,
+            contentColor = Color.White
+        ) {
+            listBottomNavigation.forEachIndexed { index, item ->
+                BottomNavigationItem(selected = selectedItem == index, onClick = {
+                    when (item.name) {
+                        "Noticias" -> {
+                            navController.navigate(NavDrawerItem.News.route) { }
+                        }
+                        "Menu" -> {
+                            navController.navigate(NavDrawerItem.Home.route) { }
+                        }
+                    }
+                    selectedItem = index
+                }, icon = {
+                    Icon(
+                        imageVector = item.icon!!,
+                        contentDescription = null
+                    )
+                }, label = { Text(text = item.name!!) })
+            }
         }
     }
 }

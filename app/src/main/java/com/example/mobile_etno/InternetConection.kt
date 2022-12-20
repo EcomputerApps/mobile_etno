@@ -17,6 +17,5 @@ fun isInternetAvailable(context: Context): Boolean {
         actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
         else -> false
     }
-
     return result
 }

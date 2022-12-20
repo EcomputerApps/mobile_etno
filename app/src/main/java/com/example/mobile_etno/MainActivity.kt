@@ -6,10 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.service.database.SqlDataBase
-import com.example.mobile_etno.viewmodels.EventNameViewModel
-import com.example.mobile_etno.viewmodels.EventViewModel
-import com.example.mobile_etno.viewmodels.FCMViewModel
-import com.example.mobile_etno.viewmodels.MenuViewModel
+import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.views.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -23,6 +20,7 @@ class MainActivity : ComponentActivity() {
         val eventViewModel = EventViewModel(sqlDataBase)
         val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel()
+        val pharmacyViewModel = PharmacyViewModel()
 
        // sqlDataBase.deleteEvents()
         sqlDataBase.deleteImages()
@@ -41,7 +39,13 @@ class MainActivity : ComponentActivity() {
         })
 
         setContent {
-           MainScreen(menuItem, menuViewModel, eventViewModel =  eventViewModel, eventNameViewModel =  eventNameViewModel, sqlDataBase =  sqlDataBase, fcmTokenViewModel = fcmViewModel)
+           MainScreen(menuItem,
+               menuViewModel,
+               eventViewModel = eventViewModel,
+               eventNameViewModel = eventNameViewModel,
+               sqlDataBase = sqlDataBase,
+               fcmTokenViewModel = fcmViewModel,
+               pharmacyViewModel = pharmacyViewModel)
         }
     }
 }

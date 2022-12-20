@@ -1,6 +1,5 @@
 package com.example.mobile_etno.views
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,10 +26,7 @@ import com.example.mobile_etno.R
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.navigation.Navigation
-import com.example.mobile_etno.viewmodels.EventNameViewModel
-import com.example.mobile_etno.viewmodels.EventViewModel
-import com.example.mobile_etno.viewmodels.FCMViewModel
-import com.example.mobile_etno.viewmodels.MenuViewModel
+import com.example.mobile_etno.viewmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -41,28 +37,21 @@ fun MainScreen(
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
     fcmTokenViewModel: FCMViewModel,
+    pharmacyViewModel: PharmacyViewModel,
     sqlDataBase: SqlDataBase,
 ){
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(1) }
-    val items = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
+
 
     Box() {
-        Navigation(navController = navController, list, menuViewModel, eventNameViewModel, eventViewModel,fcmTokenViewModel, sqlDataBase)
-        BottomNavigation(modifier = Modifier.align(Alignment.BottomCenter).height(50.dp), backgroundColor = Color.Red, contentColor = Color.White) {
-            items.forEachIndexed { index, item ->
-                BottomNavigationItem(selected = selectedItem == index, onClick = {
-                    when(item.name){
-                        "Noticias" -> { navController.navigate(NavDrawerItem.News.route) {  } }
-                        "Menu" -> { navController.navigate(NavDrawerItem.Home.route) {  } }
-                    }
-                    selectedItem = index
-                }, icon = { Icon(
-                    imageVector = item.icon!!,
-                    contentDescription = null
-                )}, label = { Text(text = item.name!!) })
-            }
-        }
+        Navigation(navController = navController,
+          list = list,
+           menuViewModel = menuViewModel,
+           eventNameViewModel = eventNameViewModel,
+           eventViewModel = eventViewModel,
+           sqlDataBase = sqlDataBase,
+            pharmacyViewModel = pharmacyViewModel)
     }
 }
 

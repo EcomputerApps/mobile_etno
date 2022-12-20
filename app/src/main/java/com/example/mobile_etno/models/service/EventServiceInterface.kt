@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 
 interface EventServiceInterface {
-    //I have to use sqllite to save token to endpoint request ...
+    //I have to use sqlLite to save token to endpoint request ...
 
     @GET("events")
     fun getEvent(): Call<List<Event>>
