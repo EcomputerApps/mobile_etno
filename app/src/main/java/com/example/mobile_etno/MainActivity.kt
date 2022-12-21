@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel()
         val pharmacyViewModel = PharmacyViewModel()
+        val tourismViewModel = TourismViewModel()
 
        // sqlDataBase.deleteEvents()
         sqlDataBase.deleteImages()
@@ -44,8 +45,8 @@ class MainActivity : ComponentActivity() {
                eventViewModel = eventViewModel,
                eventNameViewModel = eventNameViewModel,
                sqlDataBase = sqlDataBase,
-               fcmTokenViewModel = fcmViewModel,
-               pharmacyViewModel = pharmacyViewModel)
+               pharmacyViewModel = pharmacyViewModel,
+               tourismViewModel = tourismViewModel)
         }
     }
 }

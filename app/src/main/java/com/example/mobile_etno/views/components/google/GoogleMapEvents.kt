@@ -14,7 +14,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun GoogleMapSection(latitude: String, longitude: String, title: String, section: String){
+fun GoogleMapEvents(latitude: String, longitude: String, title: String, section: String){
 
     val placeInGoogleMap = LatLng(latitude.toDouble(), longitude.toDouble())
     val cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(placeInGoogleMap, 12f) }

@@ -1,13 +1,11 @@
 package com.example.mobile_etno.viewmodels
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.SectionSubscribe
 import com.example.mobile_etno.models.service.client.FCMClient
 import com.example.mobile_etno.models.service.client.SubscriptionClient
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

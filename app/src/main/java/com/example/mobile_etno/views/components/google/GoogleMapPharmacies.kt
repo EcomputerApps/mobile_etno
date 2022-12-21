@@ -2,6 +2,7 @@ package com.example.mobile_etno.views.components.google
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Pharmacy
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -42,8 +44,9 @@ fun GoogleMapPharmacies(
     ){
         listPharmacies.forEach {
             pharmacy ->
+
             Marker(
-                icon = if (pharmacy.type == "Normal") bitmapDescriptor(currentContext, com.example.mobile_etno.R.drawable.blue_pharmacy) else bitmapDescriptor(currentContext, com.example.mobile_etno.R.drawable.red_pharmacy),
+                icon = if (pharmacy.type == "Normal") bitmapDescriptor(currentContext, R.drawable.blue_pharmacy) else bitmapDescriptor(currentContext, R.drawable.red_pharmacy),
                 state = MarkerState(
                     position = LatLng(
                         pharmacy.latitude!!.toDouble(),

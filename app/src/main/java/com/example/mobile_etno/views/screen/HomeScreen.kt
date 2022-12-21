@@ -25,6 +25,7 @@ import com.example.mobile_etno.views.TopBar
 import com.example.mobile_etno.R.*
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.viewmodels.PharmacyViewModel
+import com.example.mobile_etno.viewmodels.TourismViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -34,7 +35,8 @@ fun HomeScreen(
     navController: NavHostController,
     menuViewModel: MenuViewModel,
     eventViewModel: EventViewModel,
-    pharmacyViewModel: PharmacyViewModel
+    pharmacyViewModel: PharmacyViewModel,
+    tourismViewModel: TourismViewModel
 ) {
     var selectedItem by remember { mutableStateOf(1) }
     //This will let to close the screen ->
@@ -75,6 +77,7 @@ fun HomeScreen(
                                 when (item) {
                                     "Eventos" -> eventViewModel.getEventRequest()
                                     "Farmacias" -> pharmacyViewModel.getPharmacies()
+                                    "Turismo" -> tourismViewModel.getRequestTourism()
                                 }
                             },
                             backgroundColor = Color.White) {

@@ -1,6 +1,7 @@
 package com.example.mobile_etno.views.components
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.mobile_etno.R
 import com.example.mobile_etno.viewmodels.EventNameViewModel
+import com.example.mobile_etno.views.screen.wallet.WalletActivity
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -104,7 +106,9 @@ fun ComponentFormSubscription(onDismiss: () -> Unit, reservePrice: Double, onSub
                 modifier = modifierInput
             )})
         Spacer(modifier = Modifier.padding(vertical = 12.dp))
-        Button(onClick = {if(userState.text != "" && mailState.text != "" && phoneState.text != "" && walletState.text != "")  onSubscription.invoke(userState.text, mailState.text, phoneState.text, walletState.text) else Toast.makeText(currentContext, "No se permiten campos vacíos", Toast.LENGTH_SHORT).show()},
+        Button(onClick = {if(userState.text != "" && mailState.text != "" && phoneState.text != "" && walletState.text != "")
+            onSubscription.invoke(userState.text, mailState.text, phoneState.text, walletState.text)
+          else Toast.makeText(currentContext, "No se permiten campos vacíos", Toast.LENGTH_SHORT).show()},
             colors = ButtonDefaults.buttonColors(backgroundColor = if(eventNameViewModel.isSubscribe.value) Color.Gray else Color.Red),
             modifier = Modifier.width(250.dp),
             shape = CircleShape){

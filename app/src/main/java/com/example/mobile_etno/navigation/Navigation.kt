@@ -21,6 +21,7 @@ import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
+import com.example.mobile_etno.views.screen.tourism.TourismScreen
 
 @Composable
 fun Navigation(
@@ -30,6 +31,7 @@ fun Navigation(
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
     pharmacyViewModel: PharmacyViewModel,
+    tourismViewModel: TourismViewModel,
     sqlDataBase: SqlDataBase
 ) {
     NavHost(navController, startDestination = NavItem.Home.route) {
@@ -38,6 +40,7 @@ fun Navigation(
                 menuViewModel = menuViewModel,
                 eventViewModel = eventViewModel,
                 pharmacyViewModel = pharmacyViewModel,
+                tourismViewModel = tourismViewModel,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(
@@ -136,7 +139,7 @@ fun Navigation(
             ServicesScreen(navController = navController, menuViewModel = menuViewModel)
         }
         composable(NavItem.Tourism.route){
-            TourismScreen(navController = navController, menuViewModel = menuViewModel)
+            TourismScreen(navController = navController, menuViewModel = menuViewModel, tourismViewModel = tourismViewModel)
         }
         composable(NavItem.Incidents.route){
             IncidentsScreen(navController = navController, menuViewModel = menuViewModel)

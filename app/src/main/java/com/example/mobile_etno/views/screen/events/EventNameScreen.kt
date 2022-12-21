@@ -32,7 +32,7 @@ import com.example.mobile_etno.viewmodels.EventNameViewModel
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.FormSubscription
-import com.example.mobile_etno.views.components.google.GoogleMapSection
+import com.example.mobile_etno.views.components.google.GoogleMapEvents
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 
@@ -152,7 +152,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                       Text(text = "Description", fontWeight = FontWeight.Bold)
                       Text(text = event.description!!)
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                      GoogleMapSection(latitude = event.lat!!, longitude = event.long!!, title = event.title!!, section = "Evento")
+                      GoogleMapEvents(latitude = event.lat!!, longitude = event.long!!, title = event.title!!, section = "Evento")
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
                       Text(text = "Fotos", fontWeight = FontWeight.Bold)
 
