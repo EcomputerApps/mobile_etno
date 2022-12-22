@@ -39,7 +39,7 @@ fun GoogleMapPharmacies(
         properties = properties,
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp),
+            .height(450.dp),
         cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(LatLng(42.13202335670619,-0.40816585603218675), 14f) }
     ){
         listPharmacies.forEach {
@@ -49,8 +49,8 @@ fun GoogleMapPharmacies(
                 icon = if (pharmacy.type == "Normal") bitmapDescriptor(currentContext, R.drawable.blue_pharmacy) else bitmapDescriptor(currentContext, R.drawable.red_pharmacy),
                 state = MarkerState(
                     position = LatLng(
-                        pharmacy.latitude!!.toDouble(),
-                        pharmacy.longitude!!.toDouble()
+                        pharmacy.longitude!!.toDouble(),
+                        pharmacy.latitude!!.toDouble()
                     )
                 ),
                 title = pharmacy.name,

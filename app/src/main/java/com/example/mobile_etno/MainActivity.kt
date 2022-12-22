@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
+import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import com.example.mobile_etno.views.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -16,6 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val sqlDataBase = SqlDataBase(context = this)
+        val localityViewModel = LocalityViewModel()
         val menuViewModel = MenuViewModel()
         val eventViewModel = EventViewModel(sqlDataBase)
         val eventNameViewModel = EventNameViewModel()
@@ -41,7 +43,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
            MainScreen(menuItem,
-               menuViewModel,
+               localityViewModel = localityViewModel,
+                menuViewModel = menuViewModel,
                eventViewModel = eventViewModel,
                eventNameViewModel = eventNameViewModel,
                sqlDataBase = sqlDataBase,

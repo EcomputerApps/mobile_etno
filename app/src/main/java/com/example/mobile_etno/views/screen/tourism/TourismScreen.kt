@@ -10,8 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,33 +21,33 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
+import com.example.mobile_etno.models.Tourism
 import com.example.mobile_etno.utils.colors.Colors
-import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.viewmodels.TourismViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapTourism
 
 @Composable
-fun TourismScreen(menuViewModel: MenuViewModel, tourismViewModel: TourismViewModel, navController: NavHostController){
+fun TourismScreen( tourismViewModel: TourismViewModel, navController: NavHostController){
 
     val currentContext = LocalContext.current
     val tourism = tourismViewModel.tourism.collectAsState()
+    val tourismSaved = tourismViewModel.saveTourism.collectAsState()
+
+    var selectedTabIndex by remember { mutableStateOf(0) }
 
     BackHandler() {
-        navController.navigate(NavItem.Home.route){
-            menuViewModel.updateInvisible(true)
-        }
+        navController.navigate(NavItem.Home.route){  }
     }
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Colors.backgroundEtno)
             .wrapContentSize(Alignment.Center)
     ) {
-
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
@@ -66,25 +65,46 @@ fun TourismScreen(menuViewModel: MenuViewModel, tourismViewModel: TourismViewMod
 
                 Box(modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp)
+                    .fillMaxHeight()
                 ) {
                     GoogleMapTourism(listTourism = tourism.value)
+                    CustomScrollableFilterTourism(
+                        typeButtonList = listOf(Tourism(type = "Restaurante"), Tourism(type = "Monumento"), Tourism(type = "Museo"), Tourism(type = "Hotel")),
+                        selectedTabIndex = selectedTabIndex,
+                        tourismViewModel = tourismViewModel
+                    ){
+                        index ->
+                        selectedTabIndex = index
+                    }
                 }
                 Column() {
-                    Spacer(modifier = Modifier.padding(vertical = 170.dp))
+                    Spacer(modifier = Modifier.padding(vertical = 220.dp))
                     LazyColumn(modifier = Modifier.padding(16.dp)){
                         items(tourism.value){
                                 item ->
-                            Card(modifier = Modifier.padding(vertical = 4.dp).clickable {
-                                Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
-                            }) {
+
+                            val imageType: Int = when(item.type){
+                                "Museo" -> R.drawable.museo
+                                "Hotel" -> R.drawable.hotel
+                                "Monumento" -> R.drawable.monumental
+                                "Restaurante" -> R.drawable.restaurant
+                                else -> {R.drawable.etno_icon}
+                            }
+
+                            Card(modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    Toast
+                                        .makeText(currentContext, item.title, Toast.LENGTH_SHORT)
+                                        .show()
+                                }) {
                                 Row(modifier = Modifier
                                     .background(Color.White)
                                     .width(400.dp)) {
                                     Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                                     Spacer(modifier = Modifier.padding(vertical = 16.dp))
                                     Image(
-                                        painter = painterResource(id = R.drawable.etno_icon),
+                                        painter = painterResource(id = imageType),
                                         contentDescription = "",
                                         modifier = Modifier
                                             .align(Alignment.CenterVertically)
@@ -114,6 +134,52 @@ fun TourismScreen(menuViewModel: MenuViewModel, tourismViewModel: TourismViewMod
                             }
                             Spacer(modifier = Modifier.padding(vertical = 10.dp))
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomScrollableFilterTourism(
+    typeButtonList: List<Tourism>,
+    tourismViewModel: TourismViewModel,
+    selectedTabIndex: Int,
+    onItemClick: (Int) -> Unit
+){
+    ScrollableTabRow(
+        selectedTabIndex = selectedTabIndex,
+        edgePadding = 0.dp,
+        backgroundColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        divider = {  }
+    ) {
+        Button(onClick = { tourismViewModel.filterAll() }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+            Text(text = "Todo")
+        }
+        typeButtonList.forEachIndexed { index, tourism ->
+            Tab(selected = selectedTabIndex == index, onClick = { onItemClick.invoke(index) }, modifier = Modifier
+                .background(Color.Transparent)
+                .padding(horizontal = 5.dp)) {
+                Button(onClick = {
+                                 when(tourism.type) {
+                                     "Restaurante" -> tourismViewModel.tourismFilter("Restaurante")
+                                     "Museo" -> tourismViewModel.tourismFilter("Museo")
+                                     "Hotel" -> tourismViewModel.tourismFilter("Hotel")
+                                     "Monumento" -> tourismViewModel.tourismFilter("Monumento")
+                                 }
+                }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                    Row {
+                       val typeIcon: Int = when(tourism.type){
+                            "Restaurante" -> R.drawable.restaurant
+                            "Museo" -> R.drawable.museo
+                            "Hotel" -> R.drawable.hotel
+                            "Monumento" -> R.drawable.monumental
+                           else -> { R.drawable.etno_icon }
+                        }
+                        Image(painter = painterResource(id = typeIcon), contentDescription = tourism.type, modifier = Modifier.size(20.dp))
+                        Text(text = tourism.type!!)
                     }
                 }
             }

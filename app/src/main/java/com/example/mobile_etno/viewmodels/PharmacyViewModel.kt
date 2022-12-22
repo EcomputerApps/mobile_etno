@@ -29,6 +29,9 @@ class PharmacyViewModel: ViewModel() {
             }catch (_: Exception){}
         }
     }
+    fun filterAll(){
+        _pharmacies.value = savePharmacies.value
+    }
     fun pharmaciesFilter(type: String){
         val filteredPharmacies = savePharmacies.value.filter { it.type == type }
         _pharmacies.value = filteredPharmacies.toMutableList()

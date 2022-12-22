@@ -16,17 +16,22 @@ import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.Pharmacy
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
+import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
+import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
+import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
 import com.example.mobile_etno.views.screen.events.EventNameScreen
 import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
+import com.example.mobile_etno.views.screen.splash.SplashScreen
 import com.example.mobile_etno.views.screen.tourism.TourismScreen
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     list: List<String>,
+    localityViewModel: LocalityViewModel,
     menuViewModel: MenuViewModel,
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
@@ -34,7 +39,16 @@ fun Navigation(
     tourismViewModel: TourismViewModel,
     sqlDataBase: SqlDataBase
 ) {
-    NavHost(navController, startDestination = NavItem.Home.route) {
+    NavHost(navController, startDestination = NavItem.Splash.route) {
+        composable(NavItem.Splash.route){
+            SplashScreen(navController = navController)
+        }
+        composable(NavItem.ChooseLocality.route){
+            ChooseLocalityScreen(navController = navController)
+        }
+        composable(NavItem.Localities.route){
+            LocalitiesChooseScreen(localityViewModel = localityViewModel)
+        }
         composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
                 menuViewModel = menuViewModel,
@@ -139,7 +153,7 @@ fun Navigation(
             ServicesScreen(navController = navController, menuViewModel = menuViewModel)
         }
         composable(NavItem.Tourism.route){
-            TourismScreen(navController = navController, menuViewModel = menuViewModel, tourismViewModel = tourismViewModel)
+            TourismScreen(navController = navController, tourismViewModel = tourismViewModel)
         }
         composable(NavItem.Incidents.route){
             IncidentsScreen(navController = navController, menuViewModel = menuViewModel)

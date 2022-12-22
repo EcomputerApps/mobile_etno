@@ -25,8 +25,17 @@ class TourismViewModel: ViewModel() {
                 val body = withContext(Dispatchers.IO){ tourismClient.execute().body() }
                 Log.d("see_tourism", body.toString())
                 _tourism.value = body!!.toMutableList()
-                _saveTourism.value = tourism.value
+                _saveTourism.value = body.toMutableList()
             }catch (_: Exception){  }
         }
+    }
+
+    fun filterAll(){
+        _tourism.value = saveTourism.value
+    }
+
+    fun tourismFilter(type: String){
+        val filteredTourism = saveTourism.value.filter { it.type == type }
+        _tourism.value = filteredTourism.toMutableList()
     }
 }

@@ -26,12 +26,14 @@ import com.example.mobile_etno.R
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.navigation.Navigation
 import com.example.mobile_etno.viewmodels.*
+import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
     list: List<String>,
+    localityViewModel: LocalityViewModel,
     menuViewModel: MenuViewModel,
     eventNameViewModel: EventNameViewModel,
     eventViewModel: EventViewModel,
@@ -46,6 +48,7 @@ fun MainScreen(
     Box() {
         Navigation(navController = navController,
           list = list,
+            localityViewModel = localityViewModel,
            menuViewModel = menuViewModel,
            eventNameViewModel = eventNameViewModel,
            eventViewModel = eventViewModel,

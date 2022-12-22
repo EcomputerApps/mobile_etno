@@ -1,6 +1,9 @@
 package com.example.mobile_etno
 
 sealed class NavItem(var route: String, var icon: Int? = null, var title: String? = null) {
+    object Splash : NavItem("Splash")
+    object ChooseLocality : NavItem("ChooseLocality")
+    object Localities : NavItem("Localities")
     object Home : NavItem("home")
     object Events : NavItem("Eventos", R.drawable.home_test, "Eventos")
     object EventNameScreen: NavItem("NombreEventoScreen")

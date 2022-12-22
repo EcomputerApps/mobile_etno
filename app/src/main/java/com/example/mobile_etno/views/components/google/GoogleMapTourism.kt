@@ -28,7 +28,7 @@ fun GoogleMapTourism(
         properties = properties,
         modifier = Modifier
             .fillMaxWidth()
-            .height(350.dp),
+            .height(450.dp),
         cameraPositionState = rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(
             LatLng(42.13202335670619,-0.40816585603218675),
             14f
@@ -41,7 +41,8 @@ fun GoogleMapTourism(
                 "Hotel" -> R.drawable.hotel
                 "Monumento" -> R.drawable.monumental
                 "Museo" -> R.drawable.museo
-                else -> { R.drawable.hotel }
+                "Restaurante" -> R.drawable.restaurant
+                else -> { R.drawable.etno_icon }
             }
 
             Marker(
