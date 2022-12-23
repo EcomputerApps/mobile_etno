@@ -2,6 +2,7 @@ package com.example.mobile_etno.views.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import com.example.mobile_etno.R.*
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.viewmodels.PharmacyViewModel
 import com.example.mobile_etno.viewmodels.TourismViewModel
+import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -36,8 +38,12 @@ fun HomeScreen(
     menuViewModel: MenuViewModel,
     eventViewModel: EventViewModel,
     pharmacyViewModel: PharmacyViewModel,
-    tourismViewModel: TourismViewModel
+    tourismViewModel: TourismViewModel,
+    localityViewModel: LocalityViewModel
 ) {
+    val localityState = localityViewModel.saveStateLocality.collectAsState()
+    Toast.makeText(LocalContext.current, localityState.value, Toast.LENGTH_SHORT).show()
+
     var selectedItem by remember { mutableStateOf(1) }
     //This will let to close the screen ->
     val activity = (LocalContext.current as Activity)
@@ -111,7 +117,9 @@ fun HomeScreen(
 
         }
         BottomNavigation(
-            modifier = Modifier.align(Alignment.BottomCenter).height(50.dp),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(50.dp),
             backgroundColor = Color.Red,
             contentColor = Color.White
         ) {

@@ -44,7 +44,6 @@ fun MainScreen(
     val navController = rememberNavController()
     var selectedItem by remember { mutableStateOf(1) }
 
-
     Box() {
         Navigation(navController = navController,
           list = list,

@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 
 @Composable
-fun LocalitiesChooseScreen(localityViewModel: LocalityViewModel) {
+fun LocalitiesChooseScreen(navController: NavHostController ,localityViewModel: LocalityViewModel) {
     val localities = localityViewModel.localities.collectAsState()
 
     Box(
@@ -24,7 +26,10 @@ fun LocalitiesChooseScreen(localityViewModel: LocalityViewModel) {
             items(localities.value){
                     item ->
 
-                TextButton(onClick = {  }) {
+                TextButton(onClick = {
+                    localityViewModel.updateStateLocality(item.localityName!!)
+                    navController.navigate(NavItem.Home.route)
+                }) {
                     Text(text = item.localityName!!)
                 }
             }

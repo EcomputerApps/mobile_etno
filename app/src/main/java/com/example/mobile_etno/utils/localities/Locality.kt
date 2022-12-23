@@ -24,5 +24,4 @@ sealed class Locality(
         shield = R.drawable.etno_icon,
         localityName = "Ayerbe"
     )
-
 }

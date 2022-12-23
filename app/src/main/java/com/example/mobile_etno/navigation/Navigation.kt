@@ -47,7 +47,7 @@ fun Navigation(
             ChooseLocalityScreen(navController = navController)
         }
         composable(NavItem.Localities.route){
-            LocalitiesChooseScreen(localityViewModel = localityViewModel)
+            LocalitiesChooseScreen(localityViewModel = localityViewModel, navController = navController)
         }
         composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
@@ -55,6 +55,7 @@ fun Navigation(
                 eventViewModel = eventViewModel,
                 pharmacyViewModel = pharmacyViewModel,
                 tourismViewModel = tourismViewModel,
+                localityViewModel = localityViewModel,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(
