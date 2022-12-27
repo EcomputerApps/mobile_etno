@@ -26,8 +26,7 @@ import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.utils.colors.Colors
-import com.example.mobile_etno.viewmodels.EventViewModel
-import com.example.mobile_etno.viewmodels.MenuViewModel
+import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.NotConnectionScreen
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -43,11 +42,11 @@ import java.nio.charset.StandardCharsets
 @Composable
 fun EventsScreen(
     listBottomNavigation: List<NavigationBottom>,
-    menuViewModel: MenuViewModel,
-    eventViewModel: EventViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     navController: NavHostController,
     sqlDataBase: SqlDataBase
 ) {
+    val eventsUserToVillager = userVillagerViewModel.userVillagerEvents.collectAsState()
     var selectedItem by remember { mutableStateOf(-1) }
 
     val currentContext = LocalContext.current
@@ -57,19 +56,17 @@ fun EventsScreen(
         mutableStateOf("")
     }
 
-    LaunchedEffect(eventViewModel.isRefreshing){
-        if (eventViewModel.isRefreshing){
-            eventViewModel.getEventRequest()
+    LaunchedEffect(userVillagerViewModel.isRefreshing){
+        if (userVillagerViewModel.isRefreshing){
+            userVillagerViewModel.getUserToVillagerEvents()
             delay(3000)
             // Log.d("winded up", "finish")
-            eventViewModel.isRefreshing = false
+            userVillagerViewModel.isRefreshing = false
         }
     }
 
     BackHandler() {
-        navController.navigate(NavItem.Home.route){
-            menuViewModel.updateInvisible(true)
-        }
+        navController.navigate(NavItem.Home.route){  }
     }
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
@@ -95,7 +92,7 @@ fun EventsScreen(
             backgroundColor = Color.Red
         ) {
             Box(modifier = Modifier.background(Color.White)) {
-                Kalendar(kalendarEvents = eventViewModel.calendarEvents.value.toList(), onCurrentDayClick = { kalendarDay, list -> date =
+                Kalendar(kalendarEvents = userVillagerViewModel.calendarEvents.value.toList(), onCurrentDayClick = { kalendarDay, list -> date =
                     "${kalendarDay.localDate.dayOfMonth}-${kalendarDay.localDate.monthNumber}-${kalendarDay.localDate.year}"
                     Log.d("events", list.size.toString())
                 },
@@ -103,27 +100,32 @@ fun EventsScreen(
                     kalendarType = KalendarType.Firey)
 
                 if(date != ""){
-                    eventViewModel.eventsFilterByPublicationDate(date)
+                    userVillagerViewModel.eventsFilterByPublicationDate(date)
                 }
 
                 Log.d("day_current", date)
 
-                SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = eventViewModel.isRefreshing), onRefresh = { eventViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
-                    if(eventViewModel.events.value.isNotEmpty() && isInternetAvailable(currentContext)){
+                SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing = userVillagerViewModel.isRefreshing), onRefresh = { userVillagerViewModel.isRefreshing = true }, modifier = Modifier.fillMaxSize()) {
+                    if(eventsUserToVillager.value.isNotEmpty() && isInternetAvailable(currentContext)){
                         LazyColumn(modifier = Modifier
                             .padding(top = 470.dp)
                             .padding(horizontal = 35.dp)
                         ) {
-                            items(eventViewModel.events.value) { item ->
+                            items(eventsUserToVillager.value) { item ->
                                 Card(modifier = Modifier.clickable {
                                     // Toast.makeText(currentContext, item.title, Toast.LENGTH_SHORT).show()
                                     val encodeUrlLink = URLEncoder.encode(item.link, StandardCharsets.UTF_8.toString())
                                     val encodeStartDate = URLEncoder.encode(item.startDate, StandardCharsets.UTF_8.toString())
                                     val encodeEndDate = URLEncoder.encode(item.endDate, StandardCharsets.UTF_8.toString())
                                     val encodePublicationDate = URLEncoder.encode(item.publicationDate, StandardCharsets.UTF_8.toString())
-                                    val encodeUrlImage = URLEncoder.encode(item.images!![0].link, StandardCharsets.UTF_8.toString())
 
-                                    navController.navigate("${NavItem.EventNameScreen.route}/${item.title}/${item.address}/${item.description}/${item.organization}/${item.reservePrice}/$encodeUrlLink/$encodeStartDate/$encodeEndDate/$encodePublicationDate/${item.time}/${item.lat}/${item.long}/$encodeUrlImage/${item.idEvent}"){
+                                    val encodeUrlImage: String = if(item.images!!.isNotEmpty()){
+                                        URLEncoder.encode(item.images!![0].link, StandardCharsets.UTF_8.toString())
+                                    }else{
+                                        "null"
+                                    }
+
+                                    navController.navigate("${NavItem.EventNameScreen.route}?title=${item.title}?address=${item.address}?description=${item.description}?organization=${item.organization}?reservePrice=${item.reservePrice}?link=$encodeUrlLink?startDate=$encodeStartDate?endDate=$encodeEndDate?publicationDate=$encodePublicationDate?time=${item.time}?lat=${item.lat}?long=${item.long}?image=$encodeUrlImage?idEvent=${item.idEvent}"){
 
                                     }
                                 }) {
@@ -133,7 +135,9 @@ fun EventsScreen(
                                         Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                                         Spacer(modifier = Modifier.padding(vertical = 16.dp))
                                         Image(
-                                            painter = rememberAsyncImagePainter(model = item.images!![0].link),
+                                            painter = if(item.images!!.isNotEmpty()) rememberAsyncImagePainter(model = item.images!![0].link) else painterResource(
+                                                id = R.drawable.event
+                                            ),
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .align(Alignment.CenterVertically)
@@ -176,7 +180,7 @@ fun EventsScreen(
                         }
                     }; if(!isInternetAvailable(currentContext)) {
                     // Text(text = sqlDataBase.getEventDb()[0].title!!)
-                    eventViewModel.resetListConnection()
+                    userVillagerViewModel.resetListEventsConnection()
 
                     LazyColumn(modifier = Modifier
                         .padding(top = 470.dp)
@@ -233,7 +237,9 @@ fun EventsScreen(
                     }
                 }
                 BottomNavigation(
-                    modifier = Modifier.align(Alignment.BottomCenter).height(50.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .height(50.dp),
                     backgroundColor = Color.Red,
                     contentColor = Color.White
                 ) {

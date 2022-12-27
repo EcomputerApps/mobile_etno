@@ -23,13 +23,9 @@ import com.example.mobile_etno.views.ScreenTopBar
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun DeathsScreen(menuViewModel: MenuViewModel, navController: NavHostController) {
+fun DeathsScreen(navController: NavHostController) {
 
-    BackHandler() {
-        navController.navigate(NavItem.Home.route){
-            menuViewModel.updateInvisible(true)
-        }
-    }
+    BackHandler() { navController.navigate(NavItem.Home.route){  } }
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()

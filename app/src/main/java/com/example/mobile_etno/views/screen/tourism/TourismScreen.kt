@@ -24,15 +24,17 @@ import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Tourism
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.TourismViewModel
+import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapTourism
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
-fun TourismScreen( tourismViewModel: TourismViewModel, navController: NavHostController){
+fun TourismScreen( userVillagerViewModel: UserVillagerViewModel, navController: NavHostController){
 
     val currentContext = LocalContext.current
-    val tourism = tourismViewModel.tourism.collectAsState()
-    val tourismSaved = tourismViewModel.saveTourism.collectAsState()
+    val tourism = userVillagerViewModel.userVillagerTourism.collectAsState()
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -71,7 +73,7 @@ fun TourismScreen( tourismViewModel: TourismViewModel, navController: NavHostCon
                     CustomScrollableFilterTourism(
                         typeButtonList = listOf(Tourism(type = "Restaurante"), Tourism(type = "Monumento"), Tourism(type = "Museo"), Tourism(type = "Hotel")),
                         selectedTabIndex = selectedTabIndex,
-                        tourismViewModel = tourismViewModel
+                        userVillagerViewModel = userVillagerViewModel
                     ){
                         index ->
                         selectedTabIndex = index
@@ -94,9 +96,12 @@ fun TourismScreen( tourismViewModel: TourismViewModel, navController: NavHostCon
                             Card(modifier = Modifier
                                 .padding(vertical = 4.dp)
                                 .clickable {
-                                    Toast
-                                        .makeText(currentContext, item.title, Toast.LENGTH_SHORT)
-                                        .show()
+                                    val encodeUrlImage: String = if(item.imageUrl != null){
+                                        URLEncoder.encode(item.imageUrl, StandardCharsets.UTF_8.toString())
+                                    }else{
+                                        "null"
+                                    }
+                                   navController.navigate("${NavItem.DetailTourism.route}?type=${item.type}&username=${item.username}&title=${item.title}&description=${item.description}&imageUrl=$encodeUrlImage")
                                 }) {
                                 Row(modifier = Modifier
                                     .background(Color.White)
@@ -144,7 +149,7 @@ fun TourismScreen( tourismViewModel: TourismViewModel, navController: NavHostCon
 @Composable
 fun CustomScrollableFilterTourism(
     typeButtonList: List<Tourism>,
-    tourismViewModel: TourismViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     selectedTabIndex: Int,
     onItemClick: (Int) -> Unit
 ){
@@ -155,7 +160,7 @@ fun CustomScrollableFilterTourism(
         contentColor = Color.Transparent,
         divider = {  }
     ) {
-        Button(onClick = { tourismViewModel.filterAll() }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+        Button(onClick = { userVillagerViewModel.filterAllTourism() }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
             Text(text = "Todo")
         }
         typeButtonList.forEachIndexed { index, tourism ->
@@ -164,10 +169,10 @@ fun CustomScrollableFilterTourism(
                 .padding(horizontal = 5.dp)) {
                 Button(onClick = {
                                  when(tourism.type) {
-                                     "Restaurante" -> tourismViewModel.tourismFilter("Restaurante")
-                                     "Museo" -> tourismViewModel.tourismFilter("Museo")
-                                     "Hotel" -> tourismViewModel.tourismFilter("Hotel")
-                                     "Monumento" -> tourismViewModel.tourismFilter("Monumento")
+                                     "Restaurante" -> userVillagerViewModel.tourismFilter("Restaurante")
+                                     "Museo" -> userVillagerViewModel.tourismFilter("Museo")
+                                     "Hotel" -> userVillagerViewModel.tourismFilter("Hotel")
+                                     "Monumento" -> userVillagerViewModel.tourismFilter("Monumento")
                                  }
                 }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
                     Row {

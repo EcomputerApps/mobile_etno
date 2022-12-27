@@ -13,10 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Pharmacy
 import com.example.mobile_etno.views.ScreenTopBar
 
@@ -43,9 +45,16 @@ fun PharmacyDetails(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
                 ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Image(
+                            painter = if (pharmacy?.imageUrl != "null") rememberAsyncImagePainter(
+                                model = pharmacy?.imageUrl
+                            ) else painterResource(
+                                id = R.drawable.farmacia_icon
+                            ), contentDescription = "", modifier = Modifier.height(300.dp)
+                        )
+                    }
                         Column() {
-                            Image(painter = rememberAsyncImagePainter(model = pharmacy?.imageUrl), contentDescription = "", modifier = Modifier.height(300.dp))
 
                             Spacer(modifier = Modifier.padding(vertical = 5.dp))
 
@@ -76,7 +85,6 @@ fun PharmacyDetails(
                         }
                     }
                 }
-            }
         }
     }
 }

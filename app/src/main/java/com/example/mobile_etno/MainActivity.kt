@@ -18,11 +18,9 @@ class MainActivity : ComponentActivity() {
 
         val sqlDataBase = SqlDataBase(context = this)
         val localityViewModel = LocalityViewModel()
-        val menuViewModel = MenuViewModel()
-        val eventViewModel = EventViewModel(sqlDataBase)
+        val userVillagerViewModel = UserVillagerViewModel(sqlDataBase, localityViewModel)
         val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel()
-        val pharmacyViewModel = PharmacyViewModel()
         val tourismViewModel = TourismViewModel()
 
        // sqlDataBase.deleteEvents()
@@ -44,11 +42,9 @@ class MainActivity : ComponentActivity() {
         setContent {
            MainScreen(menuItem,
                localityViewModel = localityViewModel,
-                menuViewModel = menuViewModel,
-               eventViewModel = eventViewModel,
+               userVillagerViewModel = userVillagerViewModel,
                eventNameViewModel = eventNameViewModel,
                sqlDataBase = sqlDataBase,
-               pharmacyViewModel = pharmacyViewModel,
                tourismViewModel = tourismViewModel)
         }
     }

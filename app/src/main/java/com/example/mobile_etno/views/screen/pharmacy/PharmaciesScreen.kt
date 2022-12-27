@@ -21,21 +21,18 @@ import com.example.mobile_etno.models.Pharmacy
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.viewmodels.PharmacyViewModel
+import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapPharmacies
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyViewModel, navController: NavHostController){
+fun PharmaciesScreen(userVillagerViewModel: UserVillagerViewModel, navController: NavHostController){
 
-    BackHandler() {
-        navController.navigate(NavItem.Home.route){
-            menuViewModel.updateInvisible(true)
-        }
-    }
+    BackHandler() { navController.navigate(NavItem.Home.route){  } }
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    val pharmacies = pharmacyViewModel.pharmacies.collectAsState()
+    val pharmacies = userVillagerViewModel.userVillagerPharmacies.collectAsState()
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -78,7 +75,7 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyVi
                     GoogleMapPharmacies(pharmacies.value)
                     CustomScrollableFilterPharmacy(
                         typeButtonList = listOf(Pharmacy(type = "Normal"), Pharmacy(type = "Guardia")),
-                        pharmacyViewModel = pharmacyViewModel,
+                        userVillagerViewModel = userVillagerViewModel,
                         selectedTabIndex = selectedTabIndex
                     ){ index -> selectedTabIndex = index }
                 Column {
@@ -88,13 +85,13 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyVi
                             Card(backgroundColor = Color.White, modifier = Modifier
                                 .padding(vertical = 4.dp)
                                 .clickable {
+                                    val encodeUrlImage: String = if(it.imageUrl != null){
+                                        URLEncoder.encode(it.imageUrl, StandardCharsets.UTF_8.toString())
+                                    }else{
+                                        "null"
+                                    }
                                     navController.navigate(
-                                        "${NavItem.DetailPharmacy.route}?imageUrl=${
-                                            URLEncoder.encode(
-                                                it.imageUrl,
-                                                StandardCharsets.UTF_8.toString()
-                                            )
-                                        }&link=${it.link}&type=${it.type}&name=${it.name}&phone=${it.phone}&description=${it.description}"
+                                        "${NavItem.DetailPharmacy.route}?imageUrl=${encodeUrlImage}&link=${it.link}&type=${it.type}&name=${it.name}&phone=${it.phone}&description=${it.description}"
                                     ) { }
                                 }) {
                                 Row(modifier = Modifier
@@ -130,7 +127,7 @@ fun PharmaciesScreen(menuViewModel: MenuViewModel, pharmacyViewModel: PharmacyVi
 @Composable
 fun CustomScrollableFilterPharmacy(
     typeButtonList: List<Pharmacy>,
-    pharmacyViewModel: PharmacyViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     selectedTabIndex: Int,
     onItemClick: (Int) -> Unit
 ) {
@@ -141,7 +138,7 @@ fun CustomScrollableFilterPharmacy(
         contentColor = Color.Transparent,
         divider = { }
     ) {
-        Button(onClick = { pharmacyViewModel.filterAll() }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+        Button(onClick = { userVillagerViewModel.filterAllPharmacies() }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
             Text(text = "Todo")
         }
         typeButtonList.forEachIndexed { index, pharmacy ->
@@ -149,9 +146,9 @@ fun CustomScrollableFilterPharmacy(
                 .background(Color.Transparent)
                 .padding(horizontal = 5.dp)) {
                 Button(colors = ButtonDefaults.buttonColors(Color.White), onClick = {
-                    if (pharmacy.type == "Normal") pharmacyViewModel.pharmaciesFilter(
+                    if (pharmacy.type == "Normal") userVillagerViewModel.pharmaciesFilter(
                         "Normal"
-                    ) else pharmacyViewModel.pharmaciesFilter("Guardia")
+                    ) else userVillagerViewModel.pharmaciesFilter("Guardia")
                 }) {
                     Row() {
                         //Icon(painter = painterResource(id = if(pharmacy.type == "Normal") R.drawable.blue_pharmacy else R.drawable.red_pharmacy), contentDescription = pharmacy.type, modifier = Modifier.size(20.dp))

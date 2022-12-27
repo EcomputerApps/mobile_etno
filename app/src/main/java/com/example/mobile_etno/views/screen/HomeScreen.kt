@@ -20,13 +20,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
-import com.example.mobile_etno.viewmodels.EventViewModel
-import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.views.TopBar
 import com.example.mobile_etno.R.*
 import com.example.mobile_etno.models.NavigationBottom
-import com.example.mobile_etno.viewmodels.PharmacyViewModel
-import com.example.mobile_etno.viewmodels.TourismViewModel
+import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -35,14 +32,12 @@ fun HomeScreen(
     list: List<String>,
     listBottomNavigation: List<NavigationBottom>,
     navController: NavHostController,
-    menuViewModel: MenuViewModel,
-    eventViewModel: EventViewModel,
-    pharmacyViewModel: PharmacyViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     tourismViewModel: TourismViewModel,
     localityViewModel: LocalityViewModel
 ) {
     val localityState = localityViewModel.saveStateLocality.collectAsState()
-    Toast.makeText(LocalContext.current, localityState.value, Toast.LENGTH_SHORT).show()
+   // Toast.makeText(LocalContext.current, localityState.value, Toast.LENGTH_SHORT).show()
 
     var selectedItem by remember { mutableStateOf(1) }
     //This will let to close the screen ->
@@ -59,7 +54,7 @@ fun HomeScreen(
         Column() {
             Scaffold(
                 scaffoldState = scaffoldState,
-                topBar = { TopBar(scope = scope, scaffoldState = scaffoldState, menuViewModel = menuViewModel) },
+                topBar = { TopBar(scope = scope, scaffoldState = scaffoldState) },
                 drawerBackgroundColor = Color.White,
                 // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
 
@@ -76,14 +71,12 @@ fun HomeScreen(
                             .fillMaxHeight()
                             .clickable {
                                 //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
-                                navController.navigate(list[index]) {
-                                    menuViewModel.updateInvisible(false)
-                                }
+                                navController.navigate(list[index]) {  }
 
                                 when (item) {
-                                    "Eventos" -> eventViewModel.getEventRequest()
-                                    "Farmacias" -> pharmacyViewModel.getPharmacies()
-                                    "Turismo" -> tourismViewModel.getRequestTourism()
+                                    "Eventos" -> userVillagerViewModel.getUserToVillagerEvents()
+                                    "Farmacias" -> userVillagerViewModel.getUserToVillagerPharmacies()
+                                    "Turismo" -> userVillagerViewModel.getUserToVillagerTourism()
                                 }
                             },
                             backgroundColor = Color.White) {

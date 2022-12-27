@@ -19,6 +19,7 @@ sealed class NavItem(var route: String, var icon: Int? = null, var title: String
     object Advertisements: NavItem("Anuncios", R.drawable.home_test, "Anuncios")
     object Services: NavItem("Servicios", R.drawable.home_test, "Servicios")
     object Tourism: NavItem("Turismo", R.drawable.home_test, "Turismo")
+    object DetailTourism : NavItem("TourismDetails")
     object Incidents: NavItem("Incidentes", R.drawable.home_test, "Incidentes")
     object Links: NavItem("Enlaces", R.drawable.home_test, "enlaces")
     object Bandos: NavItem("Bandos", R.drawable.home_test, "bandos")

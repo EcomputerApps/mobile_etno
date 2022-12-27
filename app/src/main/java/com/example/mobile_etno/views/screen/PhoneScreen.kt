@@ -24,13 +24,9 @@ import com.example.mobile_etno.views.ScreenTopBar
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun PhoneScreen(menuViewModel: MenuViewModel, navController: NavHostController) {
+fun PhoneScreen(navController: NavHostController) {
 
-    BackHandler() {
-        navController.navigate(NavItem.Home.route){
-            menuViewModel.updateInvisible(true)
-        }
-    }
+    BackHandler() { navController.navigate(NavItem.Home.route){  } }
 
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
@@ -52,14 +48,7 @@ fun PhoneScreen(menuViewModel: MenuViewModel, navController: NavHostController) 
             },
             drawerBackgroundColor = Colors.backgroundEtno,
             // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
-            drawerContent = {
-                Drawer(
-                    scope = scope,
-                    scaffoldState = scaffoldState,
-                    navController = navController,
-                    menuViewModel
-                )
-            },
+
             backgroundColor = Color.Red
         ) {
             Surface(color = Colors.backgroundEtno, modifier = Modifier.fillMaxSize()) {

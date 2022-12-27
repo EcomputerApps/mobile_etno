@@ -14,6 +14,7 @@ import com.example.mobile_etno.*
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.models.Pharmacy
+import com.example.mobile_etno.models.Tourism
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
@@ -25,6 +26,7 @@ import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
 import com.example.mobile_etno.views.screen.splash.SplashScreen
+import com.example.mobile_etno.views.screen.tourism.TourismDetails
 import com.example.mobile_etno.views.screen.tourism.TourismScreen
 
 @Composable
@@ -32,10 +34,8 @@ fun Navigation(
     navController: NavHostController,
     list: List<String>,
     localityViewModel: LocalityViewModel,
-    menuViewModel: MenuViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     eventNameViewModel: EventNameViewModel,
-    eventViewModel: EventViewModel,
-    pharmacyViewModel: PharmacyViewModel,
     tourismViewModel: TourismViewModel,
     sqlDataBase: SqlDataBase
 ) {
@@ -51,11 +51,9 @@ fun Navigation(
         }
         composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
-                menuViewModel = menuViewModel,
-                eventViewModel = eventViewModel,
-                pharmacyViewModel = pharmacyViewModel,
                 tourismViewModel = tourismViewModel,
                 localityViewModel = localityViewModel,
+                userVillagerViewModel = userVillagerViewModel,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(
@@ -63,26 +61,25 @@ fun Navigation(
         ) {
             EventsScreen(
                 navController = navController,
-                menuViewModel = menuViewModel,
-                eventViewModel = eventViewModel,
+                userVillagerViewModel = userVillagerViewModel,
                 sqlDataBase = sqlDataBase,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
             )
         }
-        composable("${NavItem.EventNameScreen.route}/{title}/{address}/{description}/{organization}/{reservePrice}/{link}/{startDate}/{endDate}/{publicationDate}/{time}/{lat}/{long}/{image}/{idEvent}", arguments =
+        composable("${NavItem.EventNameScreen.route}?title={title}?address={address}?description={description}?organization={organization}?reservePrice={reservePrice}?link={link}?startDate={startDate}?endDate={endDate}?publicationDate={publicationDate}?time={time}?lat={lat}?long={long}?image={image}?idEvent={idEvent}", arguments =
         listOf(
             navArgument("title"){type = NavType.StringType},
             navArgument("address"){type = NavType.StringType},
             navArgument("description"){type = NavType.StringType},
             navArgument("organization"){type = NavType.StringType},
             navArgument("reservePrice"){type = NavType.StringType},
-            navArgument("link"){type = NavType.StringType},
+            navArgument("link"){nullable = true; defaultValue = "null"; type = NavType.StringType},
             navArgument("endDate"){type = NavType.StringType},
             navArgument("publicationDate"){type = NavType.StringType},
             navArgument("time"){type = NavType.StringType},
             navArgument("lat"){type = NavType.StringType},
             navArgument("long"){type = NavType.StringType},
-            navArgument("image"){type = NavType.StringType},
+            navArgument("image"){nullable= true; type = NavType.StringType},
             navArgument("idEvent"){type = NavType.StringType}
         )
         ){
@@ -103,29 +100,29 @@ fun Navigation(
             )
             val imageEvent = it.arguments?.getString("image")
             val idEvent = it.arguments?.getString("idEvent")
-            EventNameScreen(navController = navController, menuViewModel = menuViewModel, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
+            EventNameScreen(navController = navController, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
         }
         composable(NavItem.Reservations.route) {
-            ReservationsScreen(navController = navController, menuViewModel = menuViewModel)
+            ReservationsScreen(navController = navController)
         }
         composable(NavItem.Deaths.route) {
-            DeathsScreen(navController = navController, menuViewModel = menuViewModel)
+            DeathsScreen(navController = navController)
         }
         composable(NavItem.Phone.route) {
-            PhoneScreen(navController = navController, menuViewModel = menuViewModel)
+            PhoneScreen(navController = navController)
         }
         composable(NavItem.News.route){
-            NewsScreen(navController = navController, menuViewModel = menuViewModel)
+            NewsScreen(navController = navController)
         }
         composable(NavItem.Gallery.route) {
-            GalleryScreen(navController = navController, menuViewModel = menuViewModel)
+            GalleryScreen(navController = navController)
         }
         composable(NavItem.Pharmacies.route){
-            PharmaciesScreen(navController = navController, menuViewModel = menuViewModel, pharmacyViewModel = pharmacyViewModel)
+            PharmaciesScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable("${NavItem.DetailPharmacy.route}?imageUrl={imageUrl}&link={link}&type={type}&name={name}&phone={phone}&description={description}", arguments = listOf(
             navArgument("link"){ nullable = true; type = NavType.StringType },
-            navArgument("imageUrl"){ nullable = true; type = NavType.StringType },
+            navArgument("imageUrl"){ nullable = true; defaultValue = "null" ;type = NavType.StringType },
             navArgument("name"){ nullable = true; type = NavType.StringType },
             navArgument("type"){ nullable = true; type = NavType.StringType },
             navArgument("phone"){ nullable = true; type = NavType.StringType },
@@ -142,28 +139,43 @@ fun Navigation(
             ))
         }
         composable(NavItem.Sponsors.route){
-            SponsorsScreen(navController = navController, menuViewModel = menuViewModel)
+            SponsorsScreen(navController = navController)
         }
         composable(NavItem.Festivities.route){
-            FestivitiesScreen(navController = navController, menuViewModel = menuViewModel)
+            FestivitiesScreen(navController = navController)
         }
         composable(NavItem.Advertisements.route){
-            AdvertisementsScreen(navController = navController, menuViewModel = menuViewModel)
+            AdvertisementsScreen(navController = navController)
         }
         composable(NavItem.Services.route){
-            ServicesScreen(navController = navController, menuViewModel = menuViewModel)
+            ServicesScreen(navController = navController)
         }
         composable(NavItem.Tourism.route){
-            TourismScreen(navController = navController, tourismViewModel = tourismViewModel)
+            TourismScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable("${NavItem.DetailTourism.route}?type={type}&username={username}&title={title}&description={description}&imageUrl={imageUrl}", arguments = listOf(
+            navArgument("type"){ nullable = true; type = NavType.StringType },
+            navArgument("username"){ nullable = true; type = NavType.StringType },
+            navArgument("title"){ nullable = true; type = NavType.StringType },
+            navArgument("description"){ nullable = true; type = NavType.StringType },
+            navArgument("imageUrl"){ nullable = true; type = NavType.StringType }
+        )){
+            TourismDetails(navController = navController, tourism = Tourism(
+                type = it.arguments?.getString("type"),
+                username = it.arguments?.getString("username"),
+                title = it.arguments?.getString("title"),
+                description = it.arguments?.getString("description"),
+                imageUrl = it.arguments?.getString("imageUrl")
+            ))
         }
         composable(NavItem.Incidents.route){
-            IncidentsScreen(navController = navController, menuViewModel = menuViewModel)
+            IncidentsScreen(navController = navController)
         }
         composable(NavItem.Links.route){
-            LinksScreen(navController = navController, menuViewModel = menuViewModel)
+            LinksScreen(navController = navController)
         }
         composable(NavItem.Bandos.route){
-            BandosScreen(navController = navController, menuViewModel = menuViewModel)
+            BandosScreen(navController = navController)
         }
     }
 }

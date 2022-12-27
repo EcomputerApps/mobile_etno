@@ -1,7 +1,6 @@
 package com.example.mobile_etno.views.components
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +25,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.mobile_etno.R
 import com.example.mobile_etno.viewmodels.EventNameViewModel
-import com.example.mobile_etno.views.screen.wallet.WalletActivity
 
 
 @OptIn(ExperimentalComposeUiApi::class)

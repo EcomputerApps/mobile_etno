@@ -17,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.ImageModelDB
 import com.example.mobile_etno.models.SectionSubscribe
@@ -38,12 +40,12 @@ import com.google.firebase.messaging.FirebaseMessaging
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
-fun EventNameScreen(menuViewModel: MenuViewModel?,
+fun EventNameScreen(
                     eventNameViewModel: EventNameViewModel?,
                     sqlDataBase: SqlDataBase,
                     navController: NavHostController?,
                     event: Event,
-                    imageEvent: String,
+                    imageEvent: String?,
                     idEvent: String){
 
     val imagesFilteredByEventId = sqlDataBase.getImagesDb(idEvent)
@@ -83,14 +85,19 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
             backgroundColor = Color.Red
         ){
             Surface(color = Color.White,
-                modifier = Modifier.fillMaxSize()) {
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize()
+            ) {
                Column(
                    modifier =
                    Modifier
                        .verticalScroll(rememberScrollState())
                        .padding(16.dp)) {
                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                       Image(painter = rememberAsyncImagePainter(imageEvent), contentDescription = "", modifier = Modifier.height(300.dp))
+                       Image(painter = if(imageEvent != "null") rememberAsyncImagePainter(imageEvent) else painterResource(
+                           id = R.drawable.event
+                       ), contentDescription = "", modifier = Modifier.height(300.dp))
                    }
                    Row() {
                        Column() {
@@ -100,7 +107,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                        Spacer(modifier = Modifier.padding(horizontal = 70.dp))
                        Button(contentPadding = PaddingValues(horizontal = 15.dp) ,onClick = {
 
-                           if(eventNameViewModel.isSubscribe.value){
+                           if(isSubscribe.value){
                                infoDialog.value = false
                                FirebaseMessaging.getInstance().token.addOnCompleteListener(
                                    OnCompleteListener { task ->
@@ -122,7 +129,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                            }
 
                            }, colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red), shape = CircleShape) {
-                           Text(text = if(eventNameViewModel.isSubscribe.value) "Desuscribirse" else "Subscribirse", color = Color.White)
+                           Text(text = if(isSubscribe.value) "Desuscribirse" else "Subscribirse", color = Color.White)
                        }
                    }
                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
@@ -162,7 +169,7 @@ fun EventNameScreen(menuViewModel: MenuViewModel?,
                       }
                   }
                 if(infoDialog.value){
-                    if(!eventNameViewModel.isSubscribe.value){
+                    if(!isSubscribe.value){
                         FormSubscription(eventNameViewModel = eventNameViewModel, reservePrice = event.reservePrice!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
 
                             Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
@@ -211,19 +218,31 @@ fun CustomScrollableTabRow(
         contentColor = Color.Transparent,
         divider = {}
     ) {
-        imageList.forEachIndexed { index, item ->
-            Tab(selected = selectedTabIndex == index, onClick = {
-                onItemClick.invoke(index)
-                Log.d("tab_image", index.toString())
-                imageInfoDialog.value = true
-                saveImageUrl.value = item.linkImage!!
-            }){
-                Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
+
+        if(imageList.isEmpty()){
+            Tab(selected = selectedTabIndex == 0, onClick = {  }, enabled = false ){
+                Image(painter = painterResource(id = R.drawable.event), contentDescription = "", modifier = Modifier
                     .width(180.dp)
                     .height(180.dp)
-                    .padding(5.dp), contentScale = ContentScale.Fit)
+                    .padding(5.dp))
+            }
+        }else{
+            imageList.forEachIndexed { index, item ->
+
+                Tab(selected = selectedTabIndex == index, onClick = {
+                    onItemClick.invoke(index)
+                    Log.d("tab_image", index.toString())
+                    imageInfoDialog.value = true
+                    saveImageUrl.value = item.linkImage!!
+                }){
+                    Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
+                        .width(180.dp)
+                        .height(180.dp)
+                        .padding(5.dp), contentScale = ContentScale.Fit)
+                }
             }
         }
+
         if(imageInfoDialog.value)
             ImageDetails(onDismiss = {
                 imageInfoDialog.value = false
@@ -252,14 +271,26 @@ fun ImageDetails(
                 )
                 .align(Alignment.BottomCenter)) {
                 ScrollableTabRow(selectedTabIndex = selectedTabIndex, edgePadding = 0.dp, backgroundColor = Color.Transparent, divider = {Divider(startIndent = 0.dp, thickness = 0.dp, color = Color.Transparent)}) {
-                    list.forEachIndexed { index, item ->
-                        Tab(selected = selectedTabIndex == index, onClick = {  }, enabled = false ){
-                            Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
+
+                    if(list.isEmpty()){
+                        Tab(selected = selectedTabIndex == 0, onClick = {  }, enabled = false ){
+                            Image(painter = painterResource(id = R.drawable.event), contentDescription = "", modifier = Modifier
                                 .width(300.dp)
                                 .height(300.dp)
                                 .padding(5.dp))
                         }
+                    }else{
+                        list.forEachIndexed { index, item ->
+                            Tab(selected = selectedTabIndex == index, onClick = {  }, enabled = false ){
+                                Image(painter = rememberAsyncImagePainter(model = item.linkImage), contentDescription = "", modifier = Modifier
+                                    .width(300.dp)
+                                    .height(300.dp)
+                                    .padding(5.dp))
+                            }
+                        }
                     }
+
+
                 }
             }
         }

@@ -34,10 +34,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     list: List<String>,
     localityViewModel: LocalityViewModel,
-    menuViewModel: MenuViewModel,
+    userVillagerViewModel: UserVillagerViewModel,
     eventNameViewModel: EventNameViewModel,
-    eventViewModel: EventViewModel,
-    pharmacyViewModel: PharmacyViewModel,
     tourismViewModel: TourismViewModel,
     sqlDataBase: SqlDataBase,
 ){
@@ -48,11 +46,9 @@ fun MainScreen(
         Navigation(navController = navController,
           list = list,
             localityViewModel = localityViewModel,
-           menuViewModel = menuViewModel,
+            userVillagerViewModel = userVillagerViewModel,
            eventNameViewModel = eventNameViewModel,
-           eventViewModel = eventViewModel,
            sqlDataBase = sqlDataBase,
-            pharmacyViewModel = pharmacyViewModel,
             tourismViewModel = tourismViewModel
         )
     }
@@ -171,7 +167,7 @@ fun DrawerItem(item: NavItem, selected: Boolean, onItemClick: (NavItem) -> Unit)
 }
 
 @Composable
-fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState, menuViewModel: MenuViewModel) {
+fun TopBar(scope: CoroutineScope, scaffoldState: ScaffoldState) {
         TopAppBar(
             title = {
                 //Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = "Etno")
@@ -214,7 +210,7 @@ fun ScreenTopBar(nameScreen: String, navController: NavHostController){
         )
     }
 @Composable
-fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController, menuViewModel: MenuViewModel){
+fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController){
     TopAppBar(
         title = {
             Text(modifier = Modifier.width(260.dp), textAlign = TextAlign.Center, maxLines = 1, text = nameScreen)
@@ -223,10 +219,7 @@ fun ScreenTopBarSpecial(nameScreen: String, navController: NavHostController, me
             }},
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(NavItem.Home.route){
-                    menuViewModel.updateInvisible(true)
-                }
-
+                navController.navigate(NavItem.Home.route){  }
             }) {
                 Icon(painter = painterResource(id = R.drawable.back_arrow), "back to Home screen", modifier = Modifier.size(35.dp))
             }
