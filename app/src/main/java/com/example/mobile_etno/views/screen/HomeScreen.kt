@@ -2,6 +2,7 @@ package com.example.mobile_etno.views.screen
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,9 +25,12 @@ import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.views.TopBar
 import com.example.mobile_etno.R.*
+import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.NavigationBottom
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -33,11 +39,18 @@ fun HomeScreen(
     listBottomNavigation: List<NavigationBottom>,
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel,
-    tourismViewModel: TourismViewModel,
-    localityViewModel: LocalityViewModel
+    fcmViewModel: FCMViewModel
 ) {
-    val localityState = localityViewModel.saveStateLocality.collectAsState()
-   // Toast.makeText(LocalContext.current, localityState.value, Toast.LENGTH_SHORT).show()
+    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        if (!task.isSuccessful) {
+            Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+            return@OnCompleteListener
+        }
+        // Get new FCM registration token
+        val token = task.result
+        Log.d("stater_fcmToken", token.toString())
+        fcmViewModel.saveFCMToken(FCMToken(token = token))
+    })
 
     var selectedItem by remember { mutableStateOf(1) }
     //This will let to close the screen ->
@@ -61,14 +74,14 @@ fun HomeScreen(
                 backgroundColor = Color.Red
             ){
                 LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp), modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxSize()){
-
+                    .background(Color.Red)
+                ){
                     itemsIndexed(list){
                             index ,item ->
-                        Card(elevation = 0.dp,modifier = Modifier
+                        Card(elevation = 5.dp, modifier = Modifier
                             .fillMaxSize()
                             .fillMaxHeight()
+                            .padding(6.dp)
                             .clickable {
                                 //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
                                 navController.navigate(list[index]) {  }
@@ -77,6 +90,7 @@ fun HomeScreen(
                                     "Eventos" -> userVillagerViewModel.getUserToVillagerEvents()
                                     "Farmacias" -> userVillagerViewModel.getUserToVillagerPharmacies()
                                     "Turismo" -> userVillagerViewModel.getUserToVillagerTourism()
+                                    "Muertes" -> userVillagerViewModel.getUserToVillagerDeaths()
                                 }
                             },
                             backgroundColor = Color.White) {
@@ -109,6 +123,7 @@ fun HomeScreen(
             }
 
         }
+/*
         BottomNavigation(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -135,5 +150,7 @@ fun HomeScreen(
                 }, label = { Text(text = item.name!!) })
             }
         }
+
+ */
     }
 }

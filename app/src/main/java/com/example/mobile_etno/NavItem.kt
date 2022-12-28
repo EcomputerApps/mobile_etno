@@ -9,6 +9,7 @@ sealed class NavItem(var route: String, var icon: Int? = null, var title: String
     object EventNameScreen: NavItem("NombreEventoScreen")
     object Reservations : NavItem("Reservaciones", R.drawable.home_test, "Reservaciones")
     object Deaths : NavItem("Muertes", R.drawable.home_test, "Muertes")
+    object DetailDeath : NavItem("DeathDetails")
     object Phone : NavItem("Telefonos", R.drawable.home_test, "Telefono")
     object News : NavItem("Noticias", R.drawable.home_test, "Noticias")
     object Gallery : NavItem("Galeria", R.drawable.home_test, "Galería")

@@ -222,8 +222,16 @@ fun EventsScreen(
                             Spacer(modifier = Modifier.padding(vertical = 26.dp))
                         }
                     }
-
                 }
+                    if(eventsUserToVillager.value.isEmpty() && isInternetAvailable(currentContext)){
+                        Box( modifier = Modifier.fillMaxSize().padding(top = 380.dp), Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Image(painter = painterResource(id = R.drawable.nothing), contentDescription = "", modifier = Modifier.size(150.dp))
+                                Text(text = "¡No hay eventos disponibles!")
+                            }
+                        }
+                    }
+
                     if(infoDialog.value){
                         NotConnectionScreen(
                             title = "Whoops!",

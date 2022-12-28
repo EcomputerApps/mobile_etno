@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mobile_etno.models.Death
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.Pharmacy
 import com.example.mobile_etno.models.Tourism
@@ -31,6 +32,9 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
     private val _userVillagerTourism = MutableStateFlow<MutableList<Tourism>>(mutableListOf())
     val userVillagerTourism: StateFlow<MutableList<Tourism>> = _userVillagerTourism
 
+    private val _userVillagerDeaths = MutableStateFlow<MutableList<Death>>(mutableListOf())
+    val userVillagerDeaths: StateFlow<MutableList<Death>> = _userVillagerDeaths
+
     private val _calendarEvents = MutableStateFlow<MutableSet<KalendarEvent>>(mutableSetOf())
     val calendarEvents: StateFlow<MutableSet<KalendarEvent>> = _calendarEvents
 
@@ -45,7 +49,7 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
 
     var isRefreshing by mutableStateOf(false)
 
-    // Events ->
+    // Events -> ------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerEvents(){
         viewModelScope.launch {
             try {
@@ -97,7 +101,7 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
         _userVillagerEvents.value.removeAll(userVillagerEvents.value)
     }
 
-    //Pharmacies ->
+    //Pharmacies -> --------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerPharmacies(){
         viewModelScope.launch {
             try {
@@ -116,7 +120,7 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
         _userVillagerPharmacies.value = filteredPharmacies.toMutableList()
     }
 
-    //Tourism ->
+    //Tourism -> --------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerTourism(){
         viewModelScope.launch {
             try {
@@ -133,5 +137,16 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
     fun tourismFilter(type: String){
         val filteredTourism = saveUserVillagerTourism.value.filter { it.type == type }
         _userVillagerTourism.value = filteredTourism.toMutableList()
+    }
+
+    //Deaths -> ------------------------------------------------------------------------------------------------------------------------------------------------
+    fun getUserToVillagerDeaths(){
+        viewModelScope.launch {
+            try {
+                val requestUserToVillager = UserVillagerClient.userVillager.getUserByUsernameToVillager(localityViewModel.saveStateLocality.value)
+                val body = withContext(Dispatchers.IO){ requestUserToVillager.execute().body() }
+                _userVillagerDeaths.value = body?.deaths!!
+            }catch (_: Exception){  }
+        }
     }
 }

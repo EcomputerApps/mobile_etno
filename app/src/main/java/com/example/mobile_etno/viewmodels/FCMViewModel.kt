@@ -4,13 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.service.client.FCMClient
+import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FCMViewModel: ViewModel() {
+class FCMViewModel(
+    private val localityViewModel: LocalityViewModel
+): ViewModel() {
 
     //var token by mutableStateOf("")
    private val _token = MutableStateFlow("")
@@ -18,6 +21,7 @@ class FCMViewModel: ViewModel() {
 
     fun saveFCMToken(fcmToken: FCMToken){
         viewModelScope.launch {
+            fcmToken.locality = localityViewModel.saveStateLocality.value
             val fcmTokenRequest = FCMClient.FCMService.saveFcmToken(fcmToken)
             try {
                 val body = withContext(Dispatchers.IO){ fcmTokenRequest?.execute()?.body()}

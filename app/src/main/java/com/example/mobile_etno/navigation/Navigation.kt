@@ -11,10 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mobile_etno.*
-import com.example.mobile_etno.models.Event
-import com.example.mobile_etno.models.NavigationBottom
-import com.example.mobile_etno.models.Pharmacy
-import com.example.mobile_etno.models.Tourism
+import com.example.mobile_etno.models.*
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
@@ -22,6 +19,8 @@ import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
 import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
 import com.example.mobile_etno.views.screen.events.EventNameScreen
 import com.example.mobile_etno.views.screen.*
+import com.example.mobile_etno.views.screen.death.DeathDetails
+import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
@@ -36,7 +35,7 @@ fun Navigation(
     localityViewModel: LocalityViewModel,
     userVillagerViewModel: UserVillagerViewModel,
     eventNameViewModel: EventNameViewModel,
-    tourismViewModel: TourismViewModel,
+    fcmViewModel: FCMViewModel,
     sqlDataBase: SqlDataBase
 ) {
     NavHost(navController, startDestination = NavItem.Splash.route) {
@@ -51,9 +50,8 @@ fun Navigation(
         }
         composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
-                tourismViewModel = tourismViewModel,
-                localityViewModel = localityViewModel,
                 userVillagerViewModel = userVillagerViewModel,
+                fcmViewModel = fcmViewModel,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(
@@ -106,7 +104,23 @@ fun Navigation(
             ReservationsScreen(navController = navController)
         }
         composable(NavItem.Deaths.route) {
-            DeathsScreen(navController = navController)
+            DeathsScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable("${NavItem.DetailDeath.route}?username={username}&name={name}&deathDate={deathDate}&description={description}&imageUrl={imageUrl}",
+        arguments = listOf(
+            navArgument("username"){ nullable = true; type = NavType.StringType; },
+            navArgument("name"){ nullable = true; type = NavType.StringType },
+            navArgument("deathDate"){ nullable = true; type = NavType.StringType },
+            navArgument("description"){ nullable = true; type = NavType.StringType },
+            navArgument("imageUrl"){ nullable = true; type = NavType.StringType; defaultValue = "null" }
+        )) {
+            DeathDetails(navController = navController, death = Death(
+                username = it.arguments?.getString("username"),
+                name = it.arguments?.getString("name"),
+                deathDate = it.arguments?.getString("deathDate"),
+                description = it.arguments?.getString("description"),
+                imageUrl = it.arguments?.getString("imageUrl")
+            ))
         }
         composable(NavItem.Phone.route) {
             PhoneScreen(navController = navController)

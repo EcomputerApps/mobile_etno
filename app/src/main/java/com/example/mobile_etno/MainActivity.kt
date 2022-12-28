@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         val localityViewModel = LocalityViewModel()
         val userVillagerViewModel = UserVillagerViewModel(sqlDataBase, localityViewModel)
         val eventNameViewModel = EventNameViewModel()
-        val fcmViewModel = FCMViewModel()
+        val fcmViewModel = FCMViewModel(localityViewModel)
         val tourismViewModel = TourismViewModel()
 
        // sqlDataBase.deleteEvents()
@@ -28,24 +28,13 @@ class MainActivity : ComponentActivity() {
 
         val menuItem = resources.getStringArray(R.array.menu_items).toList()
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-            // Get new FCM registration token
-            val token = task.result
-            Log.d("stater_fcmToken", token.toString())
-            fcmViewModel.saveFCMToken(FCMToken(token = token))
-        })
-
         setContent {
            MainScreen(menuItem,
                localityViewModel = localityViewModel,
                userVillagerViewModel = userVillagerViewModel,
+               fcmViewModel = fcmViewModel,
                eventNameViewModel = eventNameViewModel,
-               sqlDataBase = sqlDataBase,
-               tourismViewModel = tourismViewModel)
+               sqlDataBase = sqlDataBase)
         }
     }
 }
