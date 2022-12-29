@@ -92,7 +92,7 @@ fun DeathsScreen(navController: NavHostController, userVillagerViewModel: UserVi
                                 } else {
                                     "null"
                                 }
-                                navController.navigate("${NavItem.DetailDeath.route}?username=${death.username}&name=${death.name}&deathDate=${death.deathDate}&description=${death.description}&imageUrl=${death.imageUrl}")
+                                navController.navigate("${NavItem.DetailDeath.route}?username=${death.username}&name=${death.name}&deathDate=${death.deathDate}&description=${death.description}&imageUrl=${encodeUrlImage}")
                             }) {
 
                             Row(

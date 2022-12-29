@@ -11,6 +11,7 @@ sealed class NavItem(var route: String, var icon: Int? = null, var title: String
     object Deaths : NavItem("Muertes", R.drawable.home_test, "Muertes")
     object DetailDeath : NavItem("DeathDetails")
     object Phone : NavItem("Telefonos", R.drawable.home_test, "Telefono")
+    object PhoneDetailsList : NavItem("PhoneDetailsList")
     object News : NavItem("Noticias", R.drawable.home_test, "Noticias")
     object Gallery : NavItem("Galeria", R.drawable.home_test, "Galería")
     object Pharmacies: NavItem("Farmacias", R.drawable.home_test, "Farmacias")

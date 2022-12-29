@@ -91,6 +91,7 @@ fun HomeScreen(
                                     "Farmacias" -> userVillagerViewModel.getUserToVillagerPharmacies()
                                     "Turismo" -> userVillagerViewModel.getUserToVillagerTourism()
                                     "Muertes" -> userVillagerViewModel.getUserToVillagerDeaths()
+                                    "Telefonos" -> userVillagerViewModel.getUserToVillagerPhones()
                                 }
                             },
                             backgroundColor = Color.White) {

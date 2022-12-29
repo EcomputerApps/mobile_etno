@@ -24,6 +24,8 @@ import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
+import com.example.mobile_etno.views.screen.phone.PhoneDetailsList
+import com.example.mobile_etno.views.screen.phone.PhoneScreen
 import com.example.mobile_etno.views.screen.splash.SplashScreen
 import com.example.mobile_etno.views.screen.tourism.TourismDetails
 import com.example.mobile_etno.views.screen.tourism.TourismScreen
@@ -123,7 +125,10 @@ fun Navigation(
             ))
         }
         composable(NavItem.Phone.route) {
-            PhoneScreen(navController = navController)
+            PhoneScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable(NavItem.PhoneDetailsList.route) {
+            PhoneDetailsList(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.News.route){
             NewsScreen(navController = navController)
