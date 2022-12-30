@@ -1,13 +1,17 @@
 package com.example.mobile_etno.views.screen.phone
 
-import android.util.Log
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -15,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,10 +32,11 @@ fun PhoneDetailsList(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
+    val currentContext = LocalContext.current
     val phones = userVillagerViewModel.userVillagerPhone.collectAsState()
     val phoneCategory = userVillagerViewModel.saveStatePhoneCategory.collectAsState()
+    val dialPhoneIntent = Intent(Intent.ACTION_DIAL)
 
-    Log.d("phones::", phones.value.toString())
 
     Column(
         modifier = Modifier
@@ -47,13 +53,12 @@ fun PhoneDetailsList(
                     .fillMaxSize()
             ) {
                 Column(modifier = Modifier
-                    //.verticalScroll(rememberScrollState())
                     .padding(16.dp)
                 ) {
                     LazyColumn{
                        items(phones.value) {
                            phone ->
-                           Card(elevation = 7.dp){
+                           Card(elevation = 7.dp, modifier = Modifier.clickable {  }){
                                Box(modifier = Modifier
                                    .padding(10.dp)
                                    .fillMaxSize()
@@ -68,8 +73,12 @@ fun PhoneDetailsList(
                                            )
                                            Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                                            Text(text = phone.owner!!, fontWeight = FontWeight.Bold)
+                                           Spacer(modifier = Modifier.padding(horizontal = 40.dp))
                                            Box(modifier = Modifier.fillMaxSize()) {
-                                               Text(text = "Categoría ${phone.category}", modifier = Modifier.align(Alignment.BottomEnd), color = Color.Gray)
+                                               Row() {
+                                                   Icon(imageVector = Icons.Filled.Phone, contentDescription = "")
+                                                   Text(text = phone.number!!)
+                                               }
                                            }
                                        }
                                        Spacer(modifier = Modifier.padding(vertical = 5.dp))
@@ -77,7 +86,10 @@ fun PhoneDetailsList(
                                        Spacer(modifier = Modifier.padding(vertical = 5.dp))
                                        Box(modifier = Modifier.fillMaxSize()) {
                                            Text(text = phone.schedule!!, color = Color.Gray, modifier = Modifier.padding(vertical = 12.dp))
-                                           Button(onClick = { /*TODO*/ }, modifier = Modifier.align(
+                                           Button(onClick = {
+                                               dialPhoneIntent.data = Uri.parse("tel:${phone.number}")
+                                               currentContext.startActivity(dialPhoneIntent)
+                                           }, modifier = Modifier.align(
                                                Alignment.BottomEnd), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)) {
                                                Text(text = "Llamar", color = Color.White)
                                            }

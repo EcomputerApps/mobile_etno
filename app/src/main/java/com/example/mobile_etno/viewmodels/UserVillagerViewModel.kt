@@ -1,12 +1,15 @@
 package com.example.mobile_etno.viewmodels
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
+import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.phone.Phone
 import com.example.mobile_etno.models.service.client.UserVillagerClient
 import com.example.mobile_etno.models.service.database.SqlDataBase
@@ -20,7 +23,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
-class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val localityViewModel: LocalityViewModel): ViewModel() {
+class UserVillagerViewModel(
+    private val context: Context,
+    private val sqlDataBase: SqlDataBase,
+    private val localityViewModel: LocalityViewModel
+): ViewModel() {
+
+    //State to Connection ->
+    private val _connection = MutableStateFlow(false)
+    val connection: StateFlow<Boolean> = _connection
+
     //State to Events ->
     private val _userVillagerEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val userVillagerEvents: StateFlow<MutableList<Event>> = _userVillagerEvents
@@ -40,6 +52,10 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
     //State to Phones ->
     private val _userVillagerPhones = MutableStateFlow<MutableList<Phone>>(mutableListOf())
     val userVillagerPhone: StateFlow<MutableList<Phone>> = _userVillagerPhones
+
+    //State to News ->
+    private val _userVillagerNews = MutableStateFlow<MutableList<New>>(mutableListOf())
+    val userVillagerNews: StateFlow<MutableList<New>> = _userVillagerNews
 
     //State to CalendarEvents ->
     private val _calendarEvents = MutableStateFlow<MutableSet<KalendarEvent>>(mutableSetOf())
@@ -61,9 +77,24 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
     private val _saveUserVillagerPhones = MutableStateFlow<MutableList<Phone>>(mutableListOf())
     private val saveUserVillagerPhones: StateFlow<MutableList<Phone>> = _saveUserVillagerPhones
     private val _saveStatePhoneCategory = MutableStateFlow("")
-    val saveStatePhoneCategory:StateFlow<String> = _saveStatePhoneCategory
+    val saveStatePhoneCategory: StateFlow<String> = _saveStatePhoneCategory
+
+    //State to Save New List ->
+    private val _saveUserVillagerNews = MutableStateFlow<MutableList<New>>(mutableListOf())
+    private val saveUserVillagerNews: StateFlow<MutableList<New>> = _saveUserVillagerNews
+    private val _saveStateNewCategory = MutableStateFlow("")
+
+    private val _saveNewDetail = MutableStateFlow(New())
+    val saveNewDetail: StateFlow<New> = _saveNewDetail
+
+    private val _saveHide = MutableStateFlow(false)
+    val saveHide: StateFlow<Boolean> = _saveHide
 
     var isRefreshing by mutableStateOf(false)
+
+    init {
+        checkConnectionInRealTime()
+    }
 
     // Events -> ------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerEvents(){
@@ -106,6 +137,14 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
                 isRefreshing = false
             }catch (_: Exception){  }
         }
+    }
+
+    private fun checkConnectionInRealTime(){
+        Thread {
+            while (true) {
+                _connection.value = isInternetAvailable(context = context)
+            }
+        }.start()
     }
 
     fun eventsFilterByPublicationDate(date: String){
@@ -178,9 +217,34 @@ class UserVillagerViewModel(private val sqlDataBase: SqlDataBase, private val lo
         }
     }
 
-    fun phoneTourismFilter(phoneCategory: String){
+    fun phoneFilter(phoneCategory: String){
         _saveStatePhoneCategory.value = phoneCategory
         val filteredPhones = saveUserVillagerPhones.value.filter { it.category?.lowercase() == phoneCategory.lowercase()}
         _userVillagerPhones.value = filteredPhones.toMutableList()
+    }
+
+    // News -> ------------------------------------------------------------------------------------------------------------------------------------------------
+    fun getUserToVillagerNews(){
+        viewModelScope.launch {
+            try {
+                val requestUserToVillager = UserVillagerClient.userVillager.getUserByUsernameToVillager(localityViewModel.saveStateLocality.value)
+                val body = withContext(Dispatchers.IO){ requestUserToVillager.execute().body() }
+                _userVillagerNews.value = body?.news!!
+                _saveUserVillagerNews.value = body.news!!
+            }catch (_: Exception){  }
+        }
+    }
+
+    fun newsFilter(newCategory: String){
+        _saveStateNewCategory.value = newCategory
+        val filteredNews = saveUserVillagerNews.value.filter { it.category?.lowercase() == newCategory.lowercase() }
+        _userVillagerNews.value = filteredNews.toMutableList()
+    }
+    fun newsFilterAll(){
+        _userVillagerNews.value = saveUserVillagerNews.value
+    }
+    fun updateNewDetail(new: New){
+        _saveNewDetail.value = new
+        _saveHide.value = true
     }
 }

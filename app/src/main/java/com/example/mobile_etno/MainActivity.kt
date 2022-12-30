@@ -1,7 +1,6 @@
 package com.example.mobile_etno
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.mobile_etno.models.FCMToken
@@ -18,7 +17,7 @@ class MainActivity : ComponentActivity() {
 
         val sqlDataBase = SqlDataBase(context = this)
         val localityViewModel = LocalityViewModel()
-        val userVillagerViewModel = UserVillagerViewModel(sqlDataBase, localityViewModel)
+        val userVillagerViewModel = UserVillagerViewModel(this, sqlDataBase, localityViewModel)
         val eventNameViewModel = EventNameViewModel()
         val fcmViewModel = FCMViewModel(localityViewModel)
         val tourismViewModel = TourismViewModel()

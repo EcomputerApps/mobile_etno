@@ -1,5 +1,6 @@
 package com.example.mobile_etno.models
 
+import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.phone.Phone
 
 data class UserVillager(
@@ -8,5 +9,6 @@ data class UserVillager(
     var pharmacies: MutableList<Pharmacy> ? = mutableListOf(),
     var tourism: MutableList<Tourism> ? = mutableListOf(),
     var deaths: MutableList<Death> ? = mutableListOf(),
-    var phones: MutableList<Phone> ? = mutableListOf()
+    var phones: MutableList<Phone> ? = mutableListOf(),
+    var news: MutableList<New> ? = mutableListOf()
 )

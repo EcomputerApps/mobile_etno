@@ -1,6 +1,5 @@
 package com.example.mobile_etno.views.screen.phone
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -72,7 +71,7 @@ fun PhoneScreen(
                         items(PhoneCategories.phoneCategories){
                             phone ->
                             Card(elevation = 7.dp, modifier = Modifier.clickable {
-                                navController.navigate(NavItem.PhoneDetailsList.route){ userVillagerViewModel.phoneTourismFilter(phone.categoryName!!) }
+                                navController.navigate(NavItem.PhoneDetailsList.route){ userVillagerViewModel.phoneFilter(phone.categoryName!!) }
                             }) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Image(painter = painterResource(id = phone.image!!), contentDescription = phone.categoryName, modifier = Modifier
