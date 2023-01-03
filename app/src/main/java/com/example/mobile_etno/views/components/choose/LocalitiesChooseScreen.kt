@@ -28,7 +28,7 @@ fun LocalitiesChooseScreen(navController: NavHostController ,localityViewModel: 
 
                 TextButton(onClick = {
                     localityViewModel.updateStateLocality(item.localityName!!)
-                    navController.navigate(NavItem.Home.route)
+                    navController.navigate(NavItem.HomeModern.route)
                 }) {
                     Text(text = item.localityName!!)
                 }

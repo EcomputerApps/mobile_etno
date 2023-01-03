@@ -11,6 +11,7 @@ import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
 import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.phone.Phone
+import com.example.mobile_etno.models.service.client.ImageClient
 import com.example.mobile_etno.models.service.client.UserVillagerClient
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
@@ -57,6 +58,10 @@ class UserVillagerViewModel(
     private val _userVillagerNews = MutableStateFlow<MutableList<New>>(mutableListOf())
     val userVillagerNews: StateFlow<MutableList<New>> = _userVillagerNews
 
+    //State to Images by locality ->
+    private val _userVillagerImages = MutableStateFlow<MutableList<Image>>(mutableListOf())
+    val userVillagerImages: StateFlow<MutableList<Image>> = _userVillagerImages
+
     //State to CalendarEvents ->
     private val _calendarEvents = MutableStateFlow<MutableSet<KalendarEvent>>(mutableSetOf())
     val calendarEvents: StateFlow<MutableSet<KalendarEvent>> = _calendarEvents
@@ -74,21 +79,22 @@ class UserVillagerViewModel(
     private val saveUserVillagerTourism: StateFlow<MutableList<Tourism>> = _saveUserVillagerTourism
 
     //State to Save Phone list ->
+    //--------------------------------------------------------------------------------------------
     private val _saveUserVillagerPhones = MutableStateFlow<MutableList<Phone>>(mutableListOf())
     private val saveUserVillagerPhones: StateFlow<MutableList<Phone>> = _saveUserVillagerPhones
     private val _saveStatePhoneCategory = MutableStateFlow("")
     val saveStatePhoneCategory: StateFlow<String> = _saveStatePhoneCategory
+    //--------------------------------------------------------------------------------------------
 
     //State to Save New List ->
     private val _saveUserVillagerNews = MutableStateFlow<MutableList<New>>(mutableListOf())
     private val saveUserVillagerNews: StateFlow<MutableList<New>> = _saveUserVillagerNews
     private val _saveStateNewCategory = MutableStateFlow("")
 
-    private val _saveNewDetail = MutableStateFlow(New())
-    val saveNewDetail: StateFlow<New> = _saveNewDetail
+    //save image list ->
+    private val _saveImages = MutableStateFlow<MutableList<Image>>(mutableListOf())
+    private val saveImages: StateFlow<MutableList<Image>> = _saveImages
 
-    private val _saveHide = MutableStateFlow(false)
-    val saveHide: StateFlow<Boolean> = _saveHide
 
     var isRefreshing by mutableStateOf(false)
 
@@ -243,8 +249,23 @@ class UserVillagerViewModel(
     fun newsFilterAll(){
         _userVillagerNews.value = saveUserVillagerNews.value
     }
-    fun updateNewDetail(new: New){
-        _saveNewDetail.value = new
-        _saveHide.value = true
+
+// News -> ------------------------------------------------------------------------------------------------------------------------------------------------
+    fun getImagesByLocality(){
+        viewModelScope.launch {
+            try {
+                val requestImages = ImageClient.imageService.getImagesByLocality(localityViewModel.saveStateLocality.value)
+                val body = withContext(Dispatchers.IO){ requestImages.execute().body() }
+                _userVillagerImages.value = body!!
+                _saveImages.value = body
+            }catch (_: Exception){  }
+        }
+    }
+    fun filterImages(category: String){
+        val filteredImages = saveImages.value.filter { it.category?.lowercase() == category.lowercase() }
+        _userVillagerImages.value = filteredImages.toMutableList()
+    }
+    fun filterAllImages(){
+        _userVillagerImages.value = saveImages.value
     }
 }

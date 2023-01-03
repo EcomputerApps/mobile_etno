@@ -12,16 +12,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.models.*
+import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
 import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
+import com.example.mobile_etno.views.modern.HomeEtno
 import com.example.mobile_etno.views.screen.events.EventNameScreen
 import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.events.EventsScreen
+import com.example.mobile_etno.views.screen.gallery.GalleryScreen
+import com.example.mobile_etno.views.screen.gallery.ImageDetail
+import com.example.mobile_etno.views.screen.news.NewDetails
 import com.example.mobile_etno.views.screen.news.NewsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
@@ -56,6 +61,9 @@ fun Navigation(
                 userVillagerViewModel = userVillagerViewModel,
                 fcmViewModel = fcmViewModel,
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
+        }
+        composable(NavItem.HomeModern.route){
+            HomeEtno()
         }
         composable(
             NavItem.Events.route,
@@ -134,8 +142,33 @@ fun Navigation(
         composable(NavItem.News.route){
             NewsScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
+        composable("${NavItem.NewDetails.route}?username={username}&category={category}&title={title}&publicationDate={publicationDate}&description={description}&imageUrl={imageUrl}",
+        arguments = listOf(
+            navArgument("username"){ nullable = true; type = NavType.StringType },
+            navArgument("category"){ nullable = true; type = NavType.StringType },
+            navArgument("title"){ nullable = true; type = NavType.StringType },
+            navArgument("publicationDate"){ nullable = true; type = NavType.StringType },
+            navArgument("description"){ nullable = true; type = NavType.StringType },
+            navArgument("imageUrl"){ nullable = true; NavType.StringType; defaultValue = "image temp" }
+        )){
+            NewDetails(
+                new = New(
+                    username = it.arguments?.getString("username"),
+                    category = it.arguments?.getString("category"),
+                    title = it.arguments?.getString("title"),
+                    publicationDate = it.arguments?.getString("publicationDate"),
+                    description = it.arguments?.getString("description")
+                )
+            )
+        }
         composable(NavItem.Gallery.route) {
-            GalleryScreen(navController = navController)
+            GalleryScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable("${NavItem.ImageDetail.route}?link={link}",
+        arguments = listOf(navArgument("link"){ nullable = true; NavType.StringType; defaultValue = "null" }
+        )
+        ){
+            ImageDetail(link = it.arguments?.getString("link")!!)
         }
         composable(NavItem.Pharmacies.route){
             PharmaciesScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)

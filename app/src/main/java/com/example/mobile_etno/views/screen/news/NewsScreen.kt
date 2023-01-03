@@ -74,7 +74,7 @@ fun NewsScreen(
                 Column(
                 ) {
                     if(connection.value){
-                        CardNewList(news = news.value, userVillagerViewModel)
+                        CardNewList(news = news.value, navController)
                     }else{
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                             Text(text = "Por favor, comprueba tu conexión a internet", fontWeight = FontWeight.W700, fontSize = 14.sp)

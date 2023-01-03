@@ -19,17 +19,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 
 @Composable
-fun CardNewList(news: List<New>, userVillagerViewModel: UserVillagerViewModel){
+fun CardNewList(news: List<New>, navController: NavHostController){
 
         LazyColumn {
             items(news) { new ->
                 Card(modifier = Modifier.clickable {
-
+                    navController.navigate("${NavItem.NewDetails.route}?username=${new.username}&category=${new.category}&title=${new.title}&publicationDate=${new.publicationDate}&description=${new.description}&imageUrl=${new.imageUrl}"){  }
                 }) {
                     Box(
                         modifier = Modifier
