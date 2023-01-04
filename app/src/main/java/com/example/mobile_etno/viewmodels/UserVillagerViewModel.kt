@@ -27,12 +27,14 @@ import kotlinx.datetime.LocalDate
 class UserVillagerViewModel(
     private val context: Context,
     private val sqlDataBase: SqlDataBase,
-    private val localityViewModel: LocalityViewModel
+    private val localityViewModel: LocalityViewModel,
 ): ViewModel() {
 
     //State to Connection ->
     private val _connection = MutableStateFlow(false)
     val connection: StateFlow<Boolean> = _connection
+
+    val locality = localityViewModel.saveStateLocality
 
     //State to Events ->
     private val _userVillagerEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
@@ -100,6 +102,7 @@ class UserVillagerViewModel(
 
     init {
         checkConnectionInRealTime()
+        //getUserToVillagerNews()
     }
 
     // Events -> ------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +113,8 @@ class UserVillagerViewModel(
                 val body = withContext(Dispatchers.IO){ requestUserToVillager.execute().body() }
                 _userVillagerEvents.value = body?.events!!
                 _saveUserVillagerEvents.value = userVillagerEvents.value
-
+                Log.d("ev::", userVillagerEvents.value.toString())
+                /*
                 withContext(Dispatchers.IO){
                     userVillagerEvents.value.forEach { item ->
                         sqlDataBase.insertEventDb(
@@ -140,6 +144,7 @@ class UserVillagerViewModel(
                         ))
                     }
                 }
+                */
                 isRefreshing = false
             }catch (_: Exception){  }
         }

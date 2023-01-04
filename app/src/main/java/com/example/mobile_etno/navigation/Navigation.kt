@@ -54,7 +54,7 @@ fun Navigation(
             ChooseLocalityScreen(navController = navController)
         }
         composable(NavItem.Localities.route){
-            LocalitiesChooseScreen(localityViewModel = localityViewModel, navController = navController)
+            LocalitiesChooseScreen(localityViewModel = localityViewModel, navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.Home.route) {
             HomeScreen(list, navController = navController,
@@ -63,7 +63,7 @@ fun Navigation(
                 listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(NavItem.HomeModern.route){
-            HomeEtno()
+            HomeEtno(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(
             NavItem.Events.route,
@@ -157,7 +157,8 @@ fun Navigation(
                     category = it.arguments?.getString("category"),
                     title = it.arguments?.getString("title"),
                     publicationDate = it.arguments?.getString("publicationDate"),
-                    description = it.arguments?.getString("description")
+                    description = it.arguments?.getString("description"),
+                    imageUrl = it.arguments?.getString("imageUrl")
                 )
             )
         }

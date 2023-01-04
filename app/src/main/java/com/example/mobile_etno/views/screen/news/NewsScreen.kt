@@ -47,20 +47,13 @@ fun NewsScreen(
     var selectedTabIndex by remember { mutableStateOf(0) }
     val news = userVillagerViewModel.userVillagerNews.collectAsState()
     val connection = userVillagerViewModel.connection.collectAsState()
-    var skipHalfExpanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val state = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = skipHalfExpanded
-    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .wrapContentSize(Alignment.Center)
     ) {
-        if(connection.value && news.value.isNotEmpty()){
+        if(connection.value){
             CustomScrollableNews(
                 newCategoryList = listOf("General","Tecnología", "Salud", "Entretenimiento"),
                 selectedTabIndex = selectedTabIndex, userVillagerViewModel = userVillagerViewModel

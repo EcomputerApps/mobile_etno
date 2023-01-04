@@ -41,6 +41,9 @@ fun HomeScreen(
     userVillagerViewModel: UserVillagerViewModel,
     fcmViewModel: FCMViewModel
 ) {
+    val locality = userVillagerViewModel.locality.collectAsState()
+
+
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
         if (!task.isSuccessful) {
             Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
@@ -84,7 +87,7 @@ fun HomeScreen(
                             .padding(6.dp)
                             .clickable {
                                 //Toast.makeText(context, item.name, Toast.LENGTH_SHORT).show()
-                                navController.navigate(list[index]) {  }
+                                navController.navigate(list[index]) { }
 
                                 when (item) {
                                     "Eventos" -> userVillagerViewModel.getUserToVillagerEvents()
@@ -92,7 +95,9 @@ fun HomeScreen(
                                     "Turismo" -> userVillagerViewModel.getUserToVillagerTourism()
                                     "Muertes" -> userVillagerViewModel.getUserToVillagerDeaths()
                                     "Telefonos" -> userVillagerViewModel.getUserToVillagerPhones()
-                                    "Noticias" -> userVillagerViewModel.getUserToVillagerNews()
+                                    "Noticias" -> userVillagerViewModel.getUserToVillagerNews(
+
+                                    )
                                     "Galeria" -> userVillagerViewModel.getImagesByLocality()
                                 }
                             },
