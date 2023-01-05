@@ -28,6 +28,8 @@ class UserVillagerViewModel(
     private val context: Context,
     private val sqlDataBase: SqlDataBase,
     private val localityViewModel: LocalityViewModel,
+    val eventNameViewModel: EventNameViewModel,
+    val fcmViewModel: FCMViewModel
 ): ViewModel() {
 
     //State to Connection ->
@@ -40,13 +42,22 @@ class UserVillagerViewModel(
     private val _userVillagerEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
     val userVillagerEvents: StateFlow<MutableList<Event>> = _userVillagerEvents
 
+    private val _userVillagerEvent = MutableStateFlow(Event())
+    val userVillagerEvent: StateFlow<Event> = _userVillagerEvent
+
     //State to Pharmacies ->
     private val _userVillagerPharmacies = MutableStateFlow<MutableList<Pharmacy>>(mutableListOf())
     val userVillagerPharmacies: StateFlow<MutableList<Pharmacy>> = _userVillagerPharmacies
 
+    private val _userVillagerPharmacy = MutableStateFlow(Pharmacy())
+    val userVillagerPharmacy: StateFlow<Pharmacy> = _userVillagerPharmacy
+
     //State to Tourism ->
     private val _userVillagerTourism = MutableStateFlow<MutableList<Tourism>>(mutableListOf())
     val userVillagerTourism: StateFlow<MutableList<Tourism>> = _userVillagerTourism
+
+    private val _userVillagerTour = MutableStateFlow(Tourism())
+    val userVillagerTour: StateFlow<Tourism> = _userVillagerTour
 
     //State to Deaths ->
     private val _userVillagerDeaths = MutableStateFlow<MutableList<Death>>(mutableListOf())
@@ -166,6 +177,10 @@ class UserVillagerViewModel(
     fun resetListEventsConnection(){
         _userVillagerEvents.value.removeAll(userVillagerEvents.value)
     }
+    fun eventFilterByTitle(title: String){
+        val filteredEvent = saveUserVillagerEvents.value.find { event -> event.title == title }
+        _userVillagerEvent.value = filteredEvent!!
+    }
 
     //Pharmacies -> --------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerPharmacies(){
@@ -177,6 +192,10 @@ class UserVillagerViewModel(
                 _saveUserVillagerPharmacies.value = userVillagerPharmacies.value
             }catch (_: Exception){  }
         }
+    }
+    fun pharmacyFilterByName(name: String){
+        val filteredPharmacy = saveUserVillagerPharmacies.value.find { it.name == name }
+        _userVillagerPharmacy.value = filteredPharmacy!!
     }
     fun filterAllPharmacies(){
         _userVillagerPharmacies.value = saveUserVillagerPharmacies.value
@@ -204,6 +223,10 @@ class UserVillagerViewModel(
         val filteredTourism = saveUserVillagerTourism.value.filter { it.type == type }
         _userVillagerTourism.value = filteredTourism.toMutableList()
     }
+    fun tourismFilterByTitle(title: String){
+        val filteredTourism = saveUserVillagerTourism.value.find { it.title == title }
+        _userVillagerTour.value = filteredTourism!!
+    }
 
     //Deaths -> ------------------------------------------------------------------------------------------------------------------------------------------------
     fun getUserToVillagerDeaths(){
@@ -229,6 +252,7 @@ class UserVillagerViewModel(
     }
 
     fun phoneFilter(phoneCategory: String){
+        Log.d("filter_phone", phoneCategory)
         _saveStatePhoneCategory.value = phoneCategory
         val filteredPhones = saveUserVillagerPhones.value.filter { it.category?.lowercase() == phoneCategory.lowercase()}
         _userVillagerPhones.value = filteredPhones.toMutableList()
@@ -255,7 +279,7 @@ class UserVillagerViewModel(
         _userVillagerNews.value = saveUserVillagerNews.value
     }
 
-// News -> ------------------------------------------------------------------------------------------------------------------------------------------------
+// Images -> ------------------------------------------------------------------------------------------------------------------------------------------------
     fun getImagesByLocality(){
         viewModelScope.launch {
             try {

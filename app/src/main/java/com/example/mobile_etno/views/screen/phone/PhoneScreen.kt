@@ -10,6 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -23,13 +26,14 @@ import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.utils.phone_categories.PhoneCategories
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
 fun PhoneScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ) {
-    BackHandler() { navController.navigate(NavItem.Home.route){  } }
+    //BackHandler() { navController.navigate(NavItem.Home.route){  } }
 
     val currentContext= LocalContext.current
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
@@ -41,24 +45,9 @@ fun PhoneScreen(
             .background(Colors.backgroundEtno)
             .wrapContentSize(Alignment.Center)
     ) {
-
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                ScreenTopBar(
-                    navController = navController,
-                    nameScreen = "Telefonos"
-                )
-            },
-            drawerBackgroundColor = Colors.backgroundEtno,
-            // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
-
-            backgroundColor = Color.Red
-        ) {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(it)
             ) {
                 Column(
                     modifier = Modifier
@@ -76,7 +65,22 @@ fun PhoneScreen(
                                 Box(contentAlignment = Alignment.Center) {
                                     Image(painter = painterResource(id = phone.image!!), contentDescription = phone.categoryName, modifier = Modifier
                                         .width(400.dp)
-                                        .height(200.dp), contentScale = ContentScale.FillBounds, alpha = 0.6F)
+                                        .height(200.dp)
+                                        .drawWithCache {
+                                            val gradient = Brush.verticalGradient(
+                                                colors = listOf(Color.Transparent, Color.Black),
+                                                startY = size.height / 3,
+                                                endY = size.height
+                                            )
+                                            onDrawWithContent {
+                                                drawContent()
+                                                drawRect(
+                                                    gradient,
+                                                    blendMode = BlendMode.Multiply
+                                                )
+                                            }
+                                        }
+                                        , contentScale = ContentScale.FillBounds)
 
                                     Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(phone.categoryName!!, fontWeight = FontWeight.W700, fontSize = 24.sp, color = Color.White)
@@ -87,7 +91,7 @@ fun PhoneScreen(
                         }
                     }
                 }
-            }
+                BottomNavigationCustom(navController = navController, -1, userVillagerViewModel = userVillagerViewModel)
         }
     }
 }

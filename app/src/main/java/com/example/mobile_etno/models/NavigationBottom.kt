@@ -1,8 +1,9 @@
 package com.example.mobile_etno.models
 
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.annotation.DrawableRes
 
 data class NavigationBottom(
-    var name: String ? = null,
-    var icon: ImageVector ? = null
+    @DrawableRes
+    var icon: Int ? = null,
+    var name: String ? = null
 )

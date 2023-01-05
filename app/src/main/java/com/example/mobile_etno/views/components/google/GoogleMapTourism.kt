@@ -1,5 +1,6 @@
 package com.example.mobile_etno.views.components.google
 
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -17,7 +18,8 @@ import com.google.maps.android.compose.*
 
 @Composable
 fun GoogleMapTourism(
-    listTourism: MutableList<Tourism>
+    listTourism: MutableList<Tourism>,
+    click: (title: String) -> Unit
 ){
     val currentContext = LocalContext.current
     val properties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
@@ -28,7 +30,7 @@ fun GoogleMapTourism(
         properties = properties,
         modifier = Modifier
             .fillMaxWidth()
-            .height(450.dp),
+            .fillMaxHeight(),
         cameraPositionState = rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(
             LatLng(42.13202335670619,-0.40816585603218675),
             14f
@@ -46,6 +48,9 @@ fun GoogleMapTourism(
             }
 
             Marker(
+                onInfoWindowClick = {
+                             click.invoke(tourism.title!!)
+                },
                 icon = bitmapDescriptor(currentContext, tourismType),
                 state = MarkerState(
                     position = LatLng(

@@ -1,5 +1,6 @@
 package com.example.mobile_etno.views.screen.pharmacy
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,121 +8,186 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Pharmacy
+import com.example.mobile_etno.models.Tourism
 import com.example.mobile_etno.utils.colors.Colors
 import com.example.mobile_etno.viewmodels.MenuViewModel
 import com.example.mobile_etno.viewmodels.PharmacyViewModel
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapPharmacies
+import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PharmaciesScreen(userVillagerViewModel: UserVillagerViewModel, navController: NavHostController){
 
-    BackHandler() { navController.navigate(NavItem.Home.route){  } }
-    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
+  //  val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val pharmacies = userVillagerViewModel.userVillagerPharmacies.collectAsState()
-
+    val pharmacy = userVillagerViewModel.userVillagerPharmacy.collectAsState()
     var selectedTabIndex by remember { mutableStateOf(0) }
+    var skipHalfExpanded by remember { mutableStateOf(false) }
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = skipHalfExpanded
+    )
+    val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Colors.backgroundEtno)
-            .wrapContentSize(Alignment.Center)
-    ) {
-
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                ScreenTopBar(
-                    navController = navController,
-                    nameScreen = "Farmacias"
-                )
-            },
-            // scrimColor = Color.Red,  // Color for the fade background when you open/close the drawer
-            /*
-            drawerContent = {
-                Drawer(
-                    scope = scope,
-                    scaffoldState = scaffoldState,
-                    navController = navController,
-                    menuViewModel
-                )
-            },
-             */
-            backgroundColor = Color.Red
-        ) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(it)) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
+    ModalBottomSheetLayout(
+        sheetState = state,
+        sheetContent = {
+            if(pharmacy.value.name == null){
+                Text(text = "null")
+            }else{
+                Box(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    GoogleMapPharmacies(pharmacies.value)
-                    CustomScrollableFilterPharmacy(
-                        typeButtonList = listOf(Pharmacy(type = "Normal"), Pharmacy(type = "Guardia")),
-                        userVillagerViewModel = userVillagerViewModel,
-                        selectedTabIndex = selectedTabIndex
-                    ){ index -> selectedTabIndex = index }
-                Column {
-                    Spacer(modifier = Modifier.padding(vertical = 220.dp))
-                    LazyColumn(modifier = Modifier.padding(16.dp)){
-                        items(pharmacies.value){
-                            Card(backgroundColor = Color.White, modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    val encodeUrlImage: String = if(it.imageUrl != null){
-                                        URLEncoder.encode(it.imageUrl, StandardCharsets.UTF_8.toString())
-                                    }else{
-                                        "null"
-                                    }
-                                    navController.navigate(
-                                        "${NavItem.DetailPharmacy.route}?imageUrl=${encodeUrlImage}&link=${it.link}&type=${it.type}&name=${it.name}&phone=${it.phone}&description=${it.description}"
-                                    ) { }
-                                }) {
-                                Row(modifier = Modifier
-                                    .height(IntrinsicSize.Min)
-                                    .fillMaxWidth()) {
-                                    Divider(
-                                        color = if(it.type == "Normal") Color.Blue else Color.Red,
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .width(2.dp)
+                    Column(
+
+                    ) {
+                        GlideImage(
+                            imageModel = { pharmacy.value.imageUrl},
+                            success = { imageState ->
+                                Image(
+                                    bitmap = imageState.imageBitmap!!,
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp)
+                                        .padding(5.dp)
+                                        .drawWithCache {
+                                            val gradient = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color.Transparent,
+                                                    Color.Black
+                                                ),
+                                                startY = size.height / 3,
+                                                endY = size.height
+                                            )
+                                            onDrawWithContent {
+                                                drawContent()
+                                                drawRect(
+                                                    gradient,
+                                                    blendMode = BlendMode.Multiply
+                                                )
+                                            }
+                                        }, contentScale = ContentScale.FillBounds
+                                )
+                            },
+                            loading = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(
+                                            RoundedCornerShape(30.dp)
+                                        )
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.align(Alignment.Center)
                                     )
-                                    Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                                }
+                            },
+                            failure = {
+                                Box(
+                                    modifier = Modifier
+                                        .height(300.dp)
+                                        .fillMaxWidth()
+                                        .background(Color.Gray)
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = Color.White,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            }
+                        )
+                        Box(
+                            modifier = Modifier.padding(24.dp)
+                        ) {
+                            Column {
+                                Text(text = pharmacy.value.name!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                                Text(text = "${pharmacy.value.username} · Huesca", color = Color.Gray, fontSize = 10.sp)
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Divider(thickness = 1.dp, color = Color.Gray)
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
                                     Column() {
-                                        Text(text = it.name!!, style = MaterialTheme.typography.h6)
-                                        Row() {
-                                            Text(text = "Teléfono: ${it.phone}")
-                                            Spacer(modifier = Modifier.padding(horizontal = 50.dp))
-                                            Text(text = "Servicio ${it.type}", color = if(it.type == "Normal") Color.Blue else Color.Red)
-                                        }
-                                        Text(text = "Horario: ${it.schedule}")
+                                        Text(text = pharmacy.value.schedule!!, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                        Text(text = "Horario", color = Color.Gray, fontSize = 10.sp)
+                                    }
+                                    Spacer(modifier = Modifier.padding(horizontal = 90.dp))
+                                    Box(
+                                        modifier = Modifier.background(if(pharmacy.value.type == "Normal") Color.Blue else Color.Red)
+                                    ) {
+                                        Text(text = pharmacy.value.type!!, modifier = Modifier.padding(4.dp), color = Color.White)
                                     }
                                 }
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Divider(thickness = 1.dp, color = Color.Gray)
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Text(text = pharmacy.value.description!!, fontSize = 12.sp)
                             }
                         }
                     }
                 }
             }
         }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        ) {
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+            ) {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                ) {
+                    GoogleMapPharmacies(
+                        pharmacies.value,
+                        click = {
+                            scope.launch {
+                                userVillagerViewModel.pharmacyFilterByName(it)
+                                state.show()
+                            }
+                        }
+                    )
+                    CustomScrollableFilterPharmacy(
+                        typeButtonList = listOf(Pharmacy(type = "Normal"), Pharmacy(type = "Guardia")),
+                        userVillagerViewModel = userVillagerViewModel,
+                        selectedTabIndex = selectedTabIndex
+                    ){ index -> selectedTabIndex = index }
+                }
+            }
+        }
     }
-}
 }
 
 @Composable

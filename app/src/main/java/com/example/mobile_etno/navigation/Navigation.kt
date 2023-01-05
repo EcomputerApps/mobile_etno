@@ -1,9 +1,5 @@
 package com.example.mobile_etno.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -57,10 +53,12 @@ fun Navigation(
             LocalitiesChooseScreen(localityViewModel = localityViewModel, navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.Home.route) {
-            HomeScreen(list, navController = navController,
+            HomeScreen(
+                list,
+                navController = navController,
                 userVillagerViewModel = userVillagerViewModel,
-                fcmViewModel = fcmViewModel,
-                listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
+                fcmViewModel = fcmViewModel)
+                //listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
         }
         composable(NavItem.HomeModern.route){
             HomeEtno(navController = navController, userVillagerViewModel = userVillagerViewModel)
@@ -71,8 +69,8 @@ fun Navigation(
             EventsScreen(
                 navController = navController,
                 userVillagerViewModel = userVillagerViewModel,
-                sqlDataBase = sqlDataBase,
-                listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
+                sqlDataBase = sqlDataBase
+               // listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
             )
         }
         composable("${NavItem.EventNameScreen.route}?title={title}?address={address}?description={description}?organization={organization}?reservePrice={reservePrice}?link={link}?startDate={startDate}?endDate={endDate}?publicationDate={publicationDate}?time={time}?lat={lat}?long={long}?image={image}?idEvent={idEvent}", arguments =

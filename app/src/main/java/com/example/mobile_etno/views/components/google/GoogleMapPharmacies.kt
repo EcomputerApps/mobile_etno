@@ -2,21 +2,14 @@ package com.example.mobile_etno.views.components.google
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Pharmacy
@@ -28,7 +21,8 @@ import com.google.maps.android.compose.*
 
 @Composable
 fun GoogleMapPharmacies(
-    listPharmacies: MutableList<Pharmacy>
+    listPharmacies: MutableList<Pharmacy>,
+    click: (name: String) -> Unit
 ){
     val currentContext = LocalContext.current
     val properties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
@@ -39,13 +33,16 @@ fun GoogleMapPharmacies(
         properties = properties,
         modifier = Modifier
             .fillMaxWidth()
-            .height(450.dp),
+            .fillMaxHeight(),
         cameraPositionState = rememberCameraPositionState{ position = CameraPosition.fromLatLngZoom(LatLng(42.13202335670619,-0.40816585603218675), 14f) }
     ){
         listPharmacies.forEach {
             pharmacy ->
 
             Marker(
+                onInfoWindowClick = {
+                                    click.invoke(pharmacy.name!!)
+                },
                 icon = if (pharmacy.type == "Normal") bitmapDescriptor(currentContext, R.drawable.blue_pharmacy) else bitmapDescriptor(currentContext, R.drawable.red_pharmacy),
                 state = MarkerState(
                     position = LatLng(

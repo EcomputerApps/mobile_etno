@@ -33,6 +33,7 @@ import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -41,7 +42,6 @@ fun NewsScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-    BackHandler() { navController.navigate(NavItem.Home.route){  } }
 
     var currentContext = LocalContext.current
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -55,7 +55,7 @@ fun NewsScreen(
     ) {
         if(connection.value){
             CustomScrollableNews(
-                newCategoryList = listOf("General","Tecnología", "Salud", "Entretenimiento"),
+                newCategoryList = listOf("General","Tecnología", "Salud", "Entretenimiento", "Negocios"),
                 selectedTabIndex = selectedTabIndex, userVillagerViewModel = userVillagerViewModel
             ){ index -> selectedTabIndex = index }
         }
@@ -73,7 +73,9 @@ fun NewsScreen(
                             Text(text = "Por favor, comprueba tu conexión a internet", fontWeight = FontWeight.W700, fontSize = 14.sp)
                         }
                     }
+                    Spacer(modifier = Modifier.padding(vertical = 30.dp))
             }
+                BottomNavigationCustom(navController = navController, 1, userVillagerViewModel = userVillagerViewModel)
         }
     }
 }

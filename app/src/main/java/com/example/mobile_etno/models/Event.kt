@@ -11,6 +11,7 @@ data class Event(
     var organization: String ? = null,
     var reservePrice: Double ? = null,
     var link: String ? = null,
+    var imageUrl: String ? = null,
     var startDate: String ? = null,
     var endDate: String ? = null,
     var publicationDate: String ? = null,

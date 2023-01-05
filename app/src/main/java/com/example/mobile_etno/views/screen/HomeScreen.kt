@@ -36,13 +36,11 @@ import com.google.firebase.messaging.FirebaseMessaging
 @Composable
 fun HomeScreen(
     list: List<String>,
-    listBottomNavigation: List<NavigationBottom>,
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel,
     fcmViewModel: FCMViewModel
 ) {
     val locality = userVillagerViewModel.locality.collectAsState()
-
 
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
         if (!task.isSuccessful) {

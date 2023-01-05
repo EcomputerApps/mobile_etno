@@ -9,15 +9,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
@@ -27,41 +34,128 @@ import com.example.mobile_etno.viewmodels.TourismViewModel
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapTourism
+import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TourismScreen( userVillagerViewModel: UserVillagerViewModel, navController: NavHostController){
 
     val currentContext = LocalContext.current
     val tourism = userVillagerViewModel.userVillagerTourism.collectAsState()
-
+    val tour = userVillagerViewModel.userVillagerTour.collectAsState()
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    BackHandler() {
-        navController.navigate(NavItem.Home.route){  }
-    }
+    var skipHalfExpanded by remember { mutableStateOf(false) }
+    val state = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = skipHalfExpanded
+    )
+    val scope = rememberCoroutineScope()
 
-    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
-    
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Colors.backgroundEtno)
-            .wrapContentSize(Alignment.Center)
+
+    ModalBottomSheetLayout(
+        sheetState = state,
+        sheetContent = {
+                      if(tour.value.title == null){
+                          Text(text = "null")
+                      }else{
+                          Box(
+                              modifier = Modifier.fillMaxWidth()
+                          ) {
+                              Column(
+
+                              ) {
+                                  GlideImage(
+                                      imageModel = { tour.value.imageUrl},
+                                      success = { imageState ->
+                                          Image(
+                                              bitmap = imageState.imageBitmap!!,
+                                              contentDescription = "",
+                                              modifier = Modifier
+                                                  .fillMaxWidth()
+                                                  .height(300.dp)
+                                                  .padding(5.dp)
+                                                  .drawWithCache {
+                                                      val gradient = Brush.verticalGradient(
+                                                          colors = listOf(
+                                                              Color.Transparent,
+                                                              Color.Black
+                                                          ),
+                                                          startY = size.height / 3,
+                                                          endY = size.height
+                                                      )
+                                                      onDrawWithContent {
+                                                          drawContent()
+                                                          drawRect(
+                                                              gradient,
+                                                              blendMode = BlendMode.Multiply
+                                                          )
+                                                      }
+                                                  }, contentScale = ContentScale.FillBounds
+                                          )
+                                      },
+                                      loading = {
+                                          Box(
+                                              modifier = Modifier
+                                                  .fillMaxSize()
+                                                  .clip(
+                                                      RoundedCornerShape(30.dp)
+                                                  )
+                                          ) {
+                                              CircularProgressIndicator(
+                                                  modifier = Modifier.align(Alignment.Center)
+                                              )
+                                          }
+                                      },
+                                      failure = {
+                                          Box(
+                                              modifier = Modifier
+                                                  .height(300.dp)
+                                                  .fillMaxWidth()
+                                                  .background(Color.Gray)
+                                          ) {
+                                              CircularProgressIndicator(
+                                                  color = Color.White,
+                                                  modifier = Modifier.align(Alignment.Center)
+                                              )
+                                          }
+                                      }
+                                  )
+                                  Box(
+                                      modifier = Modifier.padding(24.dp)
+                                  ) {
+                                      Column {
+                                          Text(text = tour.value.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                                          Text(text = "${tour.value.username} · Huesca", color = Color.Gray, fontSize = 10.sp)
+
+                                          Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                          Divider(thickness = 1.dp, color = Color.Gray)
+                                          Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+                                          Text(text = tour.value.type!!, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                          Text(text = "Tipo", color = Color.Gray, fontSize = 10.sp)
+
+                                          Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                          Divider(thickness = 1.dp, color = Color.Gray)
+                                          Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                          Text(text = tour.value.description!!, fontSize = 12.sp)
+                                      }
+                                  }
+                              }
+                          }
+                      }
+        },
     ) {
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                ScreenTopBar(
-                    navController = navController,
-                    nameScreen = "Turismo"
-                )
-            },
-            backgroundColor = Color.Red
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Colors.backgroundEtno)
+                .wrapContentSize(Alignment.Center)
         ) {
             Box(modifier = Modifier
-                .padding(it)
                 .fillMaxSize()
                 .background(Color.White)) {
 
@@ -69,76 +163,22 @@ fun TourismScreen( userVillagerViewModel: UserVillagerViewModel, navController: 
                     .fillMaxWidth()
                     .fillMaxHeight()
                 ) {
-                    GoogleMapTourism(listTourism = tourism.value)
+                    GoogleMapTourism(
+                        listTourism = tourism.value,
+                        click = {
+                            scope.launch {
+                                userVillagerViewModel.tourismFilterByTitle(it)
+                                state.show()
+                            }
+                        }
+                    )
                     CustomScrollableFilterTourism(
                         typeButtonList = listOf(Tourism(type = "Restaurante"), Tourism(type = "Monumento"), Tourism(type = "Museo"), Tourism(type = "Hotel")),
                         selectedTabIndex = selectedTabIndex,
                         userVillagerViewModel = userVillagerViewModel
                     ){
-                        index ->
+                            index ->
                         selectedTabIndex = index
-                    }
-                }
-                Column() {
-                    Spacer(modifier = Modifier.padding(vertical = 220.dp))
-                    LazyColumn(modifier = Modifier.padding(16.dp)){
-                        items(tourism.value){
-                                item ->
-
-                            val imageType: Int = when(item.type){
-                                "Museo" -> R.drawable.museo
-                                "Hotel" -> R.drawable.hotel
-                                "Monumento" -> R.drawable.monumental
-                                "Restaurante" -> R.drawable.restaurant
-                                else -> {R.drawable.etno_icon}
-                            }
-
-                            Card(modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .clickable {
-                                    val encodeUrlImage: String = if(item.imageUrl != null){
-                                        URLEncoder.encode(item.imageUrl, StandardCharsets.UTF_8.toString())
-                                    }else{
-                                        "null"
-                                    }
-                                   navController.navigate("${NavItem.DetailTourism.route}?type=${item.type}&username=${item.username}&title=${item.title}&description=${item.description}&imageUrl=$encodeUrlImage")
-                                }) {
-                                Row(modifier = Modifier
-                                    .background(Color.White)
-                                    .width(400.dp)) {
-                                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                                    Image(
-                                        painter = painterResource(id = imageType),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .height(40.dp)
-                                            .width(40.dp)
-                                            .clip(
-                                                CircleShape
-                                            )
-                                    )
-                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                                        Text(
-                                            text = item.title!!,
-                                            style = MaterialTheme.typography.h6,
-                                        )
-                                        (if(item.description!!.length >= 70) item.description!!.substring(0, 37) else item.description)?.let { it -> Text(text = it, color = Color.LightGray) }
-                                    }
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.arrow_rigth),
-                                        contentDescription = "",
-                                        tint = Color.Red,
-                                        modifier = Modifier
-                                            .align(Alignment.CenterVertically)
-                                            .width(60.dp)
-                                            .height(60.dp)
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.padding(vertical = 10.dp))
-                        }
                     }
                 }
             }

@@ -2,6 +2,7 @@ package com.example.mobile_etno.views.screen.phone
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
+import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
 fun PhoneDetailsList(
@@ -37,6 +39,7 @@ fun PhoneDetailsList(
     val phoneCategory = userVillagerViewModel.saveStatePhoneCategory.collectAsState()
     val dialPhoneIntent = Intent(Intent.ACTION_DIAL)
 
+    Log.d("phones::", phones.value.toString())
 
     Column(
         modifier = Modifier
@@ -44,12 +47,8 @@ fun PhoneDetailsList(
             .background(Color.White)
             .wrapContentSize(Alignment.Center)
     ) {
-        Scaffold(
-            topBar = { ScreenTopBar(nameScreen = "Teléfonos de ${phoneCategory.value}", navController = navController) }
-        ) {
             Box(
                 modifier = Modifier
-                    .padding(it)
                     .fillMaxSize()
             ) {
                 Column(modifier = Modifier
@@ -100,8 +99,8 @@ fun PhoneDetailsList(
                            Spacer(modifier = Modifier.padding(vertical = 8.dp))
                        }
                     }
-                }
             }
+                BottomNavigationCustom(navController = navController, -1, userVillagerViewModel = userVillagerViewModel)
         }
     }
 }

@@ -41,7 +41,7 @@ import java.nio.charset.StandardCharsets
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun EventsScreen(
-    listBottomNavigation: List<NavigationBottom>,
+   // listBottomNavigation: List<NavigationBottom>,
     userVillagerViewModel: UserVillagerViewModel,
     navController: NavHostController,
     sqlDataBase: SqlDataBase
@@ -242,32 +242,6 @@ fun EventsScreen(
                                 //Log.d("down_show", infoDialog.value.toString())
                             }
                         )
-                    }
-                }
-                BottomNavigation(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .height(50.dp),
-                    backgroundColor = Color.Red,
-                    contentColor = Color.White
-                ) {
-                    listBottomNavigation.forEachIndexed { index, item ->
-                        BottomNavigationItem(selected = selectedItem == index, onClick = {
-                            when (item.name) {
-                                "Noticias" -> {
-                                    navController.navigate(NavItem.News.route) { }
-                                }
-                                "Menu" -> {
-                                    navController.navigate(NavItem.Home.route) { }
-                                }
-                            }
-                            selectedItem = index
-                        }, icon = {
-                            Icon(
-                                imageVector = item.icon!!,
-                                contentDescription = null
-                            )
-                        }, label = { Text(text = item.name!!) })
                     }
                 }
             }
