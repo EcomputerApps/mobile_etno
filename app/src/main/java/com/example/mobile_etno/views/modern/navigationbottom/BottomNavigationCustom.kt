@@ -6,6 +6,8 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +29,7 @@ fun BottomNavigationCustom(
     val items = listOf(
         NavigationBottom(R.drawable.home, "Home"),
         NavigationBottom(R.drawable.news, "News"),
-        NavigationBottom(R.drawable.explore_tourism, "Explorar")
+        NavigationBottom(R.drawable.icon_menu, "Menu")
     )
     Box(
         modifier = Modifier.fillMaxSize()
@@ -53,6 +55,7 @@ fun BottomNavigationCustom(
                         when(navigationBottom.name){
                             "Home" -> navController.navigate(NavItem.HomeModern.route)
                             "News" -> navController.navigate(NavItem.News.route){ userVillagerViewModel.getUserToVillagerNews() }
+                            "Menu" -> navController.navigate(NavItem.DiscoverySections.route){  }
                         }
                     }
                 )

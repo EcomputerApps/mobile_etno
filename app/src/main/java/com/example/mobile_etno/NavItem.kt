@@ -6,6 +6,7 @@ sealed class NavItem(var route: String, var icon: Int? = null, var title: String
     object Localities : NavItem("Localities")
     object Home : NavItem("home")
     object HomeModern : NavItem("HomeModern")
+    object DiscoverySections : NavItem("DiscoverySections")
     object Events : NavItem("Eventos", R.drawable.home_test, "Eventos")
     object EventNameScreen: NavItem("NombreEventoScreen")
     object Reservations : NavItem("Reservaciones", R.drawable.home_test, "Reservaciones")

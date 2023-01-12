@@ -18,6 +18,7 @@ import com.example.mobile_etno.views.modern.HomeEtno
 import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
+import com.example.mobile_etno.views.screen.discovery.DiscoveryScreen
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.gallery.GalleryScreen
 import com.example.mobile_etno.views.screen.gallery.ImageDetail
@@ -61,6 +62,9 @@ fun Navigation(
         }
         composable(NavItem.HomeModern.route){
             HomeEtno(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable(NavItem.DiscoverySections.route){
+            DiscoveryScreen(navController, userVillagerViewModel)
         }
         composable(
             NavItem.Events.route,
