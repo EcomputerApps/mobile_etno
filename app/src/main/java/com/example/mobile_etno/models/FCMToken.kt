@@ -6,5 +6,4 @@ data class FCMToken(
     var idFMC: UUID ? = null,
     var locality: String ? = null,
     var token: String ? = null,
-    var sections: MutableList<SectionSubscribe> ? = null
 )

@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.mobile_etno.R
-import com.example.mobile_etno.viewmodels.EventNameViewModel
+import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun FormSubscription(onDismiss: () -> Unit, reservePrice: Double ,onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun FormSubscription(onDismiss: () -> Unit, reservePrice: Double, title: String, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, userVillagerViewModel: UserVillagerViewModel){
     Dialog(onDismissRequest = { onDismiss.invoke() },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
@@ -47,7 +47,7 @@ fun FormSubscription(onDismiss: () -> Unit, reservePrice: Double ,onSubscription
                 )
                 .height(700.dp)
                 .fillMaxWidth(), contentAlignment = Alignment.Center) {
-                ComponentFormSubscription(onDismiss = onDismiss, reservePrice = reservePrice, onSubscription = onSubscription, eventNameViewModel = eventNameViewModel)
+                ComponentFormSubscription(onDismiss = onDismiss, reservePrice = reservePrice, title = title, onSubscription = onSubscription, userVillagerViewModel = userVillagerViewModel)
             }
         }
     }
@@ -55,12 +55,20 @@ fun FormSubscription(onDismiss: () -> Unit, reservePrice: Double ,onSubscription
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ComponentFormSubscription(onDismiss: () -> Unit, reservePrice: Double, onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit, eventNameViewModel: EventNameViewModel){
+fun ComponentFormSubscription(
+    onDismiss: () -> Unit,
+    reservePrice: Double,
+    title: String,
+    onSubscription: (name: String, mail: String, phone: String, wallet: String) -> Unit,
+    userVillagerViewModel: UserVillagerViewModel
+){
     var userState by remember{ mutableStateOf(TextFieldValue()) }
     var mailState by remember { mutableStateOf(TextFieldValue()) }
     var phoneState by remember { mutableStateOf(TextFieldValue()) }
     var walletState by remember { mutableStateOf(TextFieldValue(reservePrice.toString())) }
     val currentContext = LocalContext.current
+    val isSubscribe = userVillagerViewModel.eventSubscriptionViewModel.isSubscribe.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
@@ -104,15 +112,28 @@ fun ComponentFormSubscription(onDismiss: () -> Unit, reservePrice: Double, onSub
                 modifier = modifierInput
             )})
         Spacer(modifier = Modifier.padding(vertical = 12.dp))
-        Button(onClick = {if(userState.text != "" && mailState.text != "" && phoneState.text != "" && walletState.text != "")
-            onSubscription.invoke(userState.text, mailState.text, phoneState.text, walletState.text)
-          else Toast.makeText(currentContext, "No se permiten campos vacíos", Toast.LENGTH_SHORT).show()},
-            colors = ButtonDefaults.buttonColors(backgroundColor = if(eventNameViewModel.isSubscribe.value) Color.Gray else Color.Red),
+        Button(
+            onClick = {
+            if(userState.text != "" && mailState.text != "" && phoneState.text != "" && walletState.text != "") {
+                onSubscription.invoke(
+                    userState.text,
+                    mailState.text,
+                    phoneState.text,
+                    walletState.text
+                )
+               // userVillagerViewModel.findEventByUsernameAndTitle(title)
+                onDismiss.invoke()
+            }else {
+                Toast.makeText(currentContext, "No se permiten campos vacíos", Toast.LENGTH_SHORT)
+                    .show()
+            }   },
+            colors = ButtonDefaults.buttonColors(backgroundColor = if(isSubscribe.value) Color.Gray else Color.Red),
             modifier = Modifier.width(250.dp),
             shape = CircleShape){
             Text(text = "Subscribirse", color = Color.White, style = MaterialTheme.typography.button)
         }
-        Button(onClick = { onDismiss.invoke() },
+        Button(
+            onClick = { onDismiss.invoke() },
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
             modifier = Modifier.width(250.dp),
             shape = CircleShape){

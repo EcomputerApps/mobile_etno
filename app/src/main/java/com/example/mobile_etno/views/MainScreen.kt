@@ -36,7 +36,7 @@ fun MainScreen(
     localityViewModel: LocalityViewModel,
     userVillagerViewModel: UserVillagerViewModel,
     fcmViewModel: FCMViewModel,
-    eventNameViewModel: EventNameViewModel,
+    eventSubscriptionViewModel: EventSubscriptionViewModel,
     sqlDataBase: SqlDataBase,
 ){
     val navController = rememberNavController()
@@ -48,7 +48,7 @@ fun MainScreen(
             localityViewModel = localityViewModel,
             userVillagerViewModel = userVillagerViewModel,
             fcmViewModel = fcmViewModel,
-           eventNameViewModel = eventNameViewModel,
+           eventSubscriptionViewModel = eventSubscriptionViewModel,
            sqlDataBase = sqlDataBase,
         )
     }

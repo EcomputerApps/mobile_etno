@@ -28,7 +28,7 @@ import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.FCMToken
-import com.example.mobile_etno.models.SectionSubscribe
+import com.example.mobile_etno.models.UserSubscription
 import com.example.mobile_etno.utils.StringSpace
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.components.FormSubscription
@@ -51,11 +51,12 @@ fun HomeEtno(
     val news = userVillagerViewModel.userVillagerNews.collectAsState()
     val events = userVillagerViewModel.userVillagerEvents.collectAsState()
     val event = userVillagerViewModel.userVillagerEvent.collectAsState()
+    val eventSeat = userVillagerViewModel.eventSubscriptionViewModel.eventSeats.collectAsState()
     val connection = userVillagerViewModel.connection.collectAsState()
-    val isSubscribe = userVillagerViewModel.eventNameViewModel.isSubscribe.collectAsState()
+    val isSubscribe = userVillagerViewModel.eventSubscriptionViewModel.isSubscribe.collectAsState()
 
     val infoDialog = remember { mutableStateOf(false) }
-    var skipHalfExpanded by remember { mutableStateOf(false) }
+    val skipHalfExpanded by remember { mutableStateOf(false) }
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = skipHalfExpanded
@@ -91,7 +92,8 @@ fun HomeEtno(
                     }
                     // Get new FCM registration token
                     val token = task.result
-                    userVillagerViewModel.eventNameViewModel.getSubscriptionByTokenAndCategoryAndTitle(token, event.value.title!!)
+                    Log.d("tok", token)
+                    userVillagerViewModel.eventSubscriptionViewModel.getSubscription(token, event.value.title!!)
                 })
 
                 Box(
@@ -163,6 +165,10 @@ fun HomeEtno(
                                 Text(text = event.value.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                                 Text(text = "${event.value.username!!} · Huesca", color = Color.Gray, fontSize = 10.sp)
                                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Text(text = "Capacidad", fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                Text(text = "Plazas ${eventSeat.value}/${event.value.capacity}", color = Color.Gray, fontSize = 10.sp)
+                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
                                 Divider(thickness = 1.dp, color = Color.Gray)
                                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
                                 Row(
@@ -173,29 +179,52 @@ fun HomeEtno(
                                         Text(text = "Fecha de inicio", color = Color.Gray, fontSize = 10.sp)
                                     }
                                     Spacer(modifier = Modifier.padding(horizontal = 60.dp))
-                                    Button(colors = ButtonDefaults.buttonColors(if(isSubscribe.value) Color.Gray else Color.Red), onClick = {
-                                        if(isSubscribe.value){
-                                            infoDialog.value = false
-                                            FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                                                OnCompleteListener { task ->
-                                                    if (!task.isSuccessful) {
-                                                        Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
-                                                        return@OnCompleteListener
-                                                    }
-                                                    // Get new FCM registration token
-                                                    val token = task.result
-                                                    Log.d("stater_fcmToken", token.toString())
-                                                    // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                                   userVillagerViewModel.eventNameViewModel.changeStateButtonSubscribe( token = token,
-                                                        sectionSubscribe = SectionSubscribe(category = "Evento", title = event.value.title)
-                                                    )
-                                                    Toast.makeText(currentContext, "Se ha desuscrito al Evento ${event.value.title}", Toast.LENGTH_SHORT).show()
-                                                })
+                                    //if (event.value.seats!! > 0) {
+                                        Button(
+                                            colors = ButtonDefaults.buttonColors(if (isSubscribe.value) Color.Gray else Color.Red),
+                                            onClick = {
+                                                if (isSubscribe.value) {
+                                                    infoDialog.value = false
+                                                    FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                                        OnCompleteListener { task ->
+                                                            if (!task.isSuccessful) {
+                                                                Log.w(
+                                                                    "failed fcm",
+                                                                    "Fetching FCM registration token failed",
+                                                                    task.exception
+                                                                )
+                                                                return@OnCompleteListener
+                                                            }
+                                                            // Get new FCM registration token
+                                                            val token = task.result
+                                                            Log.d(
+                                                                "stater_fcmToken",
+                                                                token.toString()
+                                                            )
+                                                            // fcmViewModel.saveFCMToken(FCMToken(token = token))
+                                                           userVillagerViewModel.eventSubscriptionViewModel.dropOutSubscription(
+                                                               title = event.value.title!!,
+                                                               userSubscription = UserSubscription(
+                                                                   fcmToken = token
+                                                               )
+                                                           )
+                                                            Toast.makeText(
+                                                                currentContext,
+                                                                "Se ha desuscrito al Evento ${event.value.title}",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        })
 
-                                        }else{
-                                            infoDialog.value = true
-                                        }
-                                    }) { Text(text = if(isSubscribe.value) "Desuscribirse" else "Subscribirse", color = Color.White) }
+                                                } else {
+                                                    infoDialog.value = true
+                                                }
+                                            }) {
+                                            Text(
+                                                text = if (isSubscribe.value) "Desuscribirse" else "Subscribirse",
+                                                color = Color.White
+                                            )
+                                       // }
+                                    }
                                 }
                                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
                                 Divider(thickness = 1.dp, color = Color.Gray)
@@ -204,27 +233,27 @@ fun HomeEtno(
                             }
                             if(infoDialog.value){
                                 if(!isSubscribe.value){
-                                    FormSubscription(eventNameViewModel = userVillagerViewModel.eventNameViewModel, reservePrice = event.value.reservePrice!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
+                                    FormSubscription(userVillagerViewModel = userVillagerViewModel, reservePrice = event.value.reservePrice!!, title = event.value.title!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
 
                                         Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
 
                                         FirebaseMessaging.getInstance().token.addOnCompleteListener(
                                             OnCompleteListener { task ->
                                                 if (!task.isSuccessful) {
-                                                    Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
                                                     return@OnCompleteListener
                                                 }
-                                                // Get new FCM registration token
                                                 val token = task.result
-                                                Log.d("stater_fcmToken", token.toString())
-                                                // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                               userVillagerViewModel.eventNameViewModel.changeStateButtonSubscribe(
-                                                    token = token,
-                                                    name = name,
-                                                    mail = mail,
-                                                    phone = phone,
-                                                    wallet = wallet.toDouble(),
-                                                    sectionSubscribe = SectionSubscribe(category = "Evento", title = event.value.title))
+                                               userVillagerViewModel.eventSubscriptionViewModel.addSubscriptionToUser(
+                                                   title = event.value.title!!,
+                                                   userSubscription = UserSubscription(
+                                                       fcmToken = token,
+                                                       name = name,
+                                                       mail = mail,
+                                                       phone = phone,
+                                                       wallet = wallet.toDouble(),
+                                                       isSubscribe = true
+                                                   )
+                                               )
                                                 Toast.makeText(currentContext, "Se ha subscrito al Evento ${event.value.title}", Toast.LENGTH_SHORT).show()
                                             }
                                         )
@@ -292,15 +321,18 @@ fun HomeEtno(
                         listEvents = events.value,
                         oneItemClick = {},
                         cardClick = {
-                            scope.launch {
-                                userVillagerViewModel.eventFilterByTitle(it)
-
-                                state.show()
-                            }},
+                            userVillagerViewModel.getUserToVillagerEvents()
+                            listOf(
+                                scope.launch
+                                {
+                                    userVillagerViewModel.findEventByUsernameAndTitle(it)
+                                    state.show()
+                                },
+                            )
+                            },
                         navController = navController
                     )
                     Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
 
                     CardCustomHome(
                         R.drawable.service,

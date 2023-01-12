@@ -22,13 +22,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.LocalDate
 
 class UserVillagerViewModel(
     private val context: Context,
     private val sqlDataBase: SqlDataBase,
     private val localityViewModel: LocalityViewModel,
-    val eventNameViewModel: EventNameViewModel,
+    val eventSubscriptionViewModel: EventSubscriptionViewModel,
     val fcmViewModel: FCMViewModel
 ): ViewModel() {
 
@@ -177,9 +176,22 @@ class UserVillagerViewModel(
     fun resetListEventsConnection(){
         _userVillagerEvents.value.removeAll(userVillagerEvents.value)
     }
+
+    /*
     fun eventFilterByTitle(title: String){
         val filteredEvent = saveUserVillagerEvents.value.find { event -> event.title == title }
         _userVillagerEvent.value = filteredEvent!!
+    }
+     */
+    fun findEventByUsernameAndTitle(title: String){
+        viewModelScope.launch {
+            try {
+                val getEvent = UserVillagerClient.userVillager.getEventByUsernameAndTitle(localityViewModel.saveStateLocality.value, title)
+                val body = withContext(Dispatchers.IO){ getEvent.execute().body() }
+                _userVillagerEvent.value = body!!
+                eventSubscriptionViewModel.updateEventSeats(body.seats!!)
+            }catch (_: Exception){  }
+        }
     }
 
     //Pharmacies -> --------------------------------------------------------------------------------------------------------------------------------------------

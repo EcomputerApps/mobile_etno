@@ -10,6 +10,8 @@ data class Event(
     var description: String ? = null,
     var organization: String ? = null,
     var reservePrice: Double ? = null,
+    var seats: Int ? = null,
+    var capacity: Int ? = null,
     var link: String ? = null,
     var imageUrl: String ? = null,
     var startDate: String ? = null,
@@ -19,5 +21,6 @@ data class Event(
     var lat: String ? = null,
     var long: String ? = null,
     var images: MutableList<Image> ? = mutableListOf(),
-    var videos: MutableList<Video> ? = mutableListOf()
+    var videos: MutableList<Video> ? = mutableListOf(),
+    var userSubscriptions: MutableList<UserSubscription> ? = mutableListOf()
 )

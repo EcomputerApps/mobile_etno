@@ -15,7 +15,6 @@ import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
 import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
 import com.example.mobile_etno.views.modern.HomeEtno
-import com.example.mobile_etno.views.screen.events.EventNameScreen
 import com.example.mobile_etno.views.screen.*
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
@@ -38,7 +37,7 @@ fun Navigation(
     list: List<String>,
     localityViewModel: LocalityViewModel,
     userVillagerViewModel: UserVillagerViewModel,
-    eventNameViewModel: EventNameViewModel,
+    eventSubscriptionViewModel: EventSubscriptionViewModel,
     fcmViewModel: FCMViewModel,
     sqlDataBase: SqlDataBase
 ) {
@@ -72,42 +71,6 @@ fun Navigation(
                 sqlDataBase = sqlDataBase
                // listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
             )
-        }
-        composable("${NavItem.EventNameScreen.route}?title={title}?address={address}?description={description}?organization={organization}?reservePrice={reservePrice}?link={link}?startDate={startDate}?endDate={endDate}?publicationDate={publicationDate}?time={time}?lat={lat}?long={long}?image={image}?idEvent={idEvent}", arguments =
-        listOf(
-            navArgument("title"){type = NavType.StringType},
-            navArgument("address"){type = NavType.StringType},
-            navArgument("description"){type = NavType.StringType},
-            navArgument("organization"){type = NavType.StringType},
-            navArgument("reservePrice"){type = NavType.StringType},
-            navArgument("link"){nullable = true; defaultValue = "null"; type = NavType.StringType},
-            navArgument("endDate"){type = NavType.StringType},
-            navArgument("publicationDate"){type = NavType.StringType},
-            navArgument("time"){type = NavType.StringType},
-            navArgument("lat"){type = NavType.StringType},
-            navArgument("long"){type = NavType.StringType},
-            navArgument("image"){nullable= true; type = NavType.StringType},
-            navArgument("idEvent"){type = NavType.StringType}
-        )
-        ){
-            val event = Event(
-                title = it.arguments?.getString("title"),
-                address = it.arguments?.getString("address"),
-                description = it.arguments?.getString("description"),
-                organization = it.arguments?.getString("organization"),
-                reservePrice = it.arguments?.getString("reservePrice")?.toDouble(),
-                link = it.arguments?.getString("link"),
-                startDate = it.arguments?.getString("startDate"),
-                endDate = it.arguments?.getString("endDate"),
-                publicationDate = it.arguments?.getString("publicationDate"),
-                time = it.arguments?.getString("time"),
-                lat = it.arguments?.getString("lat"),
-                long = it.arguments?.getString("long"),
-                images = null
-            )
-            val imageEvent = it.arguments?.getString("image")
-            val idEvent = it.arguments?.getString("idEvent")
-            EventNameScreen(navController = navController, eventNameViewModel = eventNameViewModel, event = event, imageEvent = imageEvent!!, idEvent = idEvent!!, sqlDataBase = sqlDataBase)
         }
         composable(NavItem.Reservations.route) {
             ReservationsScreen(navController = navController)

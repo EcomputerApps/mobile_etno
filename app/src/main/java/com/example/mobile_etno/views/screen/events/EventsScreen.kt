@@ -239,7 +239,6 @@ fun EventsScreen(
                                     "Compruebe su conexión.",
                             onDismiss = {
                                 infoDialog.value = false
-                                //Log.d("down_show", infoDialog.value.toString())
                             }
                         )
                     }
