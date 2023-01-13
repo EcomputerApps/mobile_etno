@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
                localityViewModel = localityViewModel,
                userVillagerViewModel = userVillagerViewModel,
                fcmViewModel = fcmViewModel,
-               eventSubscriptionViewModel = eventSubscriptionViewModel,
                sqlDataBase = sqlDataBase)
         }
     }

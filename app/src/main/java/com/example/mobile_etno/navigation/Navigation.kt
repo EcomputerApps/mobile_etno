@@ -22,6 +22,7 @@ import com.example.mobile_etno.views.screen.discovery.DiscoveryScreen
 import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.gallery.GalleryScreen
 import com.example.mobile_etno.views.screen.gallery.ImageDetail
+import com.example.mobile_etno.views.screen.incident.IncidentsScreen
 import com.example.mobile_etno.views.screen.news.NewDetails
 import com.example.mobile_etno.views.screen.news.NewsScreen
 import com.example.mobile_etno.views.screen.pharmacy.PharmaciesScreen
@@ -38,7 +39,6 @@ fun Navigation(
     list: List<String>,
     localityViewModel: LocalityViewModel,
     userVillagerViewModel: UserVillagerViewModel,
-    eventSubscriptionViewModel: EventSubscriptionViewModel,
     fcmViewModel: FCMViewModel,
     sqlDataBase: SqlDataBase
 ) {
@@ -187,9 +187,7 @@ fun Navigation(
                 imageUrl = it.arguments?.getString("imageUrl")
             ))
         }
-        composable(NavItem.Incidents.route){
-            IncidentsScreen(navController = navController)
-        }
+        composable(NavItem.Incidents.route){ IncidentsScreen(navController, userVillagerViewModel) }
         composable(NavItem.Links.route){
             LinksScreen(navController = navController)
         }
