@@ -39,68 +39,74 @@ fun PhoneDetailsList(
     val phoneCategory = userVillagerViewModel.saveStatePhoneCategory.collectAsState()
     val dialPhoneIntent = Intent(Intent.ACTION_DIAL)
 
-    Log.d("phones::", phones.value.toString())
-
+Scaffold(
+    topBar = {},
+    bottomBar = { BottomNavigationCustom(
+        navController = navController,
+        stateNavigationButton = -1,
+        userVillagerViewModel = userVillagerViewModel
+    ) }
+) {
     Column(
         modifier = Modifier
+            .padding(it)
             .fillMaxSize()
             .background(Color.White)
             .wrapContentSize(Alignment.Center)
     ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Column(modifier = Modifier
+                .padding(16.dp)
             ) {
-                Column(modifier = Modifier
-                    .padding(16.dp)
-                ) {
-                    LazyColumn{
-                       items(phones.value) {
-                           phone ->
-                           Card(elevation = 7.dp, modifier = Modifier.clickable {  }){
-                               Box(modifier = Modifier
-                                   .padding(10.dp)
-                                   .fillMaxSize()
-                               ) {
-                                   Column() {
-                                       Row(verticalAlignment = Alignment.CenterVertically) {
-                                           Image(painter = painterResource(id = com.example.mobile_etno.R.drawable.panda_contact), contentDescription = "", modifier = Modifier
-                                               .width(50.dp)
-                                               .height(50.dp)
-                                               .clip(CircleShape),
-                                               contentScale = ContentScale.FillBounds
-                                           )
-                                           Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                                           Text(text = phone.owner!!, fontWeight = FontWeight.Bold)
-                                           Spacer(modifier = Modifier.padding(horizontal = 40.dp))
-                                           Box(modifier = Modifier.fillMaxSize()) {
-                                               Row() {
-                                                   Icon(imageVector = Icons.Filled.Phone, contentDescription = "")
-                                                   Text(text = phone.number!!)
-                                               }
-                                           }
-                                       }
-                                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                                       Divider()
-                                       Spacer(modifier = Modifier.padding(vertical = 5.dp))
-                                       Box(modifier = Modifier.fillMaxSize()) {
-                                           Text(text = phone.schedule!!, color = Color.Gray, modifier = Modifier.padding(vertical = 12.dp))
-                                           Button(onClick = {
-                                               dialPhoneIntent.data = Uri.parse("tel:${phone.number}")
-                                               currentContext.startActivity(dialPhoneIntent)
-                                           }, modifier = Modifier.align(
-                                               Alignment.BottomEnd), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)) {
-                                               Text(text = "Llamar", color = Color.White)
-                                           }
-                                       }
-                                   }
-                               }
-                           }
-                           Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                       }
+                LazyColumn{
+                    items(phones.value) {
+                            phone ->
+                        Card(elevation = 7.dp, modifier = Modifier.clickable {  }){
+                            Box(modifier = Modifier
+                                .padding(10.dp)
+                                .fillMaxSize()
+                            ) {
+                                Column() {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Image(painter = painterResource(id = com.example.mobile_etno.R.drawable.panda_contact), contentDescription = "", modifier = Modifier
+                                            .width(50.dp)
+                                            .height(50.dp)
+                                            .clip(CircleShape),
+                                            contentScale = ContentScale.FillBounds
+                                        )
+                                        Spacer(modifier = Modifier.padding(horizontal = 4.dp))
+                                        Text(text = phone.owner!!, fontWeight = FontWeight.Bold)
+                                        Spacer(modifier = Modifier.padding(horizontal = 40.dp))
+                                        Box(modifier = Modifier.fillMaxSize()) {
+                                            Row() {
+                                                Icon(imageVector = Icons.Filled.Phone, contentDescription = "")
+                                                Text(text = phone.number!!)
+                                            }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.padding(vertical = 5.dp))
+                                    Divider()
+                                    Spacer(modifier = Modifier.padding(vertical = 5.dp))
+                                    Box(modifier = Modifier.fillMaxSize()) {
+                                        Text(text = phone.schedule!!, color = Color.Gray, modifier = Modifier.padding(vertical = 12.dp))
+                                        Button(onClick = {
+                                            dialPhoneIntent.data = Uri.parse("tel:${phone.number}")
+                                            currentContext.startActivity(dialPhoneIntent)
+                                        }, modifier = Modifier.align(
+                                            Alignment.BottomEnd), colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)) {
+                                            Text(text = "Llamar", color = Color.White)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
             }
-                BottomNavigationCustom(navController = navController, -1, userVillagerViewModel = userVillagerViewModel)
         }
     }
+}
 }

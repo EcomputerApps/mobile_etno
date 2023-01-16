@@ -1,64 +1,53 @@
 package com.example.mobile_etno.views.screen.news
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScrollableTabRow
+import androidx.compose.material.Tab
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.NavItem
-import com.example.mobile_etno.R
-import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NewsScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-
     var currentContext = LocalContext.current
     var selectedTabIndex by remember { mutableStateOf(0) }
     val news = userVillagerViewModel.userVillagerNews.collectAsState()
     val connection = userVillagerViewModel.connection.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
+    Scaffold(
+        topBar = {},
+        bottomBar = { BottomNavigationCustom(
+            navController = navController,
+            stateNavigationButton = 1,
+            userVillagerViewModel = userVillagerViewModel
+        ) }
     ) {
-        if(connection.value){
-            CustomScrollableNews(
-                newCategoryList = listOf("General","Tecnología", "Salud", "Entretenimiento", "Negocios"),
-                selectedTabIndex = selectedTabIndex, userVillagerViewModel = userVillagerViewModel
-            ){ index -> selectedTabIndex = index }
-        }
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center)
+        ) {
+            if(connection.value){
+                CustomScrollableNews(
+                    newCategoryList = listOf("General","Tecnología", "Salud", "Entretenimiento", "Negocios"),
+                    selectedTabIndex = selectedTabIndex, userVillagerViewModel = userVillagerViewModel
+                ){ index -> selectedTabIndex = index }
+            }
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
@@ -73,9 +62,8 @@ fun NewsScreen(
                             Text(text = "Por favor, comprueba tu conexión a internet", fontWeight = FontWeight.W700, fontSize = 14.sp)
                         }
                     }
-                    Spacer(modifier = Modifier.padding(vertical = 30.dp))
+                }
             }
-                BottomNavigationCustom(navController = navController, 1, userVillagerViewModel = userVillagerViewModel)
         }
     }
 }

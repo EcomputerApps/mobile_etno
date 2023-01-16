@@ -74,112 +74,117 @@ fun HomeEtno(
         userVillagerViewModel.fcmViewModel.saveFCMToken(FCMToken(token = token))
     })
 
-    ModalBottomSheetLayout(
-        sheetState = state,
-        sheetContent = {
-            if(event.value.title == null){
-                Text(text = "Buenas")
-            }else{
-                BackHandler() {
-                    navController.navigate(NavItem.HomeModern.route){
+    Scaffold(
+        topBar = {},
+        bottomBar = { BottomNavigationCustom(navController = navController, 0, userVillagerViewModel = userVillagerViewModel) },
+    ) {
+        ModalBottomSheetLayout(
+            modifier = Modifier.padding(it),
+            sheetState = state,
+            sheetContent = {
+                if(event.value.title == null){
+                    Text(text = "Buenas")
+                }else{
+                    BackHandler() {
+                        navController.navigate(NavItem.HomeModern.route){
 
+                        }
                     }
-                }
-                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-                    if (!task.isSuccessful) {
-                        Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
-                        return@OnCompleteListener
-                    }
-                    // Get new FCM registration token
-                    val token = task.result
-                    Log.d("tok", token)
-                    userVillagerViewModel.eventSubscriptionViewModel.getSubscription(token, event.value.title!!)
-                })
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                        if (!task.isSuccessful) {
+                            Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+                            return@OnCompleteListener
+                        }
+                        // Get new FCM registration token
+                        val token = task.result
+                        Log.d("tok", token)
+                        userVillagerViewModel.eventSubscriptionViewModel.getSubscription(token, event.value.title!!)
+                    })
 
-                Box(
-                    modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                    Column(
+                        Column(
 
-                    ) {
-                        GlideImage(
-                            imageModel = { event.value.imageUrl},
-                            success = { imageState ->
-                                Image(
-                                    bitmap = imageState.imageBitmap!!,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(300.dp)
-                                        .padding(5.dp)
-                                        .drawWithCache {
-                                            val gradient = Brush.verticalGradient(
-                                                colors = listOf(
-                                                    Color.Transparent,
-                                                    Color.Black
-                                                ),
-                                                startY = size.height / 3,
-                                                endY = size.height
-                                            )
-                                            onDrawWithContent {
-                                                drawContent()
-                                                drawRect(
-                                                    gradient,
-                                                    blendMode = BlendMode.Multiply
-                                                )
-                                            }
-                                        }, contentScale = ContentScale.FillBounds
-                                )
-                            },
-                            loading = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(
-                                            RoundedCornerShape(30.dp)
-                                        )
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            },
-                            failure = {
-                                Box(
-                                    modifier = Modifier
-                                        .height(300.dp)
-                                        .fillMaxWidth()
-                                        .background(Color.Gray)
-                                ) {
-                                    CircularProgressIndicator(
-                                        color = Color.White,
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            }
-                        )
-                        Box(
-                            modifier = Modifier.padding(24.dp)
                         ) {
-                            Column {
-                                Text(text = event.value.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                                Text(text = "${event.value.username!!} · Huesca", color = Color.Gray, fontSize = 10.sp)
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Text(text = "Capacidad", fontWeight = FontWeight.Bold)
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Text(text = "Plazas ${eventSeat.value}/${event.value.capacity}", color = Color.Gray, fontSize = 10.sp)
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Divider(thickness = 1.dp, color = Color.Gray)
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column() {
-                                        Text(text = event.value.startDate!!, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                        Text(text = "Fecha de inicio", color = Color.Gray, fontSize = 10.sp)
+                            GlideImage(
+                                imageModel = { event.value.imageUrl},
+                                success = { imageState ->
+                                    Image(
+                                        bitmap = imageState.imageBitmap!!,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(300.dp)
+                                            .padding(5.dp)
+                                            .drawWithCache {
+                                                val gradient = Brush.verticalGradient(
+                                                    colors = listOf(
+                                                        Color.Transparent,
+                                                        Color.Black
+                                                    ),
+                                                    startY = size.height / 3,
+                                                    endY = size.height
+                                                )
+                                                onDrawWithContent {
+                                                    drawContent()
+                                                    drawRect(
+                                                        gradient,
+                                                        blendMode = BlendMode.Multiply
+                                                    )
+                                                }
+                                            }, contentScale = ContentScale.FillBounds
+                                    )
+                                },
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(
+                                                RoundedCornerShape(30.dp)
+                                            )
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
                                     }
-                                    Spacer(modifier = Modifier.padding(horizontal = 60.dp))
-                                    //if (event.value.seats!! > 0) {
+                                },
+                                failure = {
+                                    Box(
+                                        modifier = Modifier
+                                            .height(300.dp)
+                                            .fillMaxWidth()
+                                            .background(Color.Gray)
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color.White,
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
+                                }
+                            )
+                            Box(
+                                modifier = Modifier.padding(24.dp)
+                            ) {
+                                Column {
+                                    Text(text = event.value.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                                    Text(text = "${event.value.username!!} · Huesca", color = Color.Gray, fontSize = 10.sp)
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Text(text = "Capacidad", fontWeight = FontWeight.Bold)
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Text(text = "Plazas ${eventSeat.value}/${event.value.capacity}", color = Color.Gray, fontSize = 10.sp)
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Divider(thickness = 1.dp, color = Color.Gray)
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column() {
+                                            Text(text = event.value.startDate!!, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                            Text(text = "Fecha de inicio", color = Color.Gray, fontSize = 10.sp)
+                                        }
+                                        Spacer(modifier = Modifier.padding(horizontal = 60.dp))
+                                        //if (event.value.seats!! > 0) {
                                         Button(
                                             colors = ButtonDefaults.buttonColors(if (isSubscribe.value) Color.Gray else Color.Red),
                                             onClick = {
@@ -202,12 +207,12 @@ fun HomeEtno(
                                                                 token.toString()
                                                             )
                                                             // fcmViewModel.saveFCMToken(FCMToken(token = token))
-                                                           userVillagerViewModel.eventSubscriptionViewModel.dropOutSubscription(
-                                                               title = event.value.title!!,
-                                                               userSubscription = UserSubscription(
-                                                                   fcmToken = token
-                                                               )
-                                                           )
+                                                            userVillagerViewModel.eventSubscriptionViewModel.dropOutSubscription(
+                                                                title = event.value.title!!,
+                                                                userSubscription = UserSubscription(
+                                                                    fcmToken = token
+                                                                )
+                                                            )
                                                             Toast.makeText(
                                                                 currentContext,
                                                                 "Se ha desuscrito al Evento ${event.value.title}",
@@ -223,139 +228,140 @@ fun HomeEtno(
                                                 text = if (isSubscribe.value) "Desuscribirse" else "Subscribirse",
                                                 color = Color.White
                                             )
-                                       // }
+                                            // }
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Divider(thickness = 1.dp, color = Color.Gray)
+                                    Spacer(modifier = Modifier.padding(vertical = 4.dp))
+                                    Text(text = event.value.description!!, fontSize = 12.sp)
+                                }
+                                if(infoDialog.value){
+                                    if(!isSubscribe.value){
+                                        FormSubscription(userVillagerViewModel = userVillagerViewModel, reservePrice = event.value.reservePrice!!, title = event.value.title!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
+
+                                            Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
+
+                                            FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                                OnCompleteListener { task ->
+                                                    if (!task.isSuccessful) {
+                                                        return@OnCompleteListener
+                                                    }
+                                                    val token = task.result
+                                                    userVillagerViewModel.eventSubscriptionViewModel.addSubscriptionToUser(
+                                                        title = event.value.title!!,
+                                                        userSubscription = UserSubscription(
+                                                            fcmToken = token,
+                                                            name = name,
+                                                            mail = mail,
+                                                            phone = phone,
+                                                            wallet = wallet.toDouble(),
+                                                            isSubscribe = true
+                                                        )
+                                                    )
+                                                    Toast.makeText(currentContext, "Se ha subscrito al Evento ${event.value.title}", Toast.LENGTH_SHORT).show()
+                                                }
+                                            )
+                                        })
                                     }
                                 }
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Divider(thickness = 1.dp, color = Color.Gray)
-                                Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                                Text(text = event.value.description!!, fontSize = 12.sp)
-                            }
-                            if(infoDialog.value){
-                                if(!isSubscribe.value){
-                                    FormSubscription(userVillagerViewModel = userVillagerViewModel, reservePrice = event.value.reservePrice!!, title = event.value.title!!, onDismiss = { infoDialog.value = false }, onSubscription = {name, mail, phone, wallet ->
-
-                                        Log.d("form::subscription", "name -> $name, direction -> $mail, phone -> $phone, wallet -> $wallet")
-
-                                        FirebaseMessaging.getInstance().token.addOnCompleteListener(
-                                            OnCompleteListener { task ->
-                                                if (!task.isSuccessful) {
-                                                    return@OnCompleteListener
-                                                }
-                                                val token = task.result
-                                               userVillagerViewModel.eventSubscriptionViewModel.addSubscriptionToUser(
-                                                   title = event.value.title!!,
-                                                   userSubscription = UserSubscription(
-                                                       fcmToken = token,
-                                                       name = name,
-                                                       mail = mail,
-                                                       phone = phone,
-                                                       wallet = wallet.toDouble(),
-                                                       isSubscribe = true
-                                                   )
-                                               )
-                                                Toast.makeText(currentContext, "Se ha subscrito al Evento ${event.value.title}", Toast.LENGTH_SHORT).show()
-                                            }
-                                        )
-                                    })
-                                }
                             }
                         }
                     }
                 }
             }
-        }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 14.dp, end = 14.dp)
-                    .verticalScroll(
-                        rememberScrollState()
-                    )
+                    .fillMaxSize()
             ) {
-                if (connection.value) {
-                    Row() {
-                        Text(text = "Explorar", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Spacer(modifier = Modifier.padding(horizontal = 120.dp))
-                        Icon(
-                            painter = painterResource(id = R.drawable.bell),
-                            contentDescription = "",
-                            modifier = Modifier.size(30.dp)
+                Column(
+                    modifier = Modifier
+                        .padding(top = 20.dp, start = 14.dp, end = 14.dp)
+                        .verticalScroll(
+                            rememberScrollState()
+                        )
+                ) {
+                    if (connection.value) {
+                        Row() {
+                            Text(text = "Explorar", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                            Spacer(modifier = Modifier.padding(horizontal = 120.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.bell),
+                                contentDescription = "",
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                        Text(text = "Noticias sugeridas para ti", color = Color.Gray)
+
+                        ScrollableTabNews(
+                            listNews = news.value,
+                            onItemClick = {},
+                            navController = navController
+                        )
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
+
+                        CardCustomHome(
+                            R.drawable.vaccines_pharmacy,
+                            section = "Farmacias",
+                            title = "Encuentra las farmacias",
+                            description = StringSpace.padRight("Farmacias de guardia y normal", 14)
+                        ) {
+                            navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
+                        }
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                        CardCustomHome(
+                            R.drawable.explore_tourism,
+                            section = "Turismo",
+                            title = "Encuentra el turismo mas destacado",
+                            description = StringSpace.padRight("Turismo más destacado", 26)
+                        ) {
+                            navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
+                        }
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                        Text(text = "Eventos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text(text = "Eventos más destacados para ti", color = Color.Gray)
+
+                        ScrollableTabEvents(
+                            listEvents = events.value,
+                            oneItemClick = {},
+                            cardClick = {
+                                userVillagerViewModel.getUserToVillagerEvents()
+                                listOf(
+                                    scope.launch
+                                    {
+                                        userVillagerViewModel.findEventByUsernameAndTitle(it)
+                                        state.show()
+                                    },
+                                )
+                            },
+                            navController = navController
+                        )
+                        Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                        CardCustomHome(
+                            R.drawable.service,
+                            section = "Servicios",
+                            title = "Aquí encontrarás los servicios",
+                            description = StringSpace.padRight("Turismo más destacados...", 20)
+                        ) {
+                            navController.navigate(NavItem.Phone.route) {
+                                userVillagerViewModel.getUserToVillagerPhones()
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.padding(vertical = 30.dp))
+                }
+
+                if (!connection.value) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            text = "Por favor, comprueba tu conexión a internet",
+                            fontWeight = FontWeight.W700,
+                            fontSize = 14.sp,
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                    Text(text = "Noticias sugeridas para ti", color = Color.Gray)
-
-                    ScrollableTabNews(
-                        listNews = news.value,
-                        onItemClick = {},
-                        navController = navController
-                    )
-                    Spacer(modifier = Modifier.padding(top = 8.dp))
-
-                    CardCustomHome(
-                        R.drawable.vaccines_pharmacy,
-                        section = "Farmacias",
-                        title = "Encuentra las farmacias",
-                        description = StringSpace.padRight("Farmacias de guardia y normal", 14)
-                    ) {
-                        navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
-                    }
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                    CardCustomHome(
-                        R.drawable.explore_tourism,
-                        section = "Turismo",
-                        title = "Encuentra el turismo mas destacado",
-                        description = StringSpace.padRight("Turismo más destacado", 26)
-                    ) {
-                        navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
-                    }
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                    Text(text = "Eventos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Text(text = "Eventos más destacados para ti", color = Color.Gray)
-
-                    ScrollableTabEvents(
-                        listEvents = events.value,
-                        oneItemClick = {},
-                        cardClick = {
-                            userVillagerViewModel.getUserToVillagerEvents()
-                            listOf(
-                                scope.launch
-                                {
-                                    userVillagerViewModel.findEventByUsernameAndTitle(it)
-                                    state.show()
-                                },
-                            )
-                            },
-                        navController = navController
-                    )
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
-                    CardCustomHome(
-                        R.drawable.service,
-                        section = "Servicios",
-                        title = "Aquí encontrarás los servicios",
-                        description = StringSpace.padRight("Turismo más destacados...", 20)
-                    ) {
-                        navController.navigate(NavItem.Phone.route) {
-                            userVillagerViewModel.getUserToVillagerPhones()
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.padding(vertical = 30.dp))
-            }
-            BottomNavigationCustom(navController = navController, 0, userVillagerViewModel = userVillagerViewModel)
-            if (!connection.value) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        text = "Por favor, comprueba tu conexión a internet",
-                        fontWeight = FontWeight.W700,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,66 +21,78 @@ import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.SectionsMenu
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
 fun DiscoveryScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+    Scaffold(
+        topBar = {},
+        bottomBar = { BottomNavigationCustom(
+            navController = navController,
+            stateNavigationButton = 2,
+            userVillagerViewModel = userVillagerViewModel
+        ) }
     ) {
-        Column {
-            Text(text = "Menú", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.padding(8.dp))
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ){
-                items(
-                    listOf(
-                    SectionsMenu(R.drawable.events_icon, "Eventos"),
-                    SectionsMenu(R.drawable.explore_tourism, "Turismo"),
-                    SectionsMenu(R.drawable.vaccines_pharmacy, "Farmacias"),
-                    SectionsMenu(R.drawable.service, "Servicios"),
-                    SectionsMenu(R.drawable.news, "Noticias"),
-                    SectionsMenu(R.drawable.news, "Festividades"),
-                    SectionsMenu(R.drawable.news, "Bandos"),
-                    SectionsMenu(R.drawable.news, "Anuncios"),
-                    SectionsMenu(R.drawable.news, "Galería"),
-                    SectionsMenu(R.drawable.news, "Difunciones"),
-                    SectionsMenu(R.drawable.news, "Enlaces"),
-                    SectionsMenu(R.drawable.news, "Patrocinadores"),
-                    SectionsMenu(R.drawable.news, "Incidentes"),
-                    SectionsMenu(R.drawable.news, "Reservaciones")
-                )){ item ->
-                    Card(
-                        elevation = 4.dp,
-                        modifier = Modifier
-                            .clickable {
-                                when(item.sectionName){
-                                    "Turismo" -> navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
-                                    "Farmacias" -> navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
-                                    "Servicios" -> navController.navigate(NavItem.Phone.route){  }
-                                    "Incidentes" -> navController.navigate(NavItem.Incidents.route){  }
-                                }
-                            }
-                    ) {
-                        Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+        ) {
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(text = "Menú", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.padding(8.dp))
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ){
+                    items(
+                        listOf(
+                            SectionsMenu(R.drawable.events_icon, "Eventos"),
+                            SectionsMenu(R.drawable.explore_tourism, "Turismo"),
+                            SectionsMenu(R.drawable.vaccines_pharmacy, "Farmacias"),
+                            SectionsMenu(R.drawable.service, "Servicios"),
+                            SectionsMenu(R.drawable.news, "Noticias"),
+                            SectionsMenu(R.drawable.news, "Festividades"),
+                            SectionsMenu(R.drawable.news, "Bandos"),
+                            SectionsMenu(R.drawable.news, "Anuncios"),
+                            SectionsMenu(R.drawable.news, "Galería"),
+                            SectionsMenu(R.drawable.news, "Difunciones"),
+                            SectionsMenu(R.drawable.news, "Enlaces"),
+                            SectionsMenu(R.drawable.news, "Patrocinadores"),
+                            SectionsMenu(R.drawable.news, "Incidentes"),
+                            SectionsMenu(R.drawable.news, "Reservaciones")
+                        )){ item ->
+                        Card(
+                            elevation = 4.dp,
                             modifier = Modifier
-                                .padding(8.dp)
+                                .clickable {
+                                    when(item.sectionName){
+                                        "Turismo" -> navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
+                                        "Farmacias" -> navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
+                                        "Servicios" -> navController.navigate(NavItem.Phone.route){  }
+                                        "Incidentes" -> navController.navigate(NavItem.Incidents.route){  }
+                                    }
+                                }
                         ) {
-                            Column() {
-                                Icon(
-                                    painter = painterResource(id = item.icon),
-                                    contentDescription = "",
-                                    modifier = Modifier.size(20.dp),
-                                    tint = Color.Blue
-                                )
-                                Text(text = item.sectionName)
+                            Box(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                            ) {
+                                Column() {
+                                    Icon(
+                                        painter = painterResource(id = item.icon),
+                                        contentDescription = "",
+                                        modifier = Modifier.size(20.dp),
+                                        tint = Color.Blue
+                                    )
+                                    Text(text = item.sectionName)
+                                }
                             }
                         }
                     }

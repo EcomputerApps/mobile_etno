@@ -34,31 +34,41 @@ fun PhoneScreen(
     userVillagerViewModel: UserVillagerViewModel
 ) {
     //BackHandler() { navController.navigate(NavItem.Home.route){  } }
-
     val currentContext= LocalContext.current
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Colors.backgroundEtno)
-            .wrapContentSize(Alignment.Center)
+    Scaffold(
+        topBar = {},
+        bottomBar = { BottomNavigationCustom(
+            navController = navController,
+            stateNavigationButton = -1,
+            userVillagerViewModel = userVillagerViewModel
+        ) }
     ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+                .background(Colors.backgroundEtno)
+                .wrapContentSize(Alignment.Center)
+        ) {
             Box(modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
             ) {
                 Column(
                     modifier = Modifier
-                       // .verticalScroll(rememberScrollState())
+                        // .verticalScroll(rememberScrollState())
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .padding(20.dp)
                 ) {
-                    LazyColumn{
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ){
                         items(PhoneCategories.phoneCategories){
-                            phone ->
+                                phone ->
                             Card(elevation = 7.dp, modifier = Modifier.clickable {
                                 navController.navigate(NavItem.PhoneDetailsList.route){ userVillagerViewModel.phoneFilter(phone.categoryName!!) }
                             }) {
@@ -87,11 +97,10 @@ fun PhoneScreen(
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(vertical = 8.dp))
                         }
                     }
                 }
-                BottomNavigationCustom(navController = navController, -1, userVillagerViewModel = userVillagerViewModel)
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.mobile_etno.views.screen.incident
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -16,12 +17,17 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun IncidentCard(
-    description: String
+    title: String,
+    description: String,
+    onClick: () -> Unit
 ){
     Card(
-        elevation = 4.dp,
+        elevation = 3.dp,
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                onClick.invoke()
+            }
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -32,10 +38,9 @@ fun IncidentCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(imageVector = Icons.Filled.Warning, contentDescription = "Warning", modifier = Modifier.size(14.dp), tint = Color.Red)
-                Text(text = "INCIDENTE", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Red)
+                Text(text = "INCIDENTE - $title", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Red)
             }
             Text(text = description, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
-
 }
