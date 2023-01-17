@@ -1,5 +1,6 @@
 package com.example.mobile_etno.views.screen.discovery
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,9 +20,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
+import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.SectionsMenu
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun DiscoveryScreen(
@@ -76,7 +80,18 @@ fun DiscoveryScreen(
                                         "Turismo" -> navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
                                         "Farmacias" -> navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
                                         "Servicios" -> navController.navigate(NavItem.Phone.route){  }
-                                        "Incidentes" -> navController.navigate(NavItem.Incidents.route){  }
+                                        "Incidentes" -> navController.navigate(NavItem.Incidents.route){
+                                            FirebaseMessaging.getInstance().token.addOnCompleteListener(
+                                                OnCompleteListener { task ->
+                                                if (!task.isSuccessful) {
+                                                    Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
+                                                    return@OnCompleteListener
+                                                }
+                                                // Get new FCM registration token
+                                                val token = task.result
+                                                    userVillagerViewModel.getVillagerIncidents(fcmToken = token)
+                                            })
+                                        }
                                     }
                                 }
                         ) {

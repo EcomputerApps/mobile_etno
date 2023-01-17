@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +32,7 @@ fun IncidentsScreen(
     userVillagerViewModel: UserVillagerViewModel
 ){
     val currentContext = LocalContext.current
+    val getIncidents = userVillagerViewModel.saveIncidentsToVillager.collectAsState()
 
     Scaffold(
         topBar = {},
@@ -60,18 +62,7 @@ fun IncidentsScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ){
-                    items(listOf(
-                        IncidentModel(title = "Avería en una tubería", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                        IncidentModel(title = "Contador del agua dañado", description = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."),
-                    )){
+                    items(getIncidents.value){
                         item ->
                         IncidentCard(
                             title = item.title!!,

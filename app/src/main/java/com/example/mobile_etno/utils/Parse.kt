@@ -1,6 +1,11 @@
 package com.example.mobile_etno.utils
 
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import java.time.format.DateTimeFormatter
+
 
 object Parse {
     fun getDay(date: String): String {
@@ -22,4 +27,5 @@ object Parse {
         val europeanDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
         return europeanDateFormatter.format(java.time.LocalDate.of(getYear(date).toInt(), getMouth(date).toInt(), getDay(date).toInt()))
     }
+
 }

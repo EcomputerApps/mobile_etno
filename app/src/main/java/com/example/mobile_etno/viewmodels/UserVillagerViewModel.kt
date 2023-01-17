@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
+import com.example.mobile_etno.models.mail.Mail
+import com.example.mobile_etno.models.mail.MailSuccess
 import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.phone.Phone
 import com.example.mobile_etno.models.service.client.ImageClient
@@ -18,10 +20,12 @@ import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import com.himanshoe.kalendar.model.KalendarEvent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 class UserVillagerViewModel(
     private val context: Context,
@@ -107,12 +111,24 @@ class UserVillagerViewModel(
     private val _saveImages = MutableStateFlow<MutableList<Image>>(mutableListOf())
     private val saveImages: StateFlow<MutableList<Image>> = _saveImages
 
+    //State to save incident ->
+    private val _saveIncidentsToVillager = MutableStateFlow<List<IncidentModel>>(listOf())
+    val saveIncidentsToVillager: StateFlow<List<IncidentModel>> = _saveIncidentsToVillager
+
+    private val _saveIncidentToVillager = MutableStateFlow(IncidentModel())
+    val saveIncidentToVillager: StateFlow<IncidentModel> = _saveIncidentToVillager
+
+    //State to pick the mail message ->
+    private val _saveUserMessageMail = MutableStateFlow(MailSuccess())
+    val saveUserMessage: StateFlow<MailSuccess> = _saveUserMessageMail
+
+    private val _isFinishedMessage = MutableStateFlow(false)
+    val isFinishedMessage: StateFlow<Boolean> = _isFinishedMessage
 
     var isRefreshing by mutableStateOf(false)
 
     init {
         checkConnectionInRealTime()
-        //getUserToVillagerNews()
     }
 
     // Events -> ------------------------------------------------------------------------------------------------------------------------------------------
@@ -291,7 +307,7 @@ class UserVillagerViewModel(
         _userVillagerNews.value = saveUserVillagerNews.value
     }
 
-// Images -> ------------------------------------------------------------------------------------------------------------------------------------------------
+    // Images -> ------------------------------------------------------------------------------------------------------------------------------------------------
     fun getImagesByLocality(){
         viewModelScope.launch {
             try {
@@ -308,5 +324,48 @@ class UserVillagerViewModel(
     }
     fun filterAllImages(){
         _userVillagerImages.value = saveImages.value
+    }
+
+    // Mail -> ---------------------------------------------------------------------------------------------------------------------------------------------------
+    fun getVillagerIncidents(fcmToken: String){
+        viewModelScope.launch(Dispatchers.IO){
+            try {
+                val request = async {
+                    val requestIncidents = UserVillagerClient.userVillager.getIncidentsByUsernameAndFcmTokenAndTitle(localityViewModel.saveStateLocality.value, fcmToken)
+                    requestIncidents.execute()
+                }
+                val response = request.await()
+                _saveIncidentsToVillager.value = response.body()!!
+            }catch (_: Exception){  }
+        }
+    }
+
+    fun sendIncidence(mail: Mail, fcmToken: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                mail.address = "ecomputerapps@gmail.com"
+
+                val requestMail = async {
+                    val requestMail = UserVillagerClient.userVillager.sendMailWithAttachment(mail)
+                    requestMail.execute()
+                }
+                val responseMail = requestMail.await()
+
+                val requestIncident = async {
+                    val requestIncident = UserVillagerClient.userVillager.addIncidentInUser(localityViewModel.saveStateLocality.value, IncidentModel(fcmToken = fcmToken, title = mail.subject, description = mail.message))
+                    requestIncident.execute()
+                }
+                val responseIncident = requestIncident.await()
+
+                _isFinishedMessage.value = true
+                _saveUserMessageMail.value = responseMail.body()!!
+
+                _saveIncidentToVillager.value = responseIncident.body()!!
+
+            }catch (_: Exception){  }
+        }
+    }
+    fun updateIsFinished(isFinished: Boolean){
+        _isFinishedMessage.value = isFinished
     }
 }
