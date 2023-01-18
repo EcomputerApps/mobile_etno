@@ -93,35 +93,33 @@ fun GalleryScreen(
                     }, leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = "search", tint = Color.Black)})
                 }
             }
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart){
+            Box(modifier = Modifier.fillMaxSize().padding(top = 280.dp), contentAlignment = Alignment.CenterStart){
                         Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "Todo", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text(text = "Total", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                             Text(text = "${images.value.size} fotos", fontSize = 10.sp, color = Color.Gray)
-                        }
 
-                //Text(text = "asdfdasafasd", modifier = Modifier.padding(top = 60.dp))
-                LazyVerticalGrid(modifier = Modifier.padding(top = 450.dp), columns = GridCells.Fixed(3), content = {
-                    items(images.value){
-                        image ->
-                        Card(
-                            modifier = Modifier
-                                .padding(4.dp)
-                                .clickable {
-                                    navController.navigate("${NavItem.ImageDetail.route}?link=${image.link}")
-                                },
-                            elevation = 8.dp
-                        ) {
-                            Image(
-                                painter = rememberAsyncImagePainter(model = image.link),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .height(100.dp)
-                                    .width(100.dp),
-                                contentScale = ContentScale.FillBounds)
+                            LazyVerticalGrid(columns = GridCells.Fixed(3), content = {
+                                items(images.value){
+                                        image ->
+                                    Card(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .clickable {
+                                                navController.navigate("${NavItem.ImageDetail.route}?link=${image.link}")
+                                            },
+                                        elevation = 8.dp
+                                    ) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(model = image.link),
+                                            contentDescription = "",
+                                            modifier = Modifier
+                                                .height(100.dp)
+                                                .width(100.dp),
+                                            contentScale = ContentScale.FillBounds)
+                                    }
+                                }
+                            })
                         }
-                    }
-                })
             }
-        
     }
 }

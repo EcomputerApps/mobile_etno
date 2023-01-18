@@ -1,13 +1,8 @@
 package com.example.mobile_etno.views.screen.pharmacy
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -24,20 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
 import com.example.mobile_etno.models.Pharmacy
-import com.example.mobile_etno.models.Tourism
-import com.example.mobile_etno.utils.colors.Colors
-import com.example.mobile_etno.viewmodels.MenuViewModel
-import com.example.mobile_etno.viewmodels.PharmacyViewModel
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
-import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.components.google.GoogleMapPharmacies
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

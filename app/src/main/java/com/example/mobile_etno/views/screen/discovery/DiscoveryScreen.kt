@@ -87,11 +87,12 @@ fun DiscoveryScreen(
                                                     Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
                                                     return@OnCompleteListener
                                                 }
-                                                // Get new FCM registration token
                                                 val token = task.result
-                                                    userVillagerViewModel.getVillagerIncidents(fcmToken = token)
+                                                userVillagerViewModel.getVillagerIncidents(fcmToken = token)
                                             })
                                         }
+                                        "Galería" -> navController.navigate(NavItem.Gallery.route){ userVillagerViewModel.getImagesByLocality() }
+                                        "Bandos" -> navController.navigate(NavItem.Bandos.route){  }
                                     }
                                 }
                         ) {

@@ -52,10 +52,7 @@
                 android:value="" />
 
         </activity>
-        <activity android:name=".views.screen.wallet.WalletActivity"
-            android:exported="true">
 
-        </activity>
     </application>
 
 </manifest>

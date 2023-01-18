@@ -3,6 +3,8 @@ package com.example.mobile_etno
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import java.net.URL
+import java.net.URLConnection
 
 fun isInternetAvailable(context: Context): Boolean {
     var result = false
@@ -18,4 +20,16 @@ fun isInternetAvailable(context: Context): Boolean {
         else -> false
     }
     return result
+}
+fun isConnectedToServer(): Boolean {
+    return try {
+        val myUrl = URL("http://192.168.137.1:8080")
+        val connection: URLConnection = myUrl.openConnection()
+        connection.connectTimeout = 15
+        connection.connect()
+        true
+    } catch (e: Exception) {
+        // Handle your exceptions
+        false
+    }
 }

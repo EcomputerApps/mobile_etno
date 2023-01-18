@@ -16,6 +16,7 @@ import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
 import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
 import com.example.mobile_etno.views.modern.HomeEtno
 import com.example.mobile_etno.views.screen.*
+import com.example.mobile_etno.views.screen.bandos.BandoScreen
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.discovery.DiscoveryScreen
@@ -197,7 +198,10 @@ fun Navigation(
             LinksScreen(navController = navController)
         }
         composable(NavItem.Bandos.route){
-            BandosScreen(navController = navController)
+            BandoScreen(
+                navController = navController,
+                userVillagerViewModel = userVillagerViewModel
+            )
         }
     }
 }

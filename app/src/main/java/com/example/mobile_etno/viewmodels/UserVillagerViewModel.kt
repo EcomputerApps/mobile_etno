@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mobile_etno.isConnectedToServer
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
 import com.example.mobile_etno.models.mail.Mail
@@ -25,6 +26,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.awaitResponse
+import java.net.SocketTimeoutException
+import kotlin.system.measureTimeMillis
 
 
 class UserVillagerViewModel(
@@ -124,6 +128,9 @@ class UserVillagerViewModel(
 
     private val _isFinishedMessage = MutableStateFlow(false)
     val isFinishedMessage: StateFlow<Boolean> = _isFinishedMessage
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     var isRefreshing by mutableStateOf(false)
 
@@ -330,11 +337,9 @@ class UserVillagerViewModel(
     fun getVillagerIncidents(fcmToken: String){
         viewModelScope.launch(Dispatchers.IO){
             try {
-                val request = async {
-                    val requestIncidents = UserVillagerClient.userVillager.getIncidentsByUsernameAndFcmTokenAndTitle(localityViewModel.saveStateLocality.value, fcmToken)
-                    requestIncidents.execute()
-                }
-                val response = request.await()
+                val requestIncidents = UserVillagerClient.userVillager.getIncidentsByUsernameAndFcmTokenAndTitle(localityViewModel.saveStateLocality.value, fcmToken)
+                val response = requestIncidents.execute()
+
                 _saveIncidentsToVillager.value = response.body()!!
             }catch (_: Exception){  }
         }
@@ -344,28 +349,33 @@ class UserVillagerViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 mail.address = "ecomputerapps@gmail.com"
-
-                val requestMail = async {
-                    val requestMail = UserVillagerClient.userVillager.sendMailWithAttachment(mail)
-                    requestMail.execute()
-                }
-                val responseMail = requestMail.await()
+                    val requestMail = async {
+                        val requestMail = UserVillagerClient.userVillager.sendMailWithAttachment(mail)
+                        _isLoading.value = true
+                        requestMail.execute()
+                    }
 
                 val requestIncident = async {
                     val requestIncident = UserVillagerClient.userVillager.addIncidentInUser(localityViewModel.saveStateLocality.value, IncidentModel(fcmToken = fcmToken, title = mail.subject, description = mail.message))
                     requestIncident.execute()
                 }
-                val responseIncident = requestIncident.await()
 
-                _isFinishedMessage.value = true
-                _saveUserMessageMail.value = responseMail.body()!!
+                val time = measureTimeMillis {
+                    val responseMail = requestMail.await()
+                    val responseIncident = requestIncident.await()
 
-                _saveIncidentToVillager.value = responseIncident.body()!!
-
-            }catch (_: Exception){  }
+                    _isFinishedMessage.value = true
+                    _saveUserMessageMail.value = responseMail.body()!!
+                    _saveIncidentToVillager.value = responseIncident.body()!!
+                }
+            }catch (_: SocketTimeoutException){  }
         }
     }
+
     fun updateIsFinished(isFinished: Boolean){
         _isFinishedMessage.value = isFinished
+    }
+    fun updateIsLoading(isLoading: Boolean){
+        _isLoading.value = isLoading
     }
 }

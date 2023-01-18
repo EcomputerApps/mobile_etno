@@ -84,10 +84,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.mobile_etno.views.screen.wallet.WalletActivity"
-            android:exported="true" >
-        </activity>
-        <activity
             android:name="androidx.compose.ui.tooling.PreviewActivity"
             android:exported="true" />
         <activity
