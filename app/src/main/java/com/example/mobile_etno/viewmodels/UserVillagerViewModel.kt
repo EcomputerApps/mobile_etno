@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.isConnectedToServer
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
+import com.example.mobile_etno.models.bando.Bando
 import com.example.mobile_etno.models.mail.Mail
 import com.example.mobile_etno.models.mail.MailSuccess
 import com.example.mobile_etno.models.news.New
@@ -19,7 +20,6 @@ import com.example.mobile_etno.models.service.client.UserVillagerClient
 import com.example.mobile_etno.models.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
-import com.himanshoe.kalendar.model.KalendarEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,10 +82,6 @@ class UserVillagerViewModel(
     private val _userVillagerImages = MutableStateFlow<MutableList<Image>>(mutableListOf())
     val userVillagerImages: StateFlow<MutableList<Image>> = _userVillagerImages
 
-    //State to CalendarEvents ->
-    private val _calendarEvents = MutableStateFlow<MutableSet<KalendarEvent>>(mutableSetOf())
-    val calendarEvents: StateFlow<MutableSet<KalendarEvent>> = _calendarEvents
-
     //State to Save event list ->
     private val _saveUserVillagerEvents = MutableStateFlow<MutableList<Event>>(mutableListOf())
     private val saveUserVillagerEvents: StateFlow<MutableList<Event>> = _saveUserVillagerEvents
@@ -131,6 +127,13 @@ class UserVillagerViewModel(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    //State Bandos ->
+    private val _userBandos = MutableStateFlow<List<Bando>>(listOf())
+    val userBandos: StateFlow<List<Bando>> = _userBandos
+
+    private val _userBando = MutableStateFlow(Bando())
+    val userBando: StateFlow<Bando> = _userBando
 
     var isRefreshing by mutableStateOf(false)
 
@@ -377,5 +380,27 @@ class UserVillagerViewModel(
     }
     fun updateIsLoading(isLoading: Boolean){
         _isLoading.value = isLoading
+    }
+
+    // Bandos -> -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val getBandosByUsername: () -> Unit = {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val requestBandos = UserVillagerClient.userVillager.getBandosByUsername(localityViewModel.saveStateLocality.value)
+                val response = requestBandos.execute()
+
+                _userBandos.value = response.body()!!
+            }catch (_: Exception){  }
+        }
+    }
+    val getBandoByUsernameAndTitle: (title: String) -> Unit = {
+        viewModelScope.launch(Dispatchers.IO){
+            try {
+                val requestBando = UserVillagerClient.userVillager.getBandoByUsernameAndTitle(username = localityViewModel.saveStateLocality.value, title = it)
+                val response = requestBando.execute()
+
+                _userBando.value = response.body()!!
+            }catch (_: Exception){  }
+        }
     }
 }

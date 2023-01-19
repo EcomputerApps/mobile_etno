@@ -25,6 +25,10 @@ fun BandoScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
+
+
+    val bandos = userVillagerViewModel.userBandos.collectAsState()
+    val bando = userVillagerViewModel.userBando.collectAsState()
     val skipHalfExpanded by remember { mutableStateOf(false) }
     val state = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -43,26 +47,35 @@ fun BandoScreen(
             modifier = Modifier.padding(it),
             sheetState = state,
             sheetContent = {
-                Box(
-
-                ) {
-                    Column(
-
-                    ) {
+                when(bando.value.title){
+                    null -> {
+                        Text(text = "Null")
+                    }
+                    else -> {
                         Box(
-                            modifier = Modifier.padding(24.dp)
+
                         ) {
                             Column(
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+
                             ) {
-                                Icon(painter = painterResource(id = R.drawable.campaign), contentDescription = "", modifier = Modifier.size(200.dp).align(Alignment.CenterHorizontally), tint = Color.Red)
-                                Text(text = "Convocación de elecciones", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                                Text(text = "Bolea · Huesca", color = Color.Gray, fontSize = 10.sp)
-                                Divider(thickness = 1.dp, color = Color.Gray)
-                                Text(text = "Emitido", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                Text(text = "18-01-2023", color = Color.Gray, fontSize = 10.sp)
-                                Divider(thickness = 1.dp, color = Color.Gray)
-                                Text(text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.", fontSize = 12.sp)
+                                Box(
+                                    modifier = Modifier.padding(24.dp)
+                                ) {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(painter = painterResource(id = R.drawable.campaign), contentDescription = "", modifier = Modifier
+                                            .size(200.dp)
+                                            .align(Alignment.CenterHorizontally), tint = Color.Red)
+                                        Text(text = bando.value.title!!, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                                        Text(text = "${bando.value.username} · Huesca", color = Color.Gray, fontSize = 10.sp)
+                                        Divider(thickness = 1.dp, color = Color.Gray)
+                                        Text(text = "Emitido", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                        Text(text = bando.value.emitDate!!, color = Color.Gray, fontSize = 10.sp)
+                                        Divider(thickness = 1.dp, color = Color.Gray)
+                                        Text(text = bando.value.description!!, fontSize = 12.sp)
+                                    }
+                                }
                             }
                         }
                     }
@@ -82,7 +95,7 @@ fun BandoScreen(
                         verticalArrangement = Arrangement
                             .spacedBy(14.dp)
                     ){
-                        items(listOf("Convocatoria de funcionarios 1", "Convocatoria de funcionarios 2", "Convocatoria de funcionarios 3")){
+                        items(bandos.value){
                                 item ->
                             Card(
                                 elevation = 4.dp,
@@ -90,6 +103,9 @@ fun BandoScreen(
                                     .fillMaxWidth()
                                     .clickable {
                                         scope.launch {
+                                            userVillagerViewModel.getBandoByUsernameAndTitle.invoke(
+                                                item.title!!
+                                            )
                                             state.show()
                                         }
                                     }
@@ -104,8 +120,8 @@ fun BandoScreen(
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
-                                            Text(text = item, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                            Text(text = "Emitido el 18-01-2023", color = Color.Gray, fontSize = 12.sp)
+                                            Text(text = item.title!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                            Text(text = item.emitDate!!, color = Color.Gray, fontSize = 12.sp)
                                         }
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             Icon(painter = painterResource(id = R.drawable.right), contentDescription = "right", modifier = Modifier
@@ -119,8 +135,6 @@ fun BandoScreen(
                     }
                 }
             }
-
         }
-
     }
 }

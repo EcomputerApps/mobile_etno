@@ -20,7 +20,6 @@ import com.example.mobile_etno.views.screen.bandos.BandoScreen
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.discovery.DiscoveryScreen
-import com.example.mobile_etno.views.screen.events.EventsScreen
 import com.example.mobile_etno.views.screen.gallery.GalleryScreen
 import com.example.mobile_etno.views.screen.gallery.ImageDetail
 import com.example.mobile_etno.views.screen.incident.AddIncident
@@ -68,16 +67,7 @@ fun Navigation(
         composable(NavItem.DiscoverySections.route){
             DiscoveryScreen(navController, userVillagerViewModel)
         }
-        composable(
-            NavItem.Events.route,
-        ) {
-            EventsScreen(
-                navController = navController,
-                userVillagerViewModel = userVillagerViewModel,
-                sqlDataBase = sqlDataBase
-               // listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning))
-            )
-        }
+
         composable(NavItem.Reservations.route) {
             ReservationsScreen(navController = navController)
         }

@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +82,7 @@ fun HomeEtno(
             sheetState = state,
             sheetContent = {
                 if(event.value.title == null){
-                    Text(text = "Buenas")
+                    Text(text = "Null")
                 }else{
                     BackHandler() {
                         navController.navigate(NavItem.HomeModern.route){
@@ -283,15 +282,7 @@ fun HomeEtno(
                         )
                 ) {
                     if (connection.value) {
-                        Row() {
-                            Text(text = "Explorar", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                            Spacer(modifier = Modifier.padding(horizontal = 120.dp))
-                            Icon(
-                                painter = painterResource(id = R.drawable.bell),
-                                contentDescription = "",
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
+                        Text(text = "Explorar", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                         Text(text = "Noticias sugeridas para ti", color = Color.Gray)
 
                         ScrollableTabNews(

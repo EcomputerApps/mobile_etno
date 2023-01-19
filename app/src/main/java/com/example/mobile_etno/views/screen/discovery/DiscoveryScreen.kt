@@ -92,7 +92,7 @@ fun DiscoveryScreen(
                                             })
                                         }
                                         "Galería" -> navController.navigate(NavItem.Gallery.route){ userVillagerViewModel.getImagesByLocality() }
-                                        "Bandos" -> navController.navigate(NavItem.Bandos.route){  }
+                                        "Bandos" -> navController.navigate(NavItem.Bandos.route){ userVillagerViewModel.getBandosByUsername.invoke() }
                                     }
                                 }
                         ) {
