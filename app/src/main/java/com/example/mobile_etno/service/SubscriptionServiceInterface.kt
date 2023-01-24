@@ -1,4 +1,4 @@
-package com.example.mobile_etno.models.service
+package com.example.mobile_etno.service
 
 import com.example.mobile_etno.models.UserSubscription
 import retrofit2.Call

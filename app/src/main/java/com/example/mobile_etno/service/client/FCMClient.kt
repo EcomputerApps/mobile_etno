@@ -1,6 +1,6 @@
-package com.example.mobile_etno.models.service.client
+package com.example.mobile_etno.service.client
 
-import com.example.mobile_etno.models.service.FCMServiceInterface
+import com.example.mobile_etno.service.FCMServiceInterface
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

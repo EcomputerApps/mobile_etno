@@ -7,6 +7,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -43,10 +44,12 @@ fun CardCustomHome(
                 Text(text = title, fontWeight = FontWeight.Bold)
                 Text(text = description, color = Color.Gray)
             }
-            Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-            Icon(painter = painterResource(id = R.drawable.arrow), contentDescription = "arrow", modifier = Modifier
-                .size(30.dp)
-                .padding(top = 2.dp))
+            Box(modifier = Modifier.fillMaxSize()) {
+                Icon(painter = painterResource(id = R.drawable.arrow), contentDescription = "arrow", modifier = Modifier
+                    .size(30.dp)
+                    .padding(top = 2.dp)
+                    .align(Alignment.BottomEnd))
+            }
         }
     }
 }

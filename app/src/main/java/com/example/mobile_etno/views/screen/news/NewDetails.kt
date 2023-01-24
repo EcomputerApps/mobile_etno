@@ -64,7 +64,7 @@ fun NewDetails(
                         modifier = Modifier
                             .height(300.dp)
                             .fillMaxWidth()
-                            .background(Color.Gray)
+                            .background(Color.LightGray)
 
                     ) {
                         CircularProgressIndicator(

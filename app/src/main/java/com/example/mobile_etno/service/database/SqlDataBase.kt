@@ -1,4 +1,4 @@
-package com.example.mobile_etno.models.service.database
+package com.example.mobile_etno.service.database
 
 import android.annotation.SuppressLint
 import android.content.ContentValues

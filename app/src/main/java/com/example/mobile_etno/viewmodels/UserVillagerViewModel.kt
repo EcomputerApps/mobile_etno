@@ -7,17 +7,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mobile_etno.isConnectedToServer
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
 import com.example.mobile_etno.models.bando.Bando
+import com.example.mobile_etno.models.link.Link
 import com.example.mobile_etno.models.mail.Mail
 import com.example.mobile_etno.models.mail.MailSuccess
 import com.example.mobile_etno.models.news.New
 import com.example.mobile_etno.models.phone.Phone
-import com.example.mobile_etno.models.service.client.ImageClient
-import com.example.mobile_etno.models.service.client.UserVillagerClient
-import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.models.sponsor.Sponsor
+import com.example.mobile_etno.service.client.ImageClient
+import com.example.mobile_etno.service.client.UserVillagerClient
+import com.example.mobile_etno.service.database.SqlDataBase
 import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import kotlinx.coroutines.Dispatchers
@@ -134,6 +135,14 @@ class UserVillagerViewModel(
 
     private val _userBando = MutableStateFlow(Bando())
     val userBando: StateFlow<Bando> = _userBando
+
+    //State Links ->
+    private val _userLinks = MutableStateFlow<List<Link>>(listOf())
+    val userLinks: StateFlow<List<Link>> = _userLinks
+
+    //State sponsors ->
+    private val _userSponsors = MutableStateFlow<List<Sponsor>>(listOf())
+    val userSponsors: StateFlow<List<Sponsor>> = _userSponsors
 
     var isRefreshing by mutableStateOf(false)
 
@@ -400,6 +409,30 @@ class UserVillagerViewModel(
                 val response = requestBando.execute()
 
                 _userBando.value = response.body()!!
+            }catch (_: Exception){  }
+        }
+    }
+
+    // Links -> ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val getLinksByUsername: () -> Unit = {
+        viewModelScope.launch(Dispatchers.IO){
+            try {
+                val requestLinks = UserVillagerClient.userVillager.getLinksByUsername(localityViewModel.saveStateLocality.value)
+                val response = requestLinks.execute()
+
+                _userLinks.value = response.body()!!
+            }catch (_: Exception){  }
+        }
+    }
+
+    // Sponsors -> ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val getSponsorsByUsername: () -> Unit = {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val requestSponsors = UserVillagerClient.userVillager.getSponsors(localityViewModel.saveStateLocality.value)
+                val response = requestSponsors.execute()
+
+                _userSponsors.value = response.body()!!
             }catch (_: Exception){  }
         }
     }

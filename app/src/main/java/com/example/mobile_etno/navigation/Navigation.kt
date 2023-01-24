@@ -9,7 +9,7 @@ import androidx.navigation.navArgument
 import com.example.mobile_etno.*
 import com.example.mobile_etno.models.*
 import com.example.mobile_etno.models.news.New
-import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
@@ -20,6 +20,7 @@ import com.example.mobile_etno.views.screen.bandos.BandoScreen
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
 import com.example.mobile_etno.views.screen.discovery.DiscoveryScreen
+import com.example.mobile_etno.views.screen.events.EventScreen
 import com.example.mobile_etno.views.screen.gallery.GalleryScreen
 import com.example.mobile_etno.views.screen.gallery.ImageDetail
 import com.example.mobile_etno.views.screen.incident.AddIncident
@@ -31,6 +32,7 @@ import com.example.mobile_etno.views.screen.pharmacy.PharmacyDetails
 import com.example.mobile_etno.views.screen.phone.PhoneDetailsList
 import com.example.mobile_etno.views.screen.phone.PhoneScreen
 import com.example.mobile_etno.views.screen.splash.SplashScreen
+import com.example.mobile_etno.views.screen.sponsor.SponsorScreen
 import com.example.mobile_etno.views.screen.tourism.TourismDetails
 import com.example.mobile_etno.views.screen.tourism.TourismScreen
 
@@ -53,16 +55,11 @@ fun Navigation(
         composable(NavItem.Localities.route){
             LocalitiesChooseScreen(localityViewModel = localityViewModel, navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
-        composable(NavItem.Home.route) {
-            HomeScreen(
-                list,
-                navController = navController,
-                userVillagerViewModel = userVillagerViewModel,
-                fcmViewModel = fcmViewModel)
-                //listBottomNavigation = listOf(NavigationBottom("Noticias", Icons.Filled.Search), NavigationBottom("Menu", Icons.Filled.Home), NavigationBottom("Anuncios", Icons.Filled.Warning)))
-        }
         composable(NavItem.HomeModern.route){
             HomeEtno(navController = navController, userVillagerViewModel = userVillagerViewModel)
+        }
+        composable(NavItem.Events.route){
+            EventScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.DiscoverySections.route){
             DiscoveryScreen(navController, userVillagerViewModel)
@@ -150,10 +147,7 @@ fun Navigation(
             ))
         }
         composable(NavItem.Sponsors.route){
-            SponsorsScreen(navController = navController)
-        }
-        composable(NavItem.Festivities.route){
-            FestivitiesScreen(navController = navController)
+           SponsorScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.Advertisements.route){
             AdvertisementsScreen(navController = navController)
@@ -185,7 +179,10 @@ fun Navigation(
             userVillagerViewModel = userVillagerViewModel
         ) }
         composable(NavItem.Links.route){
-            LinksScreen(navController = navController)
+            com.example.mobile_etno.views.screen.link.LinksScreen(
+                navController = navController,
+                userVillagerViewModel = userVillagerViewModel
+            )
         }
         composable(NavItem.Bandos.route){
             BandoScreen(

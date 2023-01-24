@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +63,10 @@ fun HomeEtno(
     )
     val scope = rememberCoroutineScope()
 
+    BackHandler() {
+        navController.navigate(NavItem.ChooseLocality.route){  }
+    }
+
     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
         if (!task.isSuccessful) {
             Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
@@ -84,11 +89,7 @@ fun HomeEtno(
                 if(event.value.title == null){
                     Text(text = "Null")
                 }else{
-                    BackHandler() {
-                        navController.navigate(NavItem.HomeModern.route){
 
-                        }
-                    }
                     FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                         if (!task.isSuccessful) {
                             Log.w("failed fcm", "Fetching FCM registration token failed", task.exception)
@@ -153,7 +154,7 @@ fun HomeEtno(
                                         modifier = Modifier
                                             .height(300.dp)
                                             .fillMaxWidth()
-                                            .background(Color.Gray)
+                                            .background(Color.LightGray)
                                     ) {
                                         CircularProgressIndicator(
                                             color = Color.White,
@@ -275,6 +276,7 @@ fun HomeEtno(
                     .fillMaxSize()
             ) {
                 Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier
                         .padding(top = 20.dp, start = 14.dp, end = 14.dp)
                         .verticalScroll(
@@ -346,17 +348,23 @@ fun HomeEtno(
 
                 if (!connection.value) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Text(
-                            text = "Por favor, comprueba tu conexión a internet",
-                            fontWeight = FontWeight.W700,
-                            fontSize = 14.sp,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.wifi_off),
+                                contentDescription = ""
+                            )
+                            Text(
+                                text = "Por favor, comprueba tu conexión a internet",
+                                fontWeight = FontWeight.W700,
+                                fontSize = 14.sp,
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-
-

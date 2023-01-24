@@ -23,7 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.mobile_etno.*
 import com.example.mobile_etno.R
-import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.service.database.SqlDataBase
 import com.example.mobile_etno.navigation.Navigation
 import com.example.mobile_etno.viewmodels.*
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel

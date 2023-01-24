@@ -1,6 +1,6 @@
-package com.example.mobile_etno.models.service.client
+package com.example.mobile_etno.service.client
 
-import com.example.mobile_etno.models.service.SubscriptionServiceInterface
+import com.example.mobile_etno.service.SubscriptionServiceInterface
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -10,5 +10,6 @@ object SubscriptionClient {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val subscriptionService: SubscriptionServiceInterface = retrofit.create(SubscriptionServiceInterface::class.java)
+    val subscriptionService: SubscriptionServiceInterface = retrofit.create(
+        SubscriptionServiceInterface::class.java)
 }

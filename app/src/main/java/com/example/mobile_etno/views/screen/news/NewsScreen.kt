@@ -23,7 +23,6 @@ fun NewsScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-    var currentContext = LocalContext.current
     var selectedTabIndex by remember { mutableStateOf(0) }
     val news = userVillagerViewModel.userVillagerNews.collectAsState()
     val connection = userVillagerViewModel.connection.collectAsState()

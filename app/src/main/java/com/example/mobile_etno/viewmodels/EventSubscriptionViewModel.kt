@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.UserSubscription
-import com.example.mobile_etno.models.service.client.SubscriptionClient
+import com.example.mobile_etno.service.client.SubscriptionClient
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

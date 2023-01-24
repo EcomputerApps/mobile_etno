@@ -7,5 +7,6 @@ data class Bando(
     var username: String ? = null,
     var title: String ? = null,
     var description: String ? = null,
-    var emitDate: String ? = null
+    var issuedDate: String ? = null,
+    var imageUrl: String ? = null
 )

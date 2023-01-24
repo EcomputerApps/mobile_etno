@@ -1,6 +1,6 @@
-package com.example.mobile_etno.models.service.client
+package com.example.mobile_etno.service.client
 
-import com.example.mobile_etno.models.service.UserVillagerInterface
+import com.example.mobile_etno.service.UserVillagerInterface
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

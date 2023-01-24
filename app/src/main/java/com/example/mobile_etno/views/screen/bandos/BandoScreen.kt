@@ -71,7 +71,7 @@ fun BandoScreen(
                                         Text(text = "${bando.value.username} · Huesca", color = Color.Gray, fontSize = 10.sp)
                                         Divider(thickness = 1.dp, color = Color.Gray)
                                         Text(text = "Emitido", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                        Text(text = bando.value.emitDate!!, color = Color.Gray, fontSize = 10.sp)
+                                        Text(text = bando.value.issuedDate!!, color = Color.Gray, fontSize = 10.sp)
                                         Divider(thickness = 1.dp, color = Color.Gray)
                                         Text(text = bando.value.description!!, fontSize = 12.sp)
                                     }
@@ -89,8 +89,10 @@ fun BandoScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 8.dp, end = 8.dp, top = 16.dp)
+                        .padding(start = 8.dp, end = 8.dp, top = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    Text(text = "Bandos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     LazyColumn(
                         verticalArrangement = Arrangement
                             .spacedBy(14.dp)
@@ -121,7 +123,7 @@ fun BandoScreen(
                                             verticalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
                                             Text(text = item.title!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                            Text(text = item.emitDate!!, color = Color.Gray, fontSize = 12.sp)
+                                            Text(text = item.issuedDate!!, color = Color.Gray, fontSize = 12.sp)
                                         }
                                         Box(modifier = Modifier.fillMaxSize()) {
                                             Icon(painter = painterResource(id = R.drawable.right), contentDescription = "right", modifier = Modifier

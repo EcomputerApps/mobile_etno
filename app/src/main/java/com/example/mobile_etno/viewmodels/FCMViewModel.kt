@@ -3,7 +3,7 @@ package com.example.mobile_etno.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.models.FCMToken
-import com.example.mobile_etno.models.service.client.FCMClient
+import com.example.mobile_etno.service.client.FCMClient
 import com.example.mobile_etno.viewmodels.locality.LocalityViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -3,7 +3,7 @@ package com.example.mobile_etno
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.mobile_etno.models.service.database.SqlDataBase
+import com.example.mobile_etno.service.database.SqlDataBase
 import com.example.mobile_etno.viewmodels.EventSubscriptionViewModel
 import com.example.mobile_etno.viewmodels.FCMViewModel
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
@@ -26,11 +26,13 @@ class MainActivity : ComponentActivity() {
         val menuItem = resources.getStringArray(R.array.menu_items).toList()
 
         setContent {
-           MainScreen(menuItem,
+           MainScreen(
+               menuItem,
                localityViewModel = localityViewModel,
                userVillagerViewModel = userVillagerViewModel,
                fcmViewModel = fcmViewModel,
-               sqlDataBase = sqlDataBase)
+               sqlDataBase = sqlDataBase
+           )
         }
     }
 }

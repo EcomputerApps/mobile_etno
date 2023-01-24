@@ -106,7 +106,7 @@ fun ScrollableTabNews(
                                         modifier = Modifier
                                             .height(300.dp)
                                             .width(300.dp)
-                                            .background(Color.Gray)
+                                            .background(Color.LightGray)
                                     ) {
                                         CircularProgressIndicator(
                                             color = Color.White,

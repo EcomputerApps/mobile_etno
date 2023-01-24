@@ -1,5 +1,6 @@
 package com.example.mobile_etno.views.screen.discovery
 
+
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.R
-import com.example.mobile_etno.models.FCMToken
 import com.example.mobile_etno.models.SectionsMenu
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
@@ -52,7 +52,7 @@ fun DiscoveryScreen(
                 Spacer(modifier = Modifier.padding(8.dp))
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(30.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ){
                     items(
@@ -62,11 +62,10 @@ fun DiscoveryScreen(
                             SectionsMenu(R.drawable.vaccines_pharmacy, "Farmacias"),
                             SectionsMenu(R.drawable.service, "Servicios"),
                             SectionsMenu(R.drawable.news, "Noticias"),
-                            SectionsMenu(R.drawable.news, "Festividades"),
                             SectionsMenu(R.drawable.news, "Bandos"),
                             SectionsMenu(R.drawable.news, "Anuncios"),
                             SectionsMenu(R.drawable.news, "Galería"),
-                            SectionsMenu(R.drawable.news, "Difunciones"),
+                            SectionsMenu(R.drawable.news, "Defunciones"),
                             SectionsMenu(R.drawable.news, "Enlaces"),
                             SectionsMenu(R.drawable.news, "Patrocinadores"),
                             SectionsMenu(R.drawable.news, "Incidentes"),
@@ -75,8 +74,10 @@ fun DiscoveryScreen(
                         Card(
                             elevation = 4.dp,
                             modifier = Modifier
+                                .padding(8.dp)
                                 .clickable {
                                     when(item.sectionName){
+                                        "Eventos" -> navController.navigate(NavItem.Events.route){  }
                                         "Turismo" -> navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
                                         "Farmacias" -> navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
                                         "Servicios" -> navController.navigate(NavItem.Phone.route){  }
@@ -93,6 +94,10 @@ fun DiscoveryScreen(
                                         }
                                         "Galería" -> navController.navigate(NavItem.Gallery.route){ userVillagerViewModel.getImagesByLocality() }
                                         "Bandos" -> navController.navigate(NavItem.Bandos.route){ userVillagerViewModel.getBandosByUsername.invoke() }
+                                        "Enlaces" -> navController.navigate(NavItem.Links.route){ userVillagerViewModel.getLinksByUsername.invoke() }
+                                        "Noticias" -> navController.navigate(NavItem.News.route){ userVillagerViewModel.getUserToVillagerNews() }
+                                        "Defunciones" -> navController.navigate(NavItem.Deaths.route){ userVillagerViewModel.getUserToVillagerDeaths() }
+                                        "Patrocinadores" -> navController.navigate(NavItem.Sponsors.route){ userVillagerViewModel.getSponsorsByUsername.invoke() }
                                     }
                                 }
                         ) {
