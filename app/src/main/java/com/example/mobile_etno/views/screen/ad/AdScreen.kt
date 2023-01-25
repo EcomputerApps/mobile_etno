@@ -1,4 +1,4 @@
-package com.example.mobile_etno.views.screen.sponsor
+package com.example.mobile_etno.views.screen.ad
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -24,22 +25,24 @@ import com.example.mobile_etno.R
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun SponsorScreen(
+fun AdScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-    val sponsors = userVillagerViewModel.userSponsors.collectAsState()
+    val uriHandler = LocalUriHandler.current
+    val ads = userVillagerViewModel.userAds.collectAsState()
     val connection = userVillagerViewModel.connection.collectAsState()
 
     Scaffold(
         bottomBar = {
             BottomNavigationCustom(
-            navController = navController,
-            stateNavigationButton = -1,
-            userVillagerViewModel = userVillagerViewModel
-        ) }
+                navController = navController,
+                stateNavigationButton = -1,
+                userVillagerViewModel = userVillagerViewModel
+            ) }
     ) {
         Box(
             modifier = Modifier
@@ -48,18 +51,21 @@ fun SponsorScreen(
                 .padding(8.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (connection.value){
+                if(connection.value){
                     Text(
-                        text = "Patrocinadores", fontWeight = FontWeight.Bold,
+                        text = "Anuncios", fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
                         fontFamily = FontFamily.SansSerif
                     )
-                    if(sponsors.value.isNotEmpty()){
+                    if(ads.value.isNotEmpty()){
                         LazyColumn(){
-                            items(sponsors.value){ sponsor ->
+                            items(ads.value){ ad ->
                                 Card(
                                     modifier = Modifier
-                                        .padding(8.dp),
+                                        .padding(8.dp)
+                                        .clickable {
+                                            uriHandler.openUri(ad.webUrl!!)
+                                        },
                                     elevation = 4.dp
                                 ) {
                                     Box(
@@ -74,19 +80,12 @@ fun SponsorScreen(
                                                 verticalAlignment = Alignment.CenterVertically,
                                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                                             ) {
-                                                Icon(painter = painterResource(id = com.example.mobile_etno.R.drawable.business), contentDescription = "", modifier = Modifier.size(20.dp), tint = Color.Red)
-                                                Text(text = sponsor.title!!, fontWeight = FontWeight.Bold, color = Color.Red)
+                                                Icon(painter = painterResource(id = R.drawable.business), contentDescription = "", modifier = Modifier.size(20.dp), tint = Color.Red)
+                                                Text(text = ad.title!!, fontWeight = FontWeight.Bold, color = Color.Red)
                                             }
-                                            Text(text = sponsor.description!!, color = Color.Red)
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                            ) {
-                                                Icon(imageVector = Icons.Filled.Phone, contentDescription = "", modifier = Modifier.size(20.dp), tint = Color.Red)
-                                                Text(text = sponsor.phone!!, color = Color.Red)
-                                            }
-                                            com.skydoves.landscapist.glide.GlideImage(
-                                                imageModel = { sponsor.urlImage },
+                                            Text(text = ad.description!!)
+                                            GlideImage(
+                                                imageModel = { ad.imageUrl },
                                                 loading = {
                                                     Box(
                                                         modifier = Modifier
@@ -122,14 +121,13 @@ fun SponsorScreen(
                                 }
                             }
                         }
-
                     }else{
-                        EmptyOrConnectionScreen(icon = R.drawable.no_backpack, prop = "No hay patrocinadores en este momento")
+                        EmptyOrConnectionScreen(icon = R.drawable.no_backpack, prop = "No hay anuncios disponibles en este momento")
                     }
                 }
             }
             if (!connection.value){
-                EmptyOrConnectionScreen(icon = R.drawable.wifi_off, prop = "Por favor, comprueba tu conexión a internet")
+                EmptyOrConnectionScreen(prop = "Por favor, comprueba tu conexión a internet", icon = R.drawable.wifi_off)
             }
         }
     }

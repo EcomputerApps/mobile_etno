@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.mobile_etno.NavItem
 import com.example.mobile_etno.models.IncidentModel
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
@@ -33,6 +34,7 @@ fun IncidentsScreen(
 ){
     val currentContext = LocalContext.current
     val getIncidents = userVillagerViewModel.saveIncidentsToVillager.collectAsState()
+    val connection = userVillagerViewModel.connection.collectAsState()
 
     Scaffold(
         topBar = {},
@@ -53,22 +55,28 @@ fun IncidentsScreen(
                     .wrapContentSize(),
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                Text(
-                    text = "Mis Incidencias",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    fontFamily = FontFamily.SansSerif
-                )
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ){
-                    items(getIncidents.value){
-                        item ->
-                        IncidentCard(
-                            title = item.title!!,
-                            description = item.description!!,
-                            onClick = { Toast.makeText(currentContext, item.title ,Toast.LENGTH_SHORT).show() }
-                        )
+                if(connection.value){
+                    Text(
+                        text = "Mis Incidencias",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily.SansSerif
+                    )
+                    if(getIncidents.value.isNotEmpty()){
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ){
+                            items(getIncidents.value){
+                                    item ->
+                                IncidentCard(
+                                    title = item.title!!,
+                                    description = item.description!!,
+                                    onClick = { Toast.makeText(currentContext, item.title ,Toast.LENGTH_SHORT).show() }
+                                )
+                            }
+                        }
+                    }else{
+                        EmptyOrConnectionScreen(icon = com.example.mobile_etno.R.drawable.no_backpack, prop = "No hay incidencias en este momento")
                     }
                 }
             }
@@ -82,6 +90,12 @@ fun IncidentsScreen(
                 onClick = { navController.navigate(NavItem.CreateIncident.route){  } }
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Localized description")
+            }
+            if(!connection.value) {
+                EmptyOrConnectionScreen(
+                    icon = com.example.mobile_etno.R.drawable.wifi_off,
+                    prop = "Por favor, comprueba tu conexión a internet"
+                )
             }
         }
     }

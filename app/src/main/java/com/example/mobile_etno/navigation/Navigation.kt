@@ -16,6 +16,7 @@ import com.example.mobile_etno.views.components.choose.ChooseLocalityScreen
 import com.example.mobile_etno.views.components.choose.LocalitiesChooseScreen
 import com.example.mobile_etno.views.modern.HomeEtno
 import com.example.mobile_etno.views.screen.*
+import com.example.mobile_etno.views.screen.ad.AdScreen
 import com.example.mobile_etno.views.screen.bandos.BandoScreen
 import com.example.mobile_etno.views.screen.death.DeathDetails
 import com.example.mobile_etno.views.screen.death.DeathsScreen
@@ -150,7 +151,7 @@ fun Navigation(
            SponsorScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.Advertisements.route){
-            AdvertisementsScreen(navController = navController)
+            AdScreen(navController = navController, userVillagerViewModel = userVillagerViewModel)
         }
         composable(NavItem.Services.route){
             ServicesScreen(navController = navController)

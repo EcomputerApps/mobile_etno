@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_etno.isInternetAvailable
 import com.example.mobile_etno.models.*
+import com.example.mobile_etno.models.ad.Ad
 import com.example.mobile_etno.models.bando.Bando
 import com.example.mobile_etno.models.link.Link
 import com.example.mobile_etno.models.mail.Mail
@@ -143,6 +144,10 @@ class UserVillagerViewModel(
     //State sponsors ->
     private val _userSponsors = MutableStateFlow<List<Sponsor>>(listOf())
     val userSponsors: StateFlow<List<Sponsor>> = _userSponsors
+
+    //State Ads ->
+    private val _userAds = MutableStateFlow<List<Ad>>(listOf())
+    val userAds: StateFlow<List<Ad>> = _userAds
 
     var isRefreshing by mutableStateOf(false)
 
@@ -433,6 +438,18 @@ class UserVillagerViewModel(
                 val response = requestSponsors.execute()
 
                 _userSponsors.value = response.body()!!
+            }catch (_: Exception){  }
+        }
+    }
+
+    // Ads -> ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    val getAdsByUsername: () -> Unit = {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val requestAds = UserVillagerClient.userVillager.getAdsByUsername(localityViewModel.saveStateLocality.value)
+                val response = requestAds.execute()
+
+                _userAds.value = response.body()!!
             }catch (_: Exception){  }
         }
     }

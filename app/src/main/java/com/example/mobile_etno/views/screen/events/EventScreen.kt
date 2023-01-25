@@ -32,6 +32,7 @@ import com.example.mobile_etno.R
 import com.example.mobile_etno.models.UserSubscription
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.components.FormSubscription
+import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
@@ -273,21 +274,7 @@ fun EventScreen(
                             )
                         }
                             if(events.value.isEmpty()){
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Icon(painter = painterResource(id = R.drawable.no_backpack), contentDescription = "")
-                                        Text(
-                                            text = "No hay eventos disponibles en este momento",
-                                            fontWeight = FontWeight.W700,
-                                            fontSize = 14.sp,
-                                        )
-                                    }
-                                }
+                                EmptyOrConnectionScreen(prop ="No hay eventos disponibles en este momento", icon = R.drawable.no_backpack)
                             }else{
                                 LazyVerticalGrid(
                                     modifier = Modifier.padding(16.dp),
@@ -308,7 +295,7 @@ fun EventScreen(
                                         ) {
                                             Column() {
                                                 GlideImage(
-                                                    imageModel = { "" },
+                                                    imageModel = { event.imageUrl },
                                                     success = { imageState ->
                                                         Image(
                                                             bitmap = imageState.imageBitmap!!,
@@ -377,25 +364,7 @@ fun EventScreen(
                     }
                 }
                 if (!connection.value) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.wifi_off),
-                                contentDescription = ""
-                            )
-                            Text(
-                                text = "Por favor, comprueba tu conexión a internet",
-                                fontWeight = FontWeight.W700,
-                                fontSize = 14.sp,
-                            )
-                        }
-                    }
+                    EmptyOrConnectionScreen(prop = "Por favor, comprueba tu conexión a internet", icon = R.drawable.wifi_off)
                 }
             }
         }

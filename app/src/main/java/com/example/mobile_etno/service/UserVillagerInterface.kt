@@ -3,6 +3,7 @@ package com.example.mobile_etno.service
 import com.example.mobile_etno.models.Event
 import com.example.mobile_etno.models.IncidentModel
 import com.example.mobile_etno.models.UserVillager
+import com.example.mobile_etno.models.ad.Ad
 import com.example.mobile_etno.models.bando.Bando
 import com.example.mobile_etno.models.link.Link
 import com.example.mobile_etno.models.mail.Mail
@@ -47,6 +48,11 @@ interface UserVillagerInterface {
     fun getSponsors(
         @Query("username") username: String
     ): Call<List<Sponsor>>
+
+    @GET("ads")
+    fun getAdsByUsername(
+        @Query("username") username: String
+    ): Call<List<Ad>>
 
     @POST("users/add/incident")
     fun addIncidentInUser(

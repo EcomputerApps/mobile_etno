@@ -17,12 +17,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.R
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
 fun DeathsScreen(navController: NavHostController, userVillagerViewModel: UserVillagerViewModel) {
    // BackHandler() { navController.navigate(NavItem.Home.route) { } }
     val deaths = userVillagerViewModel.userVillagerDeaths.collectAsState()
+    val connection = userVillagerViewModel.connection.collectAsState()
 
     Scaffold(
         bottomBar = { BottomNavigationCustom(
@@ -38,36 +40,47 @@ fun DeathsScreen(navController: NavHostController, userVillagerViewModel: UserVi
                 .padding(8.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(text = "Defunciones", fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    fontFamily = FontFamily.SansSerif)
-                LazyColumn(
-                    verticalArrangement = Arrangement
-                        .spacedBy(16.dp)
-                ){
-                    items(deaths.value){ death ->
-                        Card(
-                            elevation = 3.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Column() {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
+                if(connection.value){
+                    Text(text = "Defunciones", fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily.SansSerif)
+                    if(deaths.value.isNotEmpty()){
+                        LazyColumn(
+                            verticalArrangement = Arrangement
+                                .spacedBy(16.dp)
+                        ){
+                            items(deaths.value){ death ->
+                                Card(
+                                    elevation = 3.dp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
                                 ) {
-                                    Icon(painter = painterResource(id = R.drawable.pass_away), contentDescription = "", modifier = Modifier.size(40.dp), tint = Color.Black)
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        Text(text = death.name!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                        Text(text = "Fallecido el ${death.deathDate}", color = Color.Gray, fontSize = 12.sp)
-                                        Text(text = death.description!!)
+                                    Column() {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(painter = painterResource(id = R.drawable.pass_away), contentDescription = "", modifier = Modifier.size(40.dp), tint = Color.Black)
+                                            Column(
+                                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                            ) {
+                                                Text(text = death.name!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                                Text(text = "Fallecido el ${death.deathDate}", color = Color.Gray, fontSize = 12.sp)
+                                                Text(text = death.description!!)
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                    }else{
+                        EmptyOrConnectionScreen(icon = R.drawable.no_backpack, prop = "No hay defunciones en este momento")
                     }
                 }
+            }
+            if (!connection.value){
+                EmptyOrConnectionScreen(icon = R.drawable.wifi_off, prop = "Por favor, comprueba tu conexión a internet")
             }
             }
         }

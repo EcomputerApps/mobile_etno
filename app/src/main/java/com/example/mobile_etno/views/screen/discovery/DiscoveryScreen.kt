@@ -80,7 +80,7 @@ fun DiscoveryScreen(
                                         "Eventos" -> navController.navigate(NavItem.Events.route){  }
                                         "Turismo" -> navController.navigate(NavItem.Tourism.route){ userVillagerViewModel.getUserToVillagerTourism() }
                                         "Farmacias" -> navController.navigate(NavItem.Pharmacies.route){ userVillagerViewModel.getUserToVillagerPharmacies() }
-                                        "Servicios" -> navController.navigate(NavItem.Phone.route){  }
+                                        "Servicios" -> navController.navigate(NavItem.Phone.route){ userVillagerViewModel.getUserToVillagerPhones() }
                                         "Incidentes" -> navController.navigate(NavItem.Incidents.route){
                                             FirebaseMessaging.getInstance().token.addOnCompleteListener(
                                                 OnCompleteListener { task ->
@@ -98,6 +98,7 @@ fun DiscoveryScreen(
                                         "Noticias" -> navController.navigate(NavItem.News.route){ userVillagerViewModel.getUserToVillagerNews() }
                                         "Defunciones" -> navController.navigate(NavItem.Deaths.route){ userVillagerViewModel.getUserToVillagerDeaths() }
                                         "Patrocinadores" -> navController.navigate(NavItem.Sponsors.route){ userVillagerViewModel.getSponsorsByUsername.invoke() }
+                                        "Anuncios" -> navController.navigate(NavItem.Advertisements.route){ userVillagerViewModel.getAdsByUsername.invoke() }
                                     }
                                 }
                         ) {

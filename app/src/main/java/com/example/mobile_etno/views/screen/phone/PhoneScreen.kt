@@ -27,6 +27,7 @@ import com.example.mobile_etno.utils.phone_categories.PhoneCategories
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
 import com.example.mobile_etno.views.ScreenTopBar
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun PhoneScreen(
@@ -71,7 +72,7 @@ fun PhoneScreen(
                                 phone ->
                             Card(elevation = 7.dp, modifier = Modifier.clickable {
                                 navController.navigate(NavItem.PhoneDetailsList.route){ userVillagerViewModel.phoneFilter(phone.categoryName!!) }
-                            }) {
+                            }.padding(8.dp)) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Image(painter = painterResource(id = phone.image!!), contentDescription = phone.categoryName, modifier = Modifier
                                         .width(400.dp)

@@ -15,7 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.mobile_etno.R
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 
 @Composable
@@ -55,11 +57,13 @@ fun NewsScreen(
                 Column(
                 ) {
                     if(connection.value){
-                        CardNewList(news = news.value, navController)
-                    }else{
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                            Text(text = "Por favor, comprueba tu conexión a internet", fontWeight = FontWeight.W700, fontSize = 14.sp)
+                        if(news.value.isNotEmpty()){
+                            CardNewList(news = news.value, navController)
+                        }else{
+                            EmptyOrConnectionScreen(icon = R.drawable.no_backpack, prop = "No hay noticias disponibles en este momento")
                         }
+                    }else{
+                        EmptyOrConnectionScreen(icon = R.drawable.wifi_off, prop = "Por favor, comprueba tu conexión a internet")
                     }
                 }
             }

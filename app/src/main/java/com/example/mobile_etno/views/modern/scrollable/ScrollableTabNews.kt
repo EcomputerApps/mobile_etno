@@ -126,8 +126,9 @@ fun ScrollableTabNews(
                                             "Tecnología" -> Color.Cyan
                                             "Salud" -> Color.Red
                                             "Entretenimiento" -> Color.Green
+                                            "Negocios" -> Color.Yellow
                                             else -> {
-                                                Color.Yellow
+                                                Color.Magenta
                                             }
                                         }
                                     )

@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mobile_etno.R
+import com.example.mobile_etno.utils.Parse
 import com.example.mobile_etno.viewmodels.UserVillagerViewModel
+import com.example.mobile_etno.views.components.connection.EmptyOrConnectionScreen
 import com.example.mobile_etno.views.modern.navigationbottom.BottomNavigationCustom
 import kotlinx.coroutines.launch
 
@@ -25,8 +27,7 @@ fun BandoScreen(
     navController: NavHostController,
     userVillagerViewModel: UserVillagerViewModel
 ){
-
-
+    val connection = userVillagerViewModel.connection.collectAsState()
     val bandos = userVillagerViewModel.userBandos.collectAsState()
     val bando = userVillagerViewModel.userBando.collectAsState()
     val skipHalfExpanded by remember { mutableStateOf(false) }
@@ -71,7 +72,7 @@ fun BandoScreen(
                                         Text(text = "${bando.value.username} · Huesca", color = Color.Gray, fontSize = 10.sp)
                                         Divider(thickness = 1.dp, color = Color.Gray)
                                         Text(text = "Emitido", fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                                        Text(text = bando.value.issuedDate!!, color = Color.Gray, fontSize = 10.sp)
+                                        Text(text = Parse.formatEuropean(bando.value.issuedDate!!), color = Color.Gray, fontSize = 10.sp)
                                         Divider(thickness = 1.dp, color = Color.Gray)
                                         Text(text = bando.value.description!!, fontSize = 12.sp)
                                     }
@@ -92,49 +93,59 @@ fun BandoScreen(
                         .padding(start = 8.dp, end = 8.dp, top = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(text = "Bandos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    LazyColumn(
-                        verticalArrangement = Arrangement
-                            .spacedBy(14.dp)
-                    ){
-                        items(bandos.value){
-                                item ->
-                            Card(
-                                elevation = 4.dp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        scope.launch {
-                                            userVillagerViewModel.getBandoByUsernameAndTitle.invoke(
-                                                item.title!!
-                                            )
-                                            state.show()
-                                        }
-                                    }
-                            ) {
-                                Column() {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                    if (connection.value){
+                        Text(text = "Bandos", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        if (bandos.value.isNotEmpty()){
+                            LazyColumn(
+                                verticalArrangement = Arrangement
+                                    .spacedBy(14.dp)
+                            ){
+                                items(bandos.value){
+                                        item ->
+                                    Card(
+                                        elevation = 4.dp,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                            .clickable {
+                                                scope.launch {
+                                                    userVillagerViewModel.getBandoByUsernameAndTitle.invoke(
+                                                        item.title!!
+                                                    )
+                                                    state.show()
+                                                }
+                                            }
                                     ) {
+                                        Column() {
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
 
-                                        Icon(painter = painterResource(id = R.drawable.campaign), contentDescription = "campaigns", modifier = Modifier.size(40.dp), tint = Color.Red)
-                                        Column(
-                                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                                        ) {
-                                            Text(text = item.title!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                            Text(text = item.issuedDate!!, color = Color.Gray, fontSize = 12.sp)
-                                        }
-                                        Box(modifier = Modifier.fillMaxSize()) {
-                                            Icon(painter = painterResource(id = R.drawable.right), contentDescription = "right", modifier = Modifier
-                                                .align(Alignment.BottomEnd)
-                                                .padding(4.dp), tint = Color.Red)
+                                                Icon(painter = painterResource(id = R.drawable.campaign), contentDescription = "campaigns", modifier = Modifier.size(40.dp), tint = Color.Red)
+                                                Column(
+                                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Text(text = item.title!!, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                                    Text(text = "Emitida el ${Parse.formatEuropean(item.issuedDate!!)}", color = Color.Gray, fontSize = 12.sp)
+                                                }
+                                                Box(modifier = Modifier.fillMaxSize()) {
+                                                    Icon(painter = painterResource(id = R.drawable.right), contentDescription = "right", modifier = Modifier
+                                                        .align(Alignment.BottomEnd)
+                                                        .padding(4.dp), tint = Color.Red)
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
+                        }else{
+                            EmptyOrConnectionScreen(icon = R.drawable.no_backpack, prop = "No hay bandos disponibles en este momento")
                         }
                     }
+                }
+                if (!connection.value){
+                    EmptyOrConnectionScreen(icon = R.drawable.wifi_off, prop = "Por favor, comprueba tu conexión a internet")
                 }
             }
         }

@@ -92,9 +92,9 @@ fun CardNewList(news: List<New>, navController: NavHostController){
                                         "Tecnología" -> Color.Cyan
                                         "Salud" -> Color.Red
                                         "Entretenimiento" -> Color.Green
-                                        "Negocios" -> Color.Magenta
+                                        "Negocios" -> Color.Yellow
                                         else -> {
-                                            Color.Yellow
+                                            Color.Magenta
                                         }
                                     }
                                 )
